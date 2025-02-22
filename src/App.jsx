@@ -11,6 +11,7 @@ import Story from "./components/Story";
 import Testimonials from "./components/Testimonials";
 import FAQS from "./components/FAQS";
 import NewsletterSignup from "./components/NewsletterSignup";
+import Footer from "./components/Footer";
 
 export const MobileMenuContext = createContext({
   showMenu: false,
@@ -73,6 +74,9 @@ const App = () => {
                     </section>
                     <section id="contact-us">
                       <NewsletterSignup />
+                    </section>
+                    <section id="footer">
+                      <Footer />
                     </section>
                   </main>
                 </>

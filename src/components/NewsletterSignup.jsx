@@ -58,7 +58,7 @@ const NewsletterSignup = () => {
   };
 
   return (
-    <section className="mt-32 bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-accent)] text-[var(--color-primary)] py-12 px-6 shadow-lg rounded-lg">
+    <section className="mt-32 bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-accent)] text-[var(--color-primary)] py-12 px-6 shadow-lg rounded-t-lg">
       <div className="max-w-4xl mx-auto text-center">
         <motion.h2
           initial={{ opacity: 0, y: -20 }}
