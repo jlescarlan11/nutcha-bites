@@ -9,7 +9,9 @@ const Header = () => {
         <span className="font-semibold">NUTCHA BITES</span>
       </div>
       <div>
-        <button className="px-4 py-2 font-semibold">ORDER NOW</button>
+        <button className="px-4 py-2 font-semibold bg-[var(--color-accent)]/80 text-[var(--color-primary)] hover:scale-105 transition-all duration-500 hover:bg-[var(--color-accent)]/90">
+          ORDER NOW
+        </button>
       </div>
     </div>
   );

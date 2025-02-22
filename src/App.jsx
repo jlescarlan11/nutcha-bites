@@ -9,6 +9,8 @@ import StickyNav2 from "./components/StickyNav2";
 import Ingredients from "./components/Ingredient";
 import Story from "./components/Story";
 import Testimonials from "./components/Testimonials";
+import FAQS from "./components/FAQS";
+import NewsletterSignup from "./components/NewsletterSignup";
 
 export const MobileMenuContext = createContext({
   showMenu: false,
@@ -102,26 +104,30 @@ const App = () => {
           </section>
 
           {/* Additional sections for demonstration */}
-          <section id="recipe" className="mt-24 flex-grow">
+          <section id="recipe" className=" flex-grow">
             <div className="p-4 text-lg">
               <Ingredients />
             </div>
           </section>
-          <section id="our-vision" className="mt-24 flex-grow">
+          <section id="our-vision" className=" flex-grow">
             <div className="py-4 text-lg">
               <Story />
             </div>
           </section>
-          <section id="testimonials" className="mt-24 flex-grow">
+          <section id="testimonials" className="flex-grow">
             <div className="text-lg">
               <Testimonials />
             </div>
           </section>
-          <section id="faqs" className="mt-24 flex-grow">
-            <div className="p-4 text-lg">FAQs Content</div>
+          <section id="faqs" className="flex-grow">
+            <div className="p-4 text-lg">
+              <FAQS />
+            </div>
           </section>
-          <section id="contact-us" className="mt-24 flex-grow">
-            <div className="p-4 text-lg">Contact Us Content</div>
+          <section id="contact-us" className="flex-grow">
+            <div className=" text-lg">
+              <NewsletterSignup />
+            </div>
           </section>
         </main>
       </div>

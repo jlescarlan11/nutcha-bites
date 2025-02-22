@@ -17,7 +17,7 @@ const Overview = () => {
         </div>
         {/* Benefits Section */}
         <div className="space-y-4">
-          <h2 className="text-3xl font-bold text-gray-800">
+          <h2 className="text-3xl font-bold text-[var(--color-secondary)]/80">
             When Tradition Meets{" "}
             <Typewriter
               options={{
@@ -39,17 +39,23 @@ const Overview = () => {
             />
           </h2>
 
-          <ul className="space-y-2 text-gray-700">
+          <ul className="space-y-2 text-[var(--color-secondary)]/70">
             <li className="flex items-center">
-              <span className="mr-2 text-green-600 text-xl">✅</span>
+              <span className="mr-2 text-[var(--color-accent)]/60 text-xl">
+                ✅
+              </span>
               <span>Irresistibly crunchy texture</span>
             </li>
             <li className="flex items-center">
-              <span className="mr-2 text-green-600 text-xl">✅</span>
+              <span className="mr-2 text-[var(--color-accent)]/60  text-xl">
+                ✅
+              </span>
               <span>Unique fusion of matcha and muscovado flavors</span>
             </li>
             <li className="flex items-center">
-              <span className="mr-2 text-green-600 text-xl">✅</span>
+              <span className="mr-2 text-[var(--color-accent)]/60  text-xl">
+                ✅
+              </span>
               <span>Honors rich cultural heritage with a modern twist</span>
             </li>
           </ul>

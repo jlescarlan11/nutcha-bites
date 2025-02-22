@@ -10,7 +10,7 @@ const Home = () => {
           Old-School Crunch, New-School Vibes. A Nutchalicious Bite!
         </p>
         <div className="mt-18">
-          <button className="px-8 py-4 font-semibold text-2xl hover:opacity-70 transition duration-300 ease-in-out">
+          <button className="px-8 py-4 font-semibold text-2xl hover:bg-[var(--color-accent)]/90 ease-in-out hover:scale-105 transition-all duration-500 bg-[var(--color-accent)]/80 text-[var(--color-primary)]">
             Order Now
           </button>
         </div>

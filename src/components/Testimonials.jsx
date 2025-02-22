@@ -73,7 +73,7 @@ const Testimonials = () => {
       {...swipeHandlers}
     >
       <div className="max-w-4xl mx-auto text-center">
-        <h2 className="text-3xl font-bold text-gray-800 mb-8">
+        <h2 className="text-3xl font-bold text-[var(--color-secondary)]/80 mb-8">
           What Our Customers Say
         </h2>
         <div
@@ -97,10 +97,10 @@ const Testimonials = () => {
                   className="w-20 h-20 rounded-full mb-4"
                   loading="lazy"
                 />
-                <p className="text-lg italic text-gray-700">
+                <p className="text-lg italic text-[var(--color-secondary)]/70">
                   "{testimonial.review}"
                 </p>
-                <p className="text-gray-900 font-semibold">
+                <p className="text-[var(--color-secondary)]/90 font-semibold">
                   {testimonial.name}
                 </p>
                 <div
@@ -130,14 +130,14 @@ const Testimonials = () => {
         {/* Navigation Buttons */}
         <button
           onClick={handlePrev}
-          className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full focus:outline-none"
+          className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-[var(--color-secondary)]/80 text-[var(--color-primary)] p-2 rounded-full focus:outline-none"
           aria-label="Previous testimonial"
         >
           ◀
         </button>
         <button
           onClick={handleNext}
-          className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full focus:outline-none"
+          className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[var(--color-secondary)]/80 text-[var(--color-primary)] p-2 rounded-full focus:outline-none"
           aria-label="Next testimonial"
         >
           ▶
@@ -149,7 +149,9 @@ const Testimonials = () => {
               key={index}
               onClick={() => setCurrent(index)}
               className={`w-3 h-3 rounded-full focus:outline-none ${
-                current === index ? "bg-green-600" : "bg-gray-300"
+                current === index
+                  ? "bg-[var(--color-accent)]/60"
+                  : "bg-gray-300"
               }`}
               aria-label={`Go to testimonial ${index + 1}`}
               aria-current={current === index ? "true" : "false"}

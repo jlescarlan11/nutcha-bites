@@ -47,12 +47,16 @@ const ingredients = [
 const IngredientRow = ({ ingredient }) => {
   const { name, description, optional } = ingredient;
   return (
-    <tr className="hover:bg-gray-100">
-      <td className="px-4 py-2 border-b border-gray-200 text-gray-700">
+    <tr className="hover:bg-[var(--color-secondary)]/10">
+      <td className="px-4 py-2 border-b border-[var(--color-secondary)]/20 text-[var(--color-secondary)]/70">
         {name}{" "}
-        {optional && <span className="text-sm text-gray-500">(Optional)</span>}
+        {optional && (
+          <span className="text-sm text-[var(--color-secondary)]/50">
+            (Optional)
+          </span>
+        )}
       </td>
-      <td className="px-4 py-2 border-b border-gray-200 text-gray-700">
+      <td className="px-4 py-2 border-b border-[var(--color-secondary)]/20 text-[var(--color-secondary)]/70">
         {description}
       </td>
     </tr>
@@ -71,10 +75,10 @@ const Ingredients = () => {
   return (
     <section id="ingredients" className="mt-20 py-12 px-4">
       <div className="max-w-4xl mx-auto">
-        <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
+        <h2 className="text-3xl font-bold text-center text-[var(--color-secondary)]/80 mb-6">
           Ingredients
         </h2>
-        <p className="text-center text-gray-600 mb-8">
+        <p className="text-center text-[var(--color-secondary)]/60 mb-8">
           We believe in authenticity and transparency. Here’s exactly what goes
           into every bite of Nutcha Bites:
         </p>
@@ -85,10 +89,10 @@ const Ingredients = () => {
             </caption>
             <thead>
               <tr>
-                <th className="px-4 py-2 border-b-2 border-gray-300 text-left text-gray-800 text-xl">
+                <th className="px-4 py-2 border-b-2 border-text-[var(--color-secondary)]/30 text-left text-[var(--color-secondary)]/80 text-xl">
                   Ingredient
                 </th>
-                <th className="px-4 py-2 border-b-2 border-gray-300 text-left text-gray-800 text-xl">
+                <th className="px-4 py-2 border-b-2 border-text-[var(--color-secondary)]/30 text-left text-[var(--color-secondary)]/80 text-xl">
                   Description
                 </th>
               </tr>
@@ -101,7 +105,7 @@ const Ingredients = () => {
           </table>
         </div>
         <div className="mt-8 text-center">
-          <p className="text-gray-700 italic">
+          <p className="text-[var(--color-secondary)]/70 italic">
             Our expert process transforms these high-quality ingredients into
             the perfect, crunchy, and innovative Nutcha Bites.
           </p>

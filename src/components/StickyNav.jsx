@@ -17,7 +17,7 @@ const StickyNav = ({ activeSection, visible }) => {
         visible ? "opacity-100" : "opacity-0"
       }`}
     >
-      <ul className="flex flex-wrap justify-center gap-4 bg-[var(--color-secondary)] text-[var(--color-primary)] px-2 py-4 rounded-4xl opacity-90">
+      <ul className="flex flex-wrap justify-center gap-4 bg-[var(--color-secondary)]/80 text-[var(--color-primary)] px-2 py-4 rounded-4xl">
         {menuItems.map((item, index) => {
           const id = item.toLowerCase().replace(/\s+/g, "-");
           const activeClass =

@@ -22,7 +22,7 @@ const StickyNav2 = ({ activeSection, visible }) => {
         <div className="flex items-center text-2xl">
           <img src={logo} alt="Logo" className="size-16" />
         </div>
-        <ul className="flex flex-wrap justify-center gap-4 bg-[var(--color-secondary)] text-[var(--color-primary)] px-2 py-4 rounded-4xl opacity-90">
+        <ul className="flex flex-wrap justify-center gap-4 bg-gradient-to-tr from-[var(--color-secondary)] to-[var(--color-accent)] text-[var(--color-primary)] px-2 py-4 rounded-4xl opacity-90">
           {menuItems.map((item, index) => {
             const id = item.toLowerCase().replace(/\s+/g, "-");
             const activeClass =
@@ -42,7 +42,7 @@ const StickyNav2 = ({ activeSection, visible }) => {
           })}
         </ul>
         <div>
-          <button className="px-4 py-4 rounded-4xl font-semibold bg-[var(--color-secondary)]">
+          <button className="px-4 py-4 rounded-4xl font-semibold bg-[var(--color-secondary)]/80">
             ORDER NOW
           </button>
         </div>
