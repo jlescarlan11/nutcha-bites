@@ -217,12 +217,6 @@ const CustomerOrderForm = ({
         >
           Next: Payment Details
         </button>
-        <button
-          onClick={handleCancel}
-          className="bg-gray-500 text-white p-2 rounded hover:bg-gray-600 flex-1 ml-2"
-        >
-          Cancel
-        </button>
       </div>
     </div>
   );
@@ -492,9 +486,17 @@ const OrderForm = () => {
 
   return (
     <div className="p-6 bg-gray-100 rounded-lg shadow-md max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold text-center text-yellow-600 mb-4">
-        Nutcha Bites
-      </h1>
+      <div className="flex justify-between">
+        <h1 className="text-2xl font-bold text-center text-yellow-600 mb-4">
+          Nutcha Bites
+        </h1>
+        <span
+          className="material-symbols-outlined"
+          onClick={() => navigate("/")}
+        >
+          close
+        </span>
+      </div>
       <ProgressBar step={step} />
       {step === 1 && (
         <CustomerOrderForm
