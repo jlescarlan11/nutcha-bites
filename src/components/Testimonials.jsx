@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useSwipeable } from "react-swipeable";
 import review1 from "../assets/review1.webp";
 import review2 from "../assets/review2.webp";
@@ -57,23 +57,28 @@ const Testimonials = () => {
     }
   };
 
-  // Swipe handlers for touch devices (using react-swipeable)
+  // Swipe handlers for touch devices
   const swipeHandlers = useSwipeable({
     onSwipedLeft: handleNext,
     onSwipedRight: handlePrev,
     trackMouse: true,
   });
 
+  // Toggle auto-play state
+  const togglePause = () => {
+    setPaused((prev) => !prev);
+  };
+
   return (
     <section
-      className="relative m-32 py-12 px-4"
-      aria-label="Customer testimonials"
+      className="relative mx-4 sm:mx-8 md:mx-16 lg:mx-32 py-8 md:py-12 px-4"
+      aria-label="Testimonials Slider"
       onKeyDown={handleKeyDown}
-      tabIndex="0" // Makes the container focusable for keyboard events
+      tabIndex="0"
       {...swipeHandlers}
     >
-      <div className="max-w-4xl mx-auto text-center">
-        <h2 className="text-3xl font-bold text-[var(--color-secondary)]/80 mb-8">
+      <div className="max-w-full md:max-w-4xl mx-auto text-center relative">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-[var(--color-secondary)]/80 mb-6 md:mb-8">
           What Our Customers Say
         </h2>
         <div
@@ -88,19 +93,19 @@ const Testimonials = () => {
             {testimonialsData.map((testimonial, index) => (
               <div
                 key={index}
-                className="min-w-full flex flex-col items-center p-6"
+                className="min-w-full flex flex-col items-center p-4 sm:p-6 transition-opacity duration-500"
                 aria-hidden={current !== index}
               >
                 <img
                   src={testimonial.image}
                   alt={`${testimonial.name}'s review`}
-                  className="w-20 h-20 rounded-full mb-4"
+                  className="w-16 h-16 md:w-20 md:h-20 rounded-full mb-4"
                   loading="lazy"
                 />
-                <p className="text-lg italic text-[var(--color-secondary)]/70">
+                <p className="text-base md:text-lg italic text-[var(--color-secondary)]/70">
                   "{testimonial.review}"
                 </p>
-                <p className="text-[var(--color-secondary)]/90 font-semibold">
+                <p className="text-[var(--color-secondary)]/90 font-semibold mt-2">
                   {testimonial.name}
                 </p>
                 <div
@@ -110,7 +115,7 @@ const Testimonials = () => {
                   {[...Array(5)].map((_, i) => (
                     <svg
                       key={i}
-                      className={`w-5 h-5 ${
+                      className={`w-4 h-4 md:w-5 md:h-5 ${
                         i < testimonial.rating
                           ? "text-yellow-400"
                           : "text-gray-300"
@@ -126,18 +131,28 @@ const Testimonials = () => {
               </div>
             ))}
           </div>
+          {/* Progress Bar */}
+          <div className="absolute bottom-0 left-0 w-full h-1 bg-gray-300">
+            <div
+              key={current} // Reset the animation when the slide changes
+              className="h-1 bg-[var(--color-accent)]"
+              style={{
+                animation: paused ? "none" : "progress 5000ms linear forwards",
+              }}
+            ></div>
+          </div>
         </div>
         {/* Navigation Buttons */}
         <button
           onClick={handlePrev}
-          className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-[var(--color-secondary)]/80 text-[var(--color-primary)] p-2 rounded-full focus:outline-none"
+          className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 bg-[var(--color-secondary)]/80 text-[var(--color-primary)] p-2 sm:p-3 rounded-full focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
           aria-label="Previous testimonial"
         >
           ◀
         </button>
         <button
           onClick={handleNext}
-          className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[var(--color-secondary)]/80 text-[var(--color-primary)] p-2 rounded-full focus:outline-none"
+          className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 bg-[var(--color-secondary)]/80 text-[var(--color-primary)] p-2 sm:p-3 rounded-full focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
           aria-label="Next testimonial"
         >
           ▶
@@ -148,7 +163,7 @@ const Testimonials = () => {
             <button
               key={index}
               onClick={() => setCurrent(index)}
-              className={`w-3 h-3 rounded-full focus:outline-none ${
+              className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] ${
                 current === index
                   ? "bg-[var(--color-accent)]/60"
                   : "bg-gray-300"
@@ -158,7 +173,21 @@ const Testimonials = () => {
             />
           ))}
         </div>
+        {/* Auto-Play Toggle Button */}
+        <button
+          onClick={togglePause}
+          className="mt-4 inline-flex items-center px-3 py-1 border border-[var(--color-secondary)] rounded-full text-sm font-medium text-[var(--color-secondary)] hover:bg-[var(--color-secondary)] hover:text-[var(--color-primary)] transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
+          aria-label={paused ? "Play testimonials" : "Pause testimonials"}
+        >
+          {paused ? "Play" : "Pause"}
+        </button>
       </div>
+      <style>{`
+        @keyframes progress {
+          from { width: 0%; }
+          to { width: 100%; }
+        }
+      `}</style>
     </section>
   );
 };

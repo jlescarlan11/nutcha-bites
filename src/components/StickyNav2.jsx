@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import logo from "../assets/logo1.svg";
 import { useNavigate } from "react-router-dom";
 
@@ -13,45 +13,28 @@ const menuItems = [
 
 const StickyNav2 = ({ activeSection, visible }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const menuRef = useRef(null);
-
   const navigate = useNavigate();
 
   const toggleMenu = () => {
     setIsMenuOpen((prev) => !prev);
   };
 
-  // Close mobile menu if clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setIsMenuOpen(false);
-      }
-    };
+  // Removed: useEffect for clicking outside the menu to close it
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  // Close menu on "Escape" key press
+  // Keep close on "Escape" key press if desired
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === "Escape") {
         setIsMenuOpen(false);
       }
     };
-
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   // Lock body scroll when menu is open
   useEffect(() => {
-    if (isMenuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
+    document.body.style.overflow = isMenuOpen ? "hidden" : "auto";
   }, [isMenuOpen]);
 
   return (
@@ -104,7 +87,6 @@ const StickyNav2 = ({ activeSection, visible }) => {
           <button
             onClick={toggleMenu}
             className="p-2 focus:outline-none"
-            aria-expanded={isMenuOpen}
             aria-label="Toggle menu"
           >
             {isMenuOpen ? (
@@ -139,12 +121,9 @@ const StickyNav2 = ({ activeSection, visible }) => {
           </button>
         </div>
       </div>
-      {/* Mobile Menu Dropdown with Slide-down Transition */}
+      {/* Mobile Menu Dropdown */}
       {isMenuOpen && (
-        <div
-          ref={menuRef}
-          className="md:hidden mt-4 bg-gradient-to-tr from-[var(--color-secondary)] to-[var(--color-accent)] rounded-xl opacity-95 p-4 transition-transform duration-300 transform origin-top scale-100 text-gray-200"
-        >
+        <div className="md:hidden mt-4 bg-gradient-to-tr from-[var(--color-secondary)] to-[var(--color-accent)] rounded-xl opacity-95 p-4 transition-transform duration-300 transform origin-top scale-100 text-gray-200">
           <ul className="flex flex-col space-y-2">
             {menuItems.map((item, index) => {
               const id = item.toLowerCase().replace(/\s+/g, "-");
@@ -175,13 +154,6 @@ const StickyNav2 = ({ activeSection, visible }) => {
           </ul>
         </div>
       )}
-      {/* Optional: Mobile Backdrop Overlay
-      {isMenuOpen && (
-        <div
-          className="fixed inset-0 z-20 bg-black opacity-25"
-          onClick={() => setIsMenuOpen(false)}
-        />
-      )} */}
     </nav>
   );
 };
