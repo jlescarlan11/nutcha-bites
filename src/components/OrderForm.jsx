@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CreditCard from "react-credit-cards";
 import "react-credit-cards/es/styles-compiled.css";
@@ -41,10 +41,6 @@ const CustomerOrderForm = ({
 }) => {
   const navigate = useNavigate();
 
-  const handleCancel = () => {
-    navigate("/");
-  };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setBuyerInfo((prev) => ({ ...prev, [name]: value }));
@@ -68,10 +64,12 @@ const CustomerOrderForm = ({
 
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-4">Customer & Order Details</h2>
-      <div className="flex flex-col md:flex-row md:space-x-4">
+      <h2 className="text-xl font-semibold mb-4">
+        Customer &amp; Order Details
+      </h2>
+      <div className="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0">
         {/* Left Column: Customer Info */}
-        <div className="md:w-1/2 space-y-4">
+        <div className="w-full md:w-1/2 space-y-4">
           <h3 className="text-lg font-bold">Customer Information</h3>
           <div>
             <label htmlFor="name" className="block font-medium">
@@ -156,7 +154,7 @@ const CustomerOrderForm = ({
         </div>
 
         {/* Right Column: Order Details */}
-        <div className="md:w-1/2 space-y-4 mt-4 md:mt-0">
+        <div className="w-full md:w-1/2 space-y-4">
           <h3 className="text-lg font-bold">Order Details</h3>
           <div>
             <label htmlFor="product" className="block font-medium">
@@ -286,8 +284,8 @@ const PaymentForm = ({
             </span>
           )}
         </div>
-        <div className="flex space-x-4">
-          <div className="w-1/2">
+        <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
+          <div className="w-full sm:w-1/2">
             <label htmlFor="expiration" className="block font-medium">
               Expiration Date
             </label>
@@ -309,7 +307,7 @@ const PaymentForm = ({
               </span>
             )}
           </div>
-          <div className="w-1/2">
+          <div className="w-full sm:w-1/2">
             <label htmlFor="cvv" className="block font-medium">
               CVV
             </label>
@@ -332,15 +330,17 @@ const PaymentForm = ({
             )}
           </div>
         </div>
-        {/* Live credit card preview */}
-        <div className="mt-4">
-          <CreditCard
-            number={buyerInfo.cardNumber}
-            name={buyerInfo.name}
-            expiry={buyerInfo.expiration.replace("/", "")}
-            cvc={buyerInfo.cvv}
-            focused=""
-          />
+        {/* Live credit card preview in a responsive container */}
+        <div className="mt-4 flex justify-center">
+          <div className="w-full sm:w-2/3 md:w-1/2">
+            <CreditCard
+              number={buyerInfo.cardNumber}
+              name={buyerInfo.name}
+              expiry={buyerInfo.expiration.replace("/", "")}
+              cvc={buyerInfo.cvv}
+              focused=""
+            />
+          </div>
         </div>
         <div className="flex justify-between mt-4">
           <button
@@ -354,7 +354,7 @@ const PaymentForm = ({
             onClick={onSubmit}
             type="button"
             disabled={isSubmitting}
-            className={`w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 ${
+            className={`w-full sm:w-auto bg-blue-500 text-white p-2 rounded hover:bg-blue-600 ${
               isSubmitting ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
@@ -370,7 +370,7 @@ const PaymentForm = ({
 const Confirmation = ({ buyerInfo, selectedProduct, quantity, navigate }) => {
   const totalPrice = (selectedProduct.price * quantity).toFixed(2);
   return (
-    <div className="p-6 bg-gray-100 rounded-lg shadow-md max-w-md mx-auto">
+    <div className="p-6 bg-gray-100 rounded-lg shadow-md w-full max-w-md mx-auto">
       <h1 className="text-2xl font-bold text-center text-yellow-600 mb-4">
         Nutcha Bites
       </h1>
@@ -421,7 +421,16 @@ const OrderForm = () => {
   const [orderSubmitted, setOrderSubmitted] = useState(false);
   const navigate = useNavigate();
 
-  // Validation functions
+  // Disable background scroll while modal is open
+  useEffect(() => {
+    const originalStyle = window.getComputedStyle(document.body).overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = originalStyle;
+    };
+  }, []);
+
+  // Helper: Validate Step 1 inputs
   const validateStep1 = () => {
     const newErrors = {};
     if (!buyerInfo.name.trim()) newErrors.name = "Full Name is required";
@@ -436,19 +445,7 @@ const OrderForm = () => {
     return newErrors;
   };
 
-  const validateStep2 = () => {
-    const newErrors = {};
-    if (!buyerInfo.cardNumber.trim())
-      newErrors.cardNumber = "Card number is required";
-    if (!buyerInfo.expiration.trim()) {
-      newErrors.expiration = "Expiration date is required";
-    } else if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(buyerInfo.expiration)) {
-      newErrors.expiration = "Expiration must be in MM/YY format";
-    }
-    if (!buyerInfo.cvv.trim()) newErrors.cvv = "CVV is required";
-    return newErrors;
-  };
-
+  // Helper: Move to payment step after validating customer info
   const handleNext = () => {
     const step1Errors = validateStep1();
     if (Object.keys(step1Errors).length > 0) {
@@ -458,21 +455,7 @@ const OrderForm = () => {
     setStep(2);
   };
 
-  const handleBack = () => setStep(1);
-
-  const handleSubmit = async () => {
-    const step2Errors = validateStep2();
-    if (Object.keys(step2Errors).length > 0) {
-      setErrors(step2Errors);
-      return;
-    }
-    setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    console.log("Order confirmed", { buyerInfo, selectedProduct, quantity });
-    setIsSubmitting(false);
-    setOrderSubmitted(true);
-  };
-
+  // If order is submitted, show confirmation
   if (orderSubmitted) {
     return (
       <Confirmation
@@ -485,43 +468,76 @@ const OrderForm = () => {
   }
 
   return (
-    <div className="p-6 bg-gray-100 rounded-lg shadow-md max-w-3xl mx-auto">
-      <div className="flex justify-between">
-        <h1 className="text-2xl font-bold text-center text-yellow-600 mb-4">
-          Nutcha Bites
-        </h1>
-        <span
-          className="material-symbols-outlined"
-          onClick={() => navigate("/")}
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4">
+      <div className="w-full max-w-3xl bg-gray-100 rounded-lg shadow-md mx-auto max-h-screen flex flex-col">
+        {/* Sticky Header */}
+        <div className="sticky top-0 bg-gray-100 z-10 p-4 flex justify-between items-center border-b">
+          <h1 className="text-2xl font-bold text-yellow-600">Nutcha Bites</h1>
+          <span
+            className="material-symbols-outlined cursor-pointer"
+            onClick={() => navigate("/")}
+          >
+            close
+          </span>
+        </div>
+        {/* Scrollable Content */}
+        <div
+          className="overflow-y-auto p-6"
+          style={{ maxHeight: "calc(100vh - 80px)" }}
         >
-          close
-        </span>
+          <ProgressBar step={step} />
+          {step === 1 && (
+            <CustomerOrderForm
+              buyerInfo={buyerInfo}
+              setBuyerInfo={setBuyerInfo}
+              errors={errors}
+              setErrors={setErrors}
+              onNext={handleNext}
+              selectedProduct={selectedProduct}
+              setSelectedProduct={setSelectedProduct}
+              quantity={quantity}
+              setQuantity={setQuantity}
+            />
+          )}
+          {step === 2 && (
+            <PaymentForm
+              buyerInfo={buyerInfo}
+              setBuyerInfo={setBuyerInfo}
+              errors={errors}
+              setErrors={setErrors}
+              onBack={() => setStep(1)}
+              onSubmit={async () => {
+                // Inline validation for PaymentForm
+                const newErrors = {};
+                if (!buyerInfo.cardNumber.trim())
+                  newErrors.cardNumber = "Card number is required";
+                if (!buyerInfo.expiration.trim()) {
+                  newErrors.expiration = "Expiration date is required";
+                } else if (
+                  !/^(0[1-9]|1[0-2])\/\d{2}$/.test(buyerInfo.expiration)
+                ) {
+                  newErrors.expiration = "Expiration must be in MM/YY format";
+                }
+                if (!buyerInfo.cvv.trim()) newErrors.cvv = "CVV is required";
+                if (Object.keys(newErrors).length > 0) {
+                  setErrors(newErrors);
+                  return;
+                }
+                setIsSubmitting(true);
+                await new Promise((resolve) => setTimeout(resolve, 1500));
+                console.log("Order confirmed", {
+                  buyerInfo,
+                  selectedProduct,
+                  quantity,
+                });
+                setIsSubmitting(false);
+                setOrderSubmitted(true);
+              }}
+              isSubmitting={isSubmitting}
+            />
+          )}
+        </div>
       </div>
-      <ProgressBar step={step} />
-      {step === 1 && (
-        <CustomerOrderForm
-          buyerInfo={buyerInfo}
-          setBuyerInfo={setBuyerInfo}
-          errors={errors}
-          setErrors={setErrors}
-          onNext={handleNext}
-          selectedProduct={selectedProduct}
-          setSelectedProduct={setSelectedProduct}
-          quantity={quantity}
-          setQuantity={setQuantity}
-        />
-      )}
-      {step === 2 && (
-        <PaymentForm
-          buyerInfo={buyerInfo}
-          setBuyerInfo={setBuyerInfo}
-          errors={errors}
-          setErrors={setErrors}
-          onBack={handleBack}
-          onSubmit={handleSubmit}
-          isSubmitting={isSubmitting}
-        />
-      )}
     </div>
   );
 };
