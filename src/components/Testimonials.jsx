@@ -13,7 +13,8 @@ const testimonialsData = [
   },
   {
     name: "Jen Jr.",
-    review: "Gagi Bro, ang sarap! Crisp and authentic texture!",
+    review:
+      "Gagi Bro, ang sarap! Plus points for its Crisp and authentic texture!",
     rating: 4,
     image: review2,
   },
