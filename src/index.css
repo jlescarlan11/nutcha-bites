@@ -10,6 +10,8 @@
   --color-secondary: hsl(33, 50%, 10%);
   --color-tertiary: hsl(333, 80%, 20%);
   --color-accent: hsl(93, 80%, 20%);
+
+  background-color: var(--color-primary);
 }
 .dark {
   --color-primary: hsl(33, 50%, 10%);

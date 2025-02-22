@@ -1,14 +1,8 @@
-// In App.jsx
 import React, { createContext, useState, useEffect } from "react";
 import Header from "./components/Header";
 import Home from "./components/Home";
 import Overview from "./components/Overview";
 import background from "./assets/nutchaBackground.webp";
-import StickyNav from "./components/StickyNav";
-import StickyNav2 from "./components/StickyNav2";
-import Ingredients from "./components/Ingredient";
-import Story from "./components/Story";
-import Testimonials from "./components/Testimonials";
 
 export const MobileMenuContext = createContext({
   showMenu: false,
@@ -18,7 +12,7 @@ export const MobileMenuContext = createContext({
 const menuItems = [
   "Overview",
   "Recipe",
-  "Our Vision",
+  "Our Story",
   "Packaging & Branding",
   "Testimonials",
   "FAQs",
@@ -28,13 +22,13 @@ const menuItems = [
 const App = () => {
   const [showMenu, setShowMenu] = useState(false);
   const [activeSection, setActiveSection] = useState("");
-  const [navVisible, setNavVisible] = useState(false);
 
-  // Intersection Observer for active section
   useEffect(() => {
+    // Generate section IDs from menu items
     const sectionIds = menuItems.map((item) =>
       item.toLowerCase().replace(/\s+/g, "-")
     );
+    // Get DOM elements for each section
     const sections = sectionIds
       .map((id) => document.getElementById(id))
       .filter((section) => section !== null);
@@ -42,6 +36,7 @@ const App = () => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
+          // When at least 50% of the section is visible, set it as active
           if (entry.isIntersecting) {
             setActiveSection(entry.target.id);
           }
@@ -57,28 +52,13 @@ const App = () => {
     };
   }, []);
 
-  // Scroll listener for fade-in effect
-  useEffect(() => {
-    const handleScroll = () => {
-      // Change the threshold value (e.g., 100) to when you want the nav to fade in.
-      if (window.scrollY > 700) {
-        setNavVisible(true);
-      } else {
-        setNavVisible(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   return (
     <MobileMenuContext.Provider value={{ showMenu, setShowMenu }}>
       <div className="min-h-screen flex flex-col">
         {/* Header Section */}
         <header className="relative">
           <div
-            className="min-h-screen bg-cover bg-center bg-no-repeat bg-fixed"
+            className="min-h-screen bg-cover bg-center bg-no-repeat"
             style={{ backgroundImage: `url(${background})` }}
           >
             <div className="absolute inset-0 bg-[var(--color-secondary)]/50 backdrop-blur-sm" />
@@ -91,31 +71,52 @@ const App = () => {
           </div>
         </header>
 
-        {/* Sticky Navigation with Active Highlight & Fade-in Effect */}
-
-        <StickyNav2 activeSection={activeSection} visible={navVisible} />
+        {/* Sticky Navigation with Active Highlight */}
+        <nav className="sticky top-0 z-20 -mt-16">
+          <ul className="flex flex-wrap justify-center gap-4 bg-[var(--color-secondary)] text-[var(--color-primary)] px-2 py-4 rounded-4xl opacity-90">
+            {menuItems.map((item, index) => {
+              const id = item.toLowerCase().replace(/\s+/g, "-");
+              const activeClass =
+                activeSection === id
+                  ? "bg-[var(--color-primary)] text-[var(--color-secondary)]"
+                  : "hover:bg-[var(--color-primary)] hover:opacity-90 hover:text-[var(--color-secondary)]";
+              return (
+                <li key={index} className="cursor-pointer">
+                  <a
+                    href={`#${id}`}
+                    className={`px-4 py-3 rounded-4xl transition duration-300 ease-in-out ${activeClass}`}
+                  >
+                    {item}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
 
         {/* Main Content */}
         <main className="bg-[var(--color-primary)] flex flex-col flex-grow">
-          <section id="overview" className=" flex-grow">
+          <section id="overview" className="mt-24 flex-grow">
             <Overview />
+            <div className="p-4">
+              <p className="text-lg">
+                {Array(100).fill("Content to scroll. ").join(" ")}
+              </p>
+            </div>
           </section>
 
           {/* Additional sections for demonstration */}
           <section id="recipe" className="mt-24 flex-grow">
-            <div className="p-4 text-lg">
-              <Ingredients />
-            </div>
+            <div className="p-4 text-lg">Recipe Content</div>
           </section>
-          <section id="our-vision" className="mt-24 flex-grow">
-            <div className="py-4 text-lg">
-              <Story />
-            </div>
+          <section id="our-story" className="mt-24 flex-grow">
+            <div className="p-4 text-lg">Our Story Content</div>
+          </section>
+          <section id="packaging-&-branding" className="mt-24 flex-grow">
+            <div className="p-4 text-lg">Packaging & Branding Content</div>
           </section>
           <section id="testimonials" className="mt-24 flex-grow">
-            <div className="text-lg">
-              <Testimonials />
-            </div>
+            <div className="p-4 text-lg">Testimonials Content</div>
           </section>
           <section id="faqs" className="mt-24 flex-grow">
             <div className="p-4 text-lg">FAQs Content</div>

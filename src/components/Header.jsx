@@ -1,5 +1,5 @@
 import React from "react";
-import logo from "../assets/logo.svg";
+import logo from "../assets/logo2.svg";
 
 const Header = () => {
   return (
@@ -9,7 +9,7 @@ const Header = () => {
         <span className="font-semibold">NUTCHA BITES</span>
       </div>
       <div>
-        <button className="px-4 py-2 font-semibold">Order Now</button>
+        <button className="px-4 py-2 font-semibold">ORDER NOW</button>
       </div>
     </div>
   );
