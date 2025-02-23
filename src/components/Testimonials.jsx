@@ -26,14 +26,14 @@ const testimonialsData = [
   {
     name: "Jen Jr.",
     review:
-      "Gagi Bro, ang sarap! Plus points for its crisp and authentic texture!",
+      "Gagi Bro, ang sarap! Plus points pa for its crisp and authentic texture!",
     rating: 4,
     image: review2,
   },
   {
     name: "Ming Ming",
     review:
-      "Arf Arf! The quality and heritage behind Nutcha Bites shine through.",
+      "Arf Arf! The quality and heritage behind Nutcha Bites makes me wanna bite more.",
     rating: 5,
     image: review3,
   },

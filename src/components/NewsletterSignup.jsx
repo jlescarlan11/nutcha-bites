@@ -1,7 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircleIcon, XCircleIcon, LoaderIcon, XIcon } from "lucide-react";
-import { FaGoogle, FaFacebook, FaTwitter } from "react-icons/fa";
+import {
+  FaGoogle,
+  FaFacebook,
+  FaTwitter,
+  FaFacebookMessenger,
+  FaInstagram,
+} from "react-icons/fa";
 
 // Hook to manage email state and validation.
 const useEmailValidation = () => {
@@ -277,7 +283,7 @@ const NewsletterSignup = () => {
   };
 
   const updateShareMessage = (platform) => {
-    setShareMessage(`Shared on ${platform}!`);
+    setShareMessage(`Subscribed on ${platform}!`);
     if (shareTimeoutRef.current) clearTimeout(shareTimeoutRef.current);
     shareTimeoutRef.current = setTimeout(() => {
       setShareMessage("");
@@ -287,7 +293,7 @@ const NewsletterSignup = () => {
 
   const handleGoogleSubscribe = () => updateShareMessage("Google");
   const handleFacebookSubscribe = () => updateShareMessage("Facebook");
-  const handleTwitterShare = () => updateShareMessage("Twitter");
+  const handleInstagramShare = () => updateShareMessage("Instagram");
 
   const handleModalClose = (selectedReward) => {
     setReward(selectedReward);
@@ -301,7 +307,7 @@ const NewsletterSignup = () => {
 
   return (
     <section
-      className="relative mt-16 md:mt-32 bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-accent)]  py-8 md:py-12 px-4 md:px-6 shadow-lg rounded-t-lg overflow-hidden"
+      className="relative mt-32 bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-accent)]  py-8 md:py-12 px-4 md:px-6 shadow-lg rounded-t-lg overflow-hidden"
       aria-live="polite"
     >
       {/* Live region for accessibility announcements */}
@@ -353,7 +359,7 @@ const NewsletterSignup = () => {
             type="submit"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="bg-[var(--color-primary)]/80 text-[var(--color-accent)]/70 font-semibold p-3 rounded-md hover:bg-[var(--color-primary)]/60 transition flex items-center ml-0 sm:ml-4 mt-4 sm:mt-0 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-[var(--color-primary)]/80 text-[var(--color-secondary)]/70 font-semibold p-3 rounded-md hover:bg-[var(--color-primary)]/60 transition flex items-center ml-0 sm:ml-4 mt-4 sm:mt-0 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={loading}
           >
             {loading ? (
@@ -450,11 +456,11 @@ const NewsletterSignup = () => {
             Subscribe with Facebook
           </button>
           <button
-            onClick={handleTwitterShare}
+            onClick={handleInstagramShare}
             className="flex items-center flex-grow justify-center px-4 py-2 border border-[var(--color-secondary)]/10 rounded-md  dark:hover:bg-[var(--color-secondary)]/30 transition"
           >
-            <FaTwitter size={20} className="mr-2" />
-            Share on Twitter
+            <FaInstagram size={20} className="mr-2" />
+            Subscribe with Instagram
           </button>
         </div>
         {shareMessage && (

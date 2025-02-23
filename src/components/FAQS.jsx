@@ -203,7 +203,7 @@ const FAQItem = ({ faq, isOpen, toggle, index }) => {
             </svg>
           </div>
           <svg
-            className={`w-6 h-6 transition-transform duration-300 transform ${
+            className={`w-6 h-6 transition-transform duration-300 transform text-[var(--color-secondary)]/80 ${
               isOpen ? "rotate-45" : "rotate-0"
             }`}
             fill="none"

@@ -1,4 +1,3 @@
-// Footer.jsx
 import React from "react";
 import { FaFacebook, FaGithub, FaLinkedin } from "react-icons/fa";
 
@@ -25,7 +24,8 @@ const Footer = () => {
 
   return (
     <footer className="bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-accent)] text-[var(--color-primary)] py-4 px-4 text-center relative">
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[var(--color-accent)] to-[var(--color-primary)] animate-pulse"></div>
+      {/* Static gradient bar (no animation) */}
+      <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-tl from-[var(--color-accent)] to-[var(--color-secondary)]"></div>
       <div className="max-w-screen-lg mx-auto flex flex-col items-center pt-4">
         <p className="text-xs sm:text-sm md:text-base mb-2">
           © {currentYear} John Lester Escarlan | All Rights Reserved
@@ -38,18 +38,13 @@ const Footer = () => {
               target="_blank"
               rel="noopener noreferrer"
               aria-label={link.name}
-              className="text-xl sm:text-2xl transform transition-all duration-300 hover:scale-110 hover:rotate-6"
+              // Removed interactive hover animations for a static look
+              className="text-xl mr-2 sm:text-2xl"
             >
               {link.icon}
             </a>
           ))}
         </div>
-        <button
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="mt-2 text-xs sm:text-sm text-[var(--color-primary)] border border-[var(--color-primary)] rounded px-2 py-1 hover:bg-[var(--color-primary)] hover:text-[var(--color-secondary)] transition-colors duration-300 md:hidden shadow-sm hover:shadow-md"
-        >
-          Back to Top
-        </button>
       </div>
     </footer>
   );
