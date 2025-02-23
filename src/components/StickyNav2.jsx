@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext, useRef } from "react";
 import logo from "../assets/logo2.svg";
 import { useNavigate } from "react-router-dom";
 import { MobileMenuContext } from "../App";
+import { FaMoon, FaSun } from "react-icons/fa";
 
 // Custom hook for media queries
 const useMediaQuery = (query) => {
@@ -23,11 +24,15 @@ const menuItems = [
   "Recipe",
   "Our Vision",
   "Testimonials",
+  // matches change
   "FAQs",
   "Contact Us",
+
+  // Clean up the event listener when the component is unmounted
 ];
 
-const StickyNav2 = ({ activeSection, visible }) => {
+// Return the `matches` state
+const StickyNav2 = ({ activeSection, visible, darkMode, setDarkMode }) => {
   const { setShowMenu } = useContext(MobileMenuContext);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -35,6 +40,10 @@ const StickyNav2 = ({ activeSection, visible }) => {
   const navigate = useNavigate();
   const modalRef = useRef(null);
   const hamburgerButtonRef = useRef(null);
+
+  const toggleDarkMode = () => {
+    setDarkMode((prev) => !prev);
+  };
 
   // Determine if device is tablet (width between 600px and 1023px)
   const isTablet = useMediaQuery("(min-width: 600px) and (max-width: 1023px)");
@@ -151,7 +160,18 @@ const StickyNav2 = ({ activeSection, visible }) => {
           </ul>
 
           {/* Desktop "ORDER NOW" Button for large screens */}
-          <div className="hidden lg:block">
+          <div className="hidden lg:flex gap-2">
+            <button
+              onClick={toggleDarkMode}
+              className="flex items-center justify-center p-2  size-16  bg-transparent "
+              aria-label="Toggle dark mode"
+            >
+              {darkMode ? (
+                <FaSun className="text-yellow-500 size-8" />
+              ) : (
+                <FaMoon className="text-[var(--color-primary)]/60 size-8" />
+              )}
+            </button>
             <button
               className="px-6 py-3 rounded-full font-semibold bg-[var(--color-secondary)]/80 hover:bg-[var(--color-secondary)] transition-colors duration-300"
               onClick={() => navigate("/order")}
@@ -259,13 +279,29 @@ const StickyNav2 = ({ activeSection, visible }) => {
                       </li>
                     );
                   })}
-                  <li className="mt-6">
+                  <li className="mt-6 flex flex-col gap-2">
                     <button
-                      className="w-full px-4 py-3 rounded-full font-semibold bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-secondary-light)] hover:from-[var(--color-secondary-light)] hover:to-[var(--color-secondary)] transition-transform duration-300 hover:scale-105"
+                      onClick={toggleDarkMode}
+                      className="w-full px-4 py-3 rounded-full flex justify-center items-center font-semibold bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-secondary-light)] hover:from-[var(--color-secondary-light)] hover:to-[var(--color-secondary)] transform transition-all duration-300 hover:scale-105"
+                      aria-label="Toggle dark mode"
+                    >
+                      {darkMode ? (
+                        <span className="flex gap-2 items-center">
+                          <FaSun className="text-yellow-500" />
+                          <p> Dark Mode</p>
+                        </span>
+                      ) : (
+                        <span className="flex gap-2 items-center">
+                          <FaMoon className="text-gray-600" />
+                          <p>Light Mode</p>
+                        </span>
+                      )}
+                    </button>
+                    <button
+                      className="w-full px-4 py-3 rounded-full font-semibold bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-secondary-light)] hover:from-[var(--color-secondary-light)] hover:to-[var(--color-secondary)] transform transition-all duration-300 hover:scale-105"
                       onClick={() => {
-                        navigate("/order");
-                        setIsMenuOpen(false);
                         setShowMenu(false);
+                        navigate("/order");
                       }}
                     >
                       ORDER NOW

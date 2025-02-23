@@ -1,7 +1,17 @@
 // Testimonials.jsx
 import React, { useState, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
+import FocusLock from "react-focus-lock";
 import { useSwipeable } from "react-swipeable";
-import { FaClipboard, FaCheck } from "react-icons/fa";
+import {
+  FaClipboard,
+  FaCheck,
+  FaHeart,
+  FaRegHeart,
+  FaBookmark,
+  FaRegBookmark,
+} from "react-icons/fa";
+import Confetti from "react-confetti";
 import review1 from "../assets/review1.webp";
 import review2 from "../assets/review2.webp";
 import review3 from "../assets/review3.webp";
@@ -29,14 +39,172 @@ const testimonialsData = [
   },
 ];
 
+const RatingStars = ({ rating, size = "w-5 h-5" }) => (
+  <div className="flex" aria-label={`Rating: ${rating} out of 5`}>
+    {[...Array(5)].map((_, i) => (
+      <svg
+        key={i}
+        className={`${size} ${
+          i < rating ? "text-yellow-400" : "text-gray-300"
+        }`}
+        fill="currentColor"
+        viewBox="0 0 20 20"
+        aria-hidden="true"
+      >
+        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.959a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.37 2.448a1 1 0 00-.364 1.118l1.286 3.959c.3.921-.755 1.688-1.54 1.118l-3.37-2.448a1 1 0 00-1.175 0l-3.37 2.448c-.784.57-1.838-.197-1.54-1.118l1.286-3.959a1 1 0 00-.364-1.118L2.07 9.386c-.783-.57-.38-1.81.588-1.81h4.162a1 1 0 00.95-.69l1.286-3.959z" />
+      </svg>
+    ))}
+  </div>
+);
+
+// Modal component: copyStatus state is now local and the share function uses testimonial.review
+const TestimonialModal = ({
+  testimonial,
+  onClose,
+  onLike,
+  likes,
+  onBookmark,
+  bookmarked,
+}) => {
+  const [copyStatus, setCopyStatus] = useState("");
+
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [onClose]);
+
+  const handleShare = () => {
+    navigator.clipboard
+      .writeText(testimonial.review)
+      .then(() => {
+        setCopyStatus("Copied!");
+        setTimeout(() => setCopyStatus(""), 2000);
+      })
+      .catch(() => {
+        setCopyStatus("Failed to copy.");
+        setTimeout(() => setCopyStatus(""), 2000);
+      });
+  };
+
+  return createPortal(
+    <div
+      className="fixed inset-0 flex items-center justify-center z-50"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-[var(--color-secondary)]/30 to-transparent backdrop-blur-sm"
+        onClick={onClose}
+      ></div>
+      <FocusLock>
+        <div className="relative bg-[var(--color-primary)] rounded-2xl shadow-2xl max-w-md w-full p-6 mx-4 z-50 transition-transform duration-300 transform animate-modalIn modal-container">
+          <div className="flex justify-end">
+            <button
+              onClick={onClose}
+              className="text-4xl bg-transparent text-[var(--color-secondary)] hover:text-[var(--color-accent)] focus:outline-none"
+              aria-label="Close modal"
+            >
+              &times;
+            </button>
+          </div>
+          <img
+            src={testimonial.image}
+            alt={`${testimonial.name}'s review`}
+            className="size-20 rounded-full mx-auto mb-4"
+            loading="lazy"
+          />
+          <p className="text-base md:text-lg italic text-[var(--color-secondary)]/70 mb-2">
+            "{testimonial.review}"
+          </p>
+          <p className="text-[var(--color-secondary)]/90 font-semibold">
+            - {testimonial.name}
+          </p>
+          <div className="flex items-center justify-center">
+            <RatingStars rating={testimonial.rating} size="w-5 h-5" />
+          </div>
+          <div className="mt-4 flex flex-row gap-2 justify-center items-center space-y-2 sm:space-y-0 sm:space-x-4">
+            <button
+              onClick={handleShare}
+              className="flex items-center px-3 py-2 border rounded-full text-sm font-medium transition-colors duration-300 hover:bg-[var(--color-accent)]/70 focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
+            >
+              <FaClipboard className="mr-2" />
+              Share
+            </button>
+            <button
+              onClick={onLike}
+              className="flex items-center px-3 py-2 border rounded-full text-sm font-medium transition-colors duration-300 hover:bg-[var(--color-accent)]/70 focus:outline-none focus:ring-2 focus:ring-red-300 icon-button"
+              title={likes[testimonial.name]?.liked ? "Unlike" : "Like"}
+            >
+              {likes[testimonial.name]?.liked ? (
+                <FaHeart className="mr-2 text-red-500" />
+              ) : (
+                <FaRegHeart className="mr-2 text-red-500" />
+              )}
+              Like ({likes[testimonial.name]?.count || 0})
+            </button>
+            <button
+              onClick={onBookmark}
+              className="flex items-center px-3 py-2 border rounded-full text-sm font-medium transition-colors duration-300 hover:bg-[var(--color-accent)]/70 focus:outline-none focus:ring-2 focus:ring-blue-300 icon-button"
+              title={bookmarked ? "Remove Bookmark" : "Bookmark"}
+            >
+              {bookmarked ? (
+                <FaBookmark className="mr-2 text-blue-500" />
+              ) : (
+                <FaRegBookmark className="mr-2 text-blue-500" />
+              )}
+              {bookmarked ? "Bookmarked" : "Bookmark"}
+            </button>
+          </div>
+          {copyStatus && (
+            <div className="flex items-center justify-center mt-2 text-sm text-[var(--color-accent)]/50 transition-opacity duration-300">
+              <FaCheck className="inline mr-1" /> {copyStatus}
+            </div>
+          )}
+        </div>
+      </FocusLock>
+    </div>,
+    document.body
+  );
+};
+
 const Testimonials = () => {
   const [current, setCurrent] = useState(0);
   const total = testimonialsData.length;
   const [paused, setPaused] = useState(false);
   const [selectedTestimonial, setSelectedTestimonial] = useState(null);
-  const [copyStatus, setCopyStatus] = useState("");
+  const [likes, setLikes] = useState({});
+  const [bookmarks, setBookmarks] = useState({});
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [windowSize, setWindowSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
 
-  // Auto slide effect with pause functionality
+  useEffect(() => {
+    const handleResize = () =>
+      setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
+    const savedLikes = localStorage.getItem("testimonialLikes");
+    if (savedLikes) setLikes(JSON.parse(savedLikes));
+    const savedBookmarks = localStorage.getItem("testimonialBookmarks");
+    if (savedBookmarks) setBookmarks(JSON.parse(savedBookmarks));
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("testimonialLikes", JSON.stringify(likes));
+  }, [likes]);
+
+  useEffect(() => {
+    localStorage.setItem("testimonialBookmarks", JSON.stringify(bookmarks));
+  }, [bookmarks]);
+
   useEffect(() => {
     if (paused) return;
     const interval = setInterval(() => {
@@ -53,49 +221,72 @@ const Testimonials = () => {
     setCurrent((prev) => (prev - 1 + total) % total);
   }, [total]);
 
-  // Keyboard navigation for arrow keys
   const handleKeyDown = (e) => {
-    if (e.key === "ArrowLeft") {
-      handlePrev();
-    } else if (e.key === "ArrowRight") {
-      handleNext();
-    }
+    if (e.key === "ArrowLeft") handlePrev();
+    else if (e.key === "ArrowRight") handleNext();
   };
 
-  // Swipe handlers for touch devices
   const swipeHandlers = useSwipeable({
     onSwipedLeft: handleNext,
     onSwipedRight: handlePrev,
     trackMouse: true,
   });
 
-  // Toggle auto-play state
-  const togglePause = () => {
-    setPaused((prev) => !prev);
+  const handleLikeForTestimonial = (testimonial) => {
+    setLikes((prev) => {
+      const currentState = prev[testimonial.name] || { count: 0, liked: false };
+      const newLiked = !currentState.liked;
+      const newCount = newLiked
+        ? currentState.count + 1
+        : Math.max(currentState.count - 1, 0);
+      if (newLiked && !currentState.liked) {
+        setShowConfetti(true);
+        setTimeout(() => setShowConfetti(false), 3000);
+      }
+      return {
+        ...prev,
+        [testimonial.name]: { count: newCount, liked: newLiked },
+      };
+    });
   };
 
-  // Handle share: copy testimonial review to clipboard
-  const handleShare = () => {
-    navigator.clipboard.writeText(selectedTestimonial.review).then(() => {
-      setCopyStatus("Copied!");
-      setTimeout(() => setCopyStatus(""), 2000);
-    });
+  const handleBookmarkForTestimonial = (testimonial) => {
+    setBookmarks((prev) => ({
+      ...prev,
+      [testimonial.name]: !prev[testimonial.name],
+    }));
+  };
+
+  const handleLike = () => {
+    if (selectedTestimonial) handleLikeForTestimonial(selectedTestimonial);
+  };
+
+  const handleBookmark = () => {
+    if (selectedTestimonial) handleBookmarkForTestimonial(selectedTestimonial);
   };
 
   return (
     <section
-      className="relative mx-4 sm:mx-8 md:mx-16 lg:mx-32 py-8 md:py-12 px-4"
+      className="relative mt-24 mx-4 sm:mx-8 overflow-hidden md:mx-16 lg:mx-32 py-8 md:py-12 px-4"
       aria-label="Testimonials Slider"
       onKeyDown={handleKeyDown}
       tabIndex="0"
       {...swipeHandlers}
     >
+      {showConfetti && (
+        <Confetti
+          width={windowSize.width}
+          height={windowSize.height}
+          recycle={false}
+          numberOfPieces={200}
+        />
+      )}
       <div className="max-w-full md:max-w-4xl mx-auto text-center relative">
-        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-[var(--color-secondary)]/80 mb-6 md:mb-8">
+        <h2 className="text-3xl sm:text-4xl mb-6 md:text-5xl font-bold text-[var(--color-secondary)]/80">
           What Our Customers Say
         </h2>
         <div
-          className="overflow-hidden relative w-full"
+          className="overflow-hidden bg-[var(--color-secondary)]/10 border border-[var(--color-tertiary)]/10 rounded-2xl relative w-full"
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
         >
@@ -106,15 +297,54 @@ const Testimonials = () => {
             {testimonialsData.map((testimonial, index) => (
               <div
                 key={index}
-                className="min-w-full flex flex-col items-center p-4 sm:p-6 transition-opacity duration-500"
+                className="min-w-full relative flex flex-col items-center p-4 sm:p-6 transition-opacity duration-500"
                 aria-hidden={current !== index}
+                onClick={() => setSelectedTestimonial(testimonial)}
               >
+                <div className="absolute top-3 right-3 gap-2 flex space-x-2">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleLikeForTestimonial(testimonial);
+                    }}
+                    className="flex items-center bg-transparent text-red-500 hover:text-red-600 icon-button"
+                    title={likes[testimonial.name]?.liked ? "Unlike" : "Like"}
+                    aria-label="Like testimonial"
+                  >
+                    {likes[testimonial.name]?.liked ? (
+                      <FaHeart />
+                    ) : (
+                      <FaRegHeart />
+                    )}
+                    <span className="ml-1 text-xs">
+                      {likes[testimonial.name]?.count || 0}
+                    </span>
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleBookmarkForTestimonial(testimonial);
+                    }}
+                    className="flex items-center bg-transparent text-blue-500 hover:text-blue-600 icon-button"
+                    title={
+                      bookmarks[testimonial.name]
+                        ? "Remove Bookmark"
+                        : "Bookmark"
+                    }
+                    aria-label="Bookmark testimonial"
+                  >
+                    {bookmarks[testimonial.name] ? (
+                      <FaBookmark />
+                    ) : (
+                      <FaRegBookmark />
+                    )}
+                  </button>
+                </div>
                 <img
                   src={testimonial.image}
                   alt={`${testimonial.name}'s review`}
                   className="w-16 h-16 md:w-20 md:h-20 rounded-full mb-4 cursor-pointer hover:opacity-90 transition-transform duration-200 transform hover:scale-105"
                   loading="lazy"
-                  onClick={() => setSelectedTestimonial(testimonial)}
                 />
                 <p className="text-base md:text-lg italic text-[var(--color-secondary)]/70">
                   "{testimonial.review}"
@@ -122,62 +352,46 @@ const Testimonials = () => {
                 <p className="text-[var(--color-secondary)]/90 font-semibold mt-2">
                   {testimonial.name}
                 </p>
-                <div
-                  className="flex mt-2"
-                  aria-label={`Rating: ${testimonial.rating} out of 5`}
-                >
-                  {[...Array(5)].map((_, i) => (
-                    <svg
-                      key={i}
-                      className={`w-4 h-4 md:w-5 md:h-5 ${
-                        i < testimonial.rating
-                          ? "text-yellow-400"
-                          : "text-gray-300"
-                      }`}
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                      aria-hidden="true"
-                    >
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.959a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.37 2.448a1 1 0 00-.364 1.118l1.286 3.959c.3.921-.755 1.688-1.54 1.118l-3.37-2.448a1 1 0 00-1.175 0l-3.37 2.448c-.784.57-1.838-.197-1.54-1.118l1.286-3.959a1 1 0 00-.364-1.118L2.07 9.386c-.783-.57-.38-1.81.588-1.81h4.162a1 1 0 00.95-.69l1.286-3.959z" />
-                    </svg>
-                  ))}
-                </div>
+                <RatingStars
+                  rating={testimonial.rating}
+                  size="w-4 h-4 md:w-5 md:h-5"
+                />
                 <button
-                  onClick={() => setSelectedTestimonial(testimonial)}
-                  className="mt-2 px-4 py-1 text-sm bg-[var(--color-accent)]/80 text-[var(--color-primary)] rounded hover:bg-[var(--color-accent)]/90 transition"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedTestimonial(testimonial);
+                  }}
+                  className="mt-2 px-4 py-1 text-sm bg-[var(--color-accent)]/80 text-[var(--color-primary)]/90 rounded hover:bg-[var(--color-accent)]/90 transition"
                 >
                   View Details
                 </button>
               </div>
             ))}
           </div>
-          {/* Progress Bar */}
-          <div className="absolute bottom-0 left-0 w-full h-1 bg-gray-300 rounded">
+          <div className="absolute bottom-0 left-0 w-full h-1 bg-[var(--color-secondary)]/20 rounded">
             <div
               key={current}
-              className="h-1 bg-[var(--color-accent)] rounded"
+              className="h-1 bg-[var(--color-accent)]/80 rounded"
               style={{
                 animation: paused ? "none" : "progress 5000ms linear forwards",
               }}
             ></div>
           </div>
         </div>
-        {/* Navigation Buttons */}
         <button
           onClick={handlePrev}
-          className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 bg-[var(--color-secondary)]/80 text-[var(--color-primary)] p-2 sm:p-3 rounded-full focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
+          className="absolute left-1 sm:left-3 top-1/2 transform -translate-y-1/2 bg-[var(--color-secondary)]/80 text-[var(--color-primary)] p-2 sm:p-3 rounded-full focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
           aria-label="Previous testimonial"
         >
           ◀
         </button>
         <button
           onClick={handleNext}
-          className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 bg-[var(--color-secondary)]/80 text-[var(--color-primary)] p-2 sm:p-3 rounded-full focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
+          className="absolute right-1 sm:right-3 top-1/2 transform -translate-y-1/2 bg-[var(--color-secondary)]/80 text-[var(--color-primary)] p-2 sm:p-3 rounded-full focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
           aria-label="Next testimonial"
         >
           ▶
         </button>
-        {/* Dots Navigation */}
         <div className="flex justify-center mt-4 space-x-2">
           {testimonialsData.map((_, index) => (
             <button
@@ -185,89 +399,35 @@ const Testimonials = () => {
               onClick={() => setCurrent(index)}
               className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] ${
                 current === index
-                  ? "bg-[var(--color-accent)]/60"
-                  : "bg-gray-300"
+                  ? "bg-[var(--color-accent)]/50"
+                  : "bg-[var(--color-secondary)]/30"
               }`}
               aria-label={`Go to testimonial ${index + 1}`}
               aria-current={current === index ? "true" : "false"}
             />
           ))}
         </div>
-        {/* Auto-Play Toggle Button */}
-        <button
-          onClick={togglePause}
-          className="mt-4 inline-flex items-center px-3 py-1 border border-[var(--color-secondary)] rounded-full text-sm font-medium text-[var(--color-secondary)] hover:bg-[var(--color-secondary)] hover:text-[var(--color-primary)] transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
-          aria-label={paused ? "Play testimonials" : "Pause testimonials"}
-        >
-          {paused ? "Play" : "Pause"}
-        </button>
-      </div>
-
-      {/* Testimonial Details Modal */}
-      {selectedTestimonial && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div
-            className="absolute inset-0 bg-black bg-opacity-40 backdrop-blur-sm transition-opacity duration-300"
-            onClick={() => setSelectedTestimonial(null)}
-          ></div>
-          <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 mx-4 z-50 transition-transform duration-300 transform animate-modalIn">
-            <button
-              onClick={() => setSelectedTestimonial(null)}
-              className="absolute top-3 right-3 text-2xl text-[var(--color-secondary)] hover:text-[var(--color-accent)] focus:outline-none"
-              aria-label="Close modal"
-            >
-              &times;
-            </button>
-            <img
-              src={selectedTestimonial.image}
-              alt={`${selectedTestimonial.name}'s review`}
-              className="w-20 h-20 rounded-full mx-auto mb-4"
-            />
-            <p className="text-base md:text-lg italic text-[var(--color-secondary)]/70 mb-2">
-              "{selectedTestimonial.review}"
-            </p>
-            <p className="text-[var(--color-secondary)]/90 font-semibold">
-              {selectedTestimonial.name}
-            </p>
-            <div
-              className="flex mt-2 justify-center"
-              aria-label={`Rating: ${selectedTestimonial.rating} out of 5`}
-            >
-              {[...Array(5)].map((_, i) => (
-                <svg
-                  key={i}
-                  className={`w-5 h-5 ${
-                    i < selectedTestimonial.rating
-                      ? "text-yellow-400"
-                      : "text-gray-300"
-                  }`}
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  aria-hidden="true"
-                >
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.959a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.37 2.448a1 1 0 00-.364 1.118l1.286 3.959c.3.921-.755 1.688-1.54 1.118l-3.37-2.448a1 1 0 00-1.175 0l-3.37 2.448c-.784.57-1.838-.197-1.54-1.118l1.286-3.959a1 1 0 00-.364-1.118L2.07 9.386c-.783-.57-.38-1.81.588-1.81h4.162a1 1 0 00.95-.69l1.286-3.959z" />
-                </svg>
-              ))}
-            </div>
-            <div className="mt-4 flex justify-center items-center space-x-4">
-              <button
-                onClick={handleShare}
-                className="flex items-center px-3 py-2 border rounded-full text-sm font-medium transition-colors duration-300 hover:bg-[var(--color-accent)]/10 focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
-              >
-                <FaClipboard className="mr-2" />
-                Share
-              </button>
-              {copyStatus && (
-                <span className="text-sm text-green-500 transition-opacity duration-300">
-                  <FaCheck className="inline mr-1" /> {copyStatus}
-                </span>
-              )}
-            </div>
-          </div>
+        <div className="block sm:hidden mt-4 text-sm text-[var(--color-secondary)]/50">
+          Swipe left or right to navigate
         </div>
+      </div>
+      {selectedTestimonial && (
+        <TestimonialModal
+          testimonial={selectedTestimonial}
+          onClose={() => setSelectedTestimonial(null)}
+          onLike={handleLike}
+          likes={likes}
+          onBookmark={handleBookmark}
+          bookmarked={bookmarks[selectedTestimonial.name] || false}
+        />
       )}
-
       <style>{`
+        .icon-button {
+          transition: transform 0.2s ease-in-out;
+        }
+        .icon-button:hover {
+          transform: scale(1.1);
+        }
         @keyframes modalIn {
           from { opacity: 0; transform: scale(0.95); }
           to { opacity: 1; transform: scale(1); }
@@ -278,6 +438,12 @@ const Testimonials = () => {
         @keyframes progress {
           from { width: 0%; }
           to { width: 100%; }
+        }
+        @media (max-width: 640px) {
+          .modal-container {
+            padding: 1rem;
+            border-radius: 1rem;
+          }
         }
       `}</style>
     </section>

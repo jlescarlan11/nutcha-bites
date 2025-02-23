@@ -25,6 +25,15 @@ const App = () => {
   const [showMenu, setShowMenu] = useState(false);
   const [activeSection, setActiveSection] = useState("");
   const [navVisible, setNavVisible] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [darkMode]);
 
   // Toggle sticky nav visibility after a scroll threshold
   useEffect(() => {
@@ -83,7 +92,7 @@ const App = () => {
                       {/* Enhanced overlay with gradient, blur, and parallax effect */}
                       <div className="absolute inset-0 bg-gradient-to-b from-[var(--color-secondary)]/40 to-[var(--color-secondary)]/80 backdrop-blur-md" />
                       <div className="relative z-10 text-[var(--color-primary)]">
-                        <Header />
+                        <Header darkMode={darkMode} setDarkMode={setDarkMode} />
                         <Home />
                       </div>
                     </div>
@@ -91,6 +100,8 @@ const App = () => {
                   <StickyNav2
                     activeSection={activeSection}
                     visible={navVisible}
+                    darkMode={darkMode}
+                    setDarkMode={setDarkMode}
                   />
                   <main className="bg-[var(--color-primary)] flex flex-col flex-grow">
                     <section id="overview">
