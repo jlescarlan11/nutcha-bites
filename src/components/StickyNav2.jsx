@@ -1,8 +1,22 @@
-// StickyNav2.jsx
 import React, { useState, useEffect, useContext, useRef } from "react";
 import logo from "../assets/logo2.svg";
 import { useNavigate } from "react-router-dom";
 import { MobileMenuContext } from "../App";
+
+// Custom hook for media queries
+const useMediaQuery = (query) => {
+  const [matches, setMatches] = useState(false);
+  useEffect(() => {
+    const media = window.matchMedia(query);
+    if (media.matches !== matches) {
+      setMatches(media.matches);
+    }
+    const listener = () => setMatches(media.matches);
+    media.addEventListener("change", listener);
+    return () => media.removeEventListener("change", listener);
+  }, [matches, query]);
+  return matches;
+};
 
 const menuItems = [
   "Overview",
@@ -17,9 +31,13 @@ const StickyNav2 = ({ activeSection, visible }) => {
   const { setShowMenu } = useContext(MobileMenuContext);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [showBackToTop, setShowBackToTop] = useState(false);
   const navigate = useNavigate();
   const modalRef = useRef(null);
   const hamburgerButtonRef = useRef(null);
+
+  // Determine if device is tablet (width between 600px and 1023px)
+  const isTablet = useMediaQuery("(min-width: 600px) and (max-width: 1023px)");
 
   // Smooth scroll to section
   const scrollToSection = (id) => {
@@ -53,13 +71,14 @@ const StickyNav2 = ({ activeSection, visible }) => {
     document.body.style.overflow = isMenuOpen ? "hidden" : "auto";
   }, [isMenuOpen]);
 
-  // Update scroll progress indicator
+  // Update scroll progress indicator and Back-to-Top button visibility
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.scrollY;
       const docHeight = document.body.scrollHeight - window.innerHeight;
       const progress = (scrollTop / docHeight) * 100;
       setScrollProgress(progress);
+      setShowBackToTop(scrollTop > 300);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -71,7 +90,8 @@ const StickyNav2 = ({ activeSection, visible }) => {
       if (
         isMenuOpen &&
         modalRef.current &&
-        !modalRef.current.contains(e.target)
+        !modalRef.current.contains(e.target) &&
+        !hamburgerButtonRef.current.contains(e.target)
       ) {
         setIsMenuOpen(false);
         setShowMenu(false);
@@ -100,19 +120,19 @@ const StickyNav2 = ({ activeSection, visible }) => {
           {/* Logo */}
           <div className="flex items-center">
             <img src={logo} alt="Company Logo" className="w-16 h-auto" />
-            <h2 className="text-2xl font-bold text-[var(--color-primary)] ml-2">
+            <h2 className="ml-2 text-lg sm:text-xl md:text-2xl font-bold text-[var(--color-primary)]">
               NUTCHA BITES
             </h2>
           </div>
 
-          {/* Desktop Menu */}
-          <ul className="hidden md:flex items-center space-x-4 text-[var(--color-primary)]">
+          {/* Desktop Menu for large screens */}
+          <ul className="hidden lg:flex items-center space-x-4 text-[var(--color-primary)]">
             {menuItems.map((item, index) => {
               const id = item.toLowerCase().replace(/\s+/g, "-");
               const activeClass =
                 activeSection === id
                   ? "text-[var(--color-primary)]"
-                  : "text-[var(--color-primary)]/20 hover:bg-[var(--color-primary)] hover:text-[var(--color-secondary)]";
+                  : "text-[var(--color-primary)]/70 hover:bg-[var(--color-primary)] hover:text-[var(--color-secondary)]";
               return (
                 <li key={index} className="cursor-pointer">
                   <a
@@ -130,8 +150,8 @@ const StickyNav2 = ({ activeSection, visible }) => {
             })}
           </ul>
 
-          {/* Desktop "ORDER NOW" Button */}
-          <div className="hidden md:block">
+          {/* Desktop "ORDER NOW" Button for large screens */}
+          <div className="hidden lg:block">
             <button
               className="px-6 py-3 rounded-full font-semibold bg-[var(--color-secondary)]/80 hover:bg-[var(--color-secondary)] transition-colors duration-300"
               onClick={() => navigate("/order")}
@@ -140,8 +160,8 @@ const StickyNav2 = ({ activeSection, visible }) => {
             </button>
           </div>
 
-          {/* Mobile Hamburger Menu */}
-          <div className="md:hidden">
+          {/* Mobile & Tablet Hamburger Menu */}
+          <div className="lg:hidden">
             <button
               ref={hamburgerButtonRef}
               onClick={toggleMenu}
@@ -182,78 +202,184 @@ const StickyNav2 = ({ activeSection, visible }) => {
           </div>
         </div>
 
-        {/* Mobile Menu Modal */}
+        {/* Mobile/Tablet Menu Modal or Sidebar */}
         {isMenuOpen && (
-          <div className="fixed inset-0 z-40 flex items-center justify-center bg-gradient-to-br from-[var(--color-secondary)]/30 to-transparent backdrop-blur-sm">
-            <div
-              ref={modalRef}
-              className="relative bg-[var(--color-primary)] rounded-2xl shadow-2xl p-8 w-11/12 max-w-sm animate-slideDown transform transition-all duration-300 hover:scale-105"
-              role="dialog"
-              aria-modal="true"
-            >
-              <button
-                onClick={() => {
-                  setIsMenuOpen(false);
-                  setShowMenu(false);
-                }}
-                className="absolute top-4 right-4 text-3xl focus:outline-none bg-transparent text-[var(--color-secondary)] transform transition-transform duration-300 hover:scale-110"
-                aria-label="Close menu"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+          <>
+            {isTablet ? (
+              // Tablet Sidebar Menu
+              <div className="fixed inset-0 z-40 flex">
+                <div
+                  ref={modalRef}
+                  className="w-2/3 max-w-xs bg-[var(--color-primary)] rounded-r-2xl shadow-2xl p-8 transition-transform duration-300 transform translate-x-0"
+                  role="dialog"
+                  aria-modal="true"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-              <ul className="mt-8 space-y-6 text-center text-xl text-[var(--color-secondary)]">
-                {menuItems.map((item, index) => {
-                  const id = item.toLowerCase().replace(/\s+/g, "-");
-                  return (
-                    <li
-                      key={index}
-                      className="cursor-pointer transform transition-transform duration-300 hover:scale-105"
-                    >
-                      <a
-                        href={`#${id}`}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          scrollToSection(id);
-                          setIsMenuOpen(false);
-                          setShowMenu(false);
-                        }}
-                        className="block px-4 py-2 rounded transition-colors duration-300 ease-in-out hover:bg-[var(--color-secondary)] hover:text-[var(--color-primary)]"
-                      >
-                        {item}
-                      </a>
-                    </li>
-                  );
-                })}
-                <li className="mt-6">
                   <button
-                    className="w-full px-4 py-3 rounded-full font-semibold bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-secondary-light)] hover:from-[var(--color-secondary-light)] hover:to-[var(--color-secondary)] transform transition-all duration-300 hover:scale-105"
                     onClick={() => {
-                      navigate("/order");
                       setIsMenuOpen(false);
                       setShowMenu(false);
                     }}
+                    className="absolute top-4 right-4 text-3xl focus:outline-none bg-transparent text-[var(--color-secondary)] transition-transform duration-300 hover:scale-110"
+                    aria-label="Close menu"
                   >
-                    ORDER NOW
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-8 w-8"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
                   </button>
-                </li>
-              </ul>
-            </div>
-          </div>
+                  <ul className="mt-8 space-y-6 text-center text-xl text-[var(--color-secondary)]">
+                    {menuItems.map((item, index) => {
+                      const id = item.toLowerCase().replace(/\s+/g, "-");
+                      return (
+                        <li
+                          key={index}
+                          className="cursor-pointer transition-transform duration-300 hover:scale-105"
+                        >
+                          <a
+                            href={`#${id}`}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              scrollToSection(id);
+                              setIsMenuOpen(false);
+                              setShowMenu(false);
+                            }}
+                            className="block px-4 py-2 rounded transition-colors duration-300 ease-in-out hover:bg-[var(--color-secondary)] hover:text-[var(--color-primary)]"
+                          >
+                            {item}
+                          </a>
+                        </li>
+                      );
+                    })}
+                    <li className="mt-6">
+                      <button
+                        className="w-full px-4 py-3 rounded-full font-semibold bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-secondary-light)] hover:from-[var(--color-secondary-light)] hover:to-[var(--color-secondary)] transition-transform duration-300 hover:scale-105"
+                        onClick={() => {
+                          navigate("/order");
+                          setIsMenuOpen(false);
+                          setShowMenu(false);
+                        }}
+                      >
+                        ORDER NOW
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+                {/* Overlay for closing sidebar */}
+                <div
+                  className="flex-1"
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    setShowMenu(false);
+                  }}
+                ></div>
+              </div>
+            ) : (
+              // Mobile Modal Menu
+              <div className="fixed inset-0 z-40 flex items-center justify-center bg-gradient-to-br from-[var(--color-secondary)]/30 to-transparent backdrop-blur-sm">
+                <div
+                  ref={modalRef}
+                  className="relative bg-[var(--color-primary)] rounded-2xl shadow-2xl p-8 w-11/12 max-w-sm animate-slideDown transform transition-all duration-300 hover:scale-105"
+                  role="dialog"
+                  aria-modal="true"
+                >
+                  <button
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      setShowMenu(false);
+                    }}
+                    className="absolute top-4 right-4 text-3xl focus:outline-none bg-transparent text-[var(--color-secondary)] transition-transform duration-300 hover:scale-110"
+                    aria-label="Close menu"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-8 w-8"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                  <ul className="mt-8 space-y-6 text-center text-xl text-[var(--color-secondary)]">
+                    {menuItems.map((item, index) => {
+                      const id = item.toLowerCase().replace(/\s+/g, "-");
+                      return (
+                        <li
+                          key={index}
+                          className="cursor-pointer transition-transform duration-300 hover:scale-105"
+                        >
+                          <a
+                            href={`#${id}`}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              scrollToSection(id);
+                              setIsMenuOpen(false);
+                              setShowMenu(false);
+                            }}
+                            className="block px-4 py-2 rounded transition-colors duration-300 ease-in-out hover:bg-[var(--color-secondary)] hover:text-[var(--color-primary)]"
+                          >
+                            {item}
+                          </a>
+                        </li>
+                      );
+                    })}
+                    <li className="mt-6">
+                      <button
+                        className="w-full px-4 py-3 rounded-full font-semibold bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-secondary-light)] hover:from-[var(--color-secondary-light)] hover:to-[var(--color-secondary)] transition-transform duration-300 hover:scale-105"
+                        onClick={() => {
+                          navigate("/order");
+                          setIsMenuOpen(false);
+                          setShowMenu(false);
+                        }}
+                      >
+                        ORDER NOW
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </nav>
+
+      {/* Back to Top Button */}
+      {showBackToTop && (
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="fixed bottom-8 right-8 bg-[var(--color-secondary)] text-[var(--color-primary)] p-3 rounded-full shadow-lg transition-opacity duration-300 hover:opacity-80"
+          aria-label="Back to top"
+        >
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 15l7-7 7 7"
+            />
+          </svg>
+        </button>
+      )}
     </>
   );
 };
