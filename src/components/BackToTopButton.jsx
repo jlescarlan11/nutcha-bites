@@ -1,17 +1,15 @@
 // BackToTopButton.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { FaArrowUp } from "react-icons/fa";
+import { MobileMenuContext } from "../App"; // Adjust the import path as needed
 
 const BackToTopButton = () => {
+  const { showMenu } = useContext(MobileMenuContext);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const toggleVisibility = () => {
-      if (window.pageYOffset > 300) {
-        setVisible(true);
-      } else {
-        setVisible(false);
-      }
+      setVisible(window.pageYOffset > 300);
     };
     window.addEventListener("scroll", toggleVisibility);
     return () => window.removeEventListener("scroll", toggleVisibility);
@@ -23,6 +21,9 @@ const BackToTopButton = () => {
       behavior: "smooth",
     });
   };
+
+  // Do not render the button if the modal is open
+  if (showMenu) return null;
 
   return (
     visible && (

@@ -26,12 +26,45 @@ const App = () => {
   const [activeSection, setActiveSection] = useState("");
   const [navVisible, setNavVisible] = useState(false);
 
+  // Toggle sticky nav visibility after a scroll threshold
   useEffect(() => {
-    const handleScroll = () => {
+    const handleNavVisibility = () => {
       setNavVisible(window.scrollY > 700);
     };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleNavVisibility);
+    return () => window.removeEventListener("scroll", handleNavVisibility);
+  }, []);
+
+  // Scroll spy: update activeSection based on current scroll position
+  useEffect(() => {
+    const sectionIds = [
+      "overview",
+      "recipe",
+      "our-vision",
+      "testimonials",
+      "faqs",
+      "contact-us",
+    ];
+    const handleScrollSpy = () => {
+      const scrollPos = window.scrollY;
+      let currentSection = "";
+      // Loop through each section and update the activeSection based on its position
+      sectionIds.forEach((id) => {
+        const section = document.getElementById(id);
+        if (section) {
+          // Adjust threshold (here using one-third of viewport height)
+          if (section.offsetTop <= scrollPos + window.innerHeight / 3) {
+            currentSection = id;
+          }
+        }
+      });
+      setActiveSection(currentSection);
+    };
+
+    window.addEventListener("scroll", handleScrollSpy);
+    // Initial check
+    handleScrollSpy();
+    return () => window.removeEventListener("scroll", handleScrollSpy);
   }, []);
 
   return (
@@ -50,8 +83,8 @@ const App = () => {
                       style={{ backgroundImage: `url(${background})` }}
                     >
                       {/* Enhanced overlay with gradient, blur, and parallax effect */}
-                      <div className="absolute inset-0 bg-gradient-to-b from-[rgba(0,0,0,0.4)] to-[rgba(0,0,0,0.8)] backdrop-blur-md" />
-                      <div className="relative z-10 text-white">
+                      <div className="absolute inset-0 bg-gradient-to-b from-[var(--color-secondary)]/40 to-[var(--color-secondary)]/80 backdrop-blur-md" />
+                      <div className="relative z-10 text-[var(--color-primary)]">
                         <Header />
                         <Home />
                       </div>

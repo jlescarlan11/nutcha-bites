@@ -37,9 +37,9 @@ const Header = () => {
             alt="Nutcha Bites Logo"
             className="w-12 h-12 md:w-16 md:h-16 transition-transform duration-300 hover:scale-110"
           />
-          <span className="ml-2 text-xl md:text-2xl font-semibold tracking-wide">
+          <h2 className="text-2xl font-bold text-[var(--color-primary)] ml-2">
             NUTCHA BITES
-          </span>
+          </h2>
         </div>
 
         {/* Desktop Navigation */}
@@ -93,7 +93,7 @@ const Header = () => {
         {/* Mobile Navigation Button */}
         <button
           onClick={() => setShowMenu(true)}
-          className="md:hidden focus:outline-none"
+          className="md:hidden focus:outline-none bg-transparent"
           aria-label="Open mobile menu"
         >
           <svg
@@ -113,13 +113,13 @@ const Header = () => {
         </button>
       </div>
 
-      {/* Mobile Menu Overlay (Updated to include all sections) */}
+      {/* Mobile Menu Overlay with Enhanced Effects */}
       {showMenu && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--color-secondary)]/20 backdrop-blur-sm transition-opacity duration-300">
-          <div className="relative bg-[var(--color-primary)] rounded-2xl shadow-2xl p-8 w-11/12 max-w-md animate-slideDown">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-[var(--color-secondary)]/30 to-transparent backdrop-blur-sm ">
+          <div className="relative bg-[var(--color-primary)] rounded-2xl shadow-2xl p-8 w-11/12 max-w-md animate-slideDown transform transition-all duration-300 hover:scale-105">
             <button
               onClick={() => setShowMenu(false)}
-              className="absolute top-4 right-4 text-3xl focus:outline-none bg-transparent text-[var(--color-secondary)]"
+              className="absolute top-4 right-4 text-3xl focus:outline-none bg-transparent text-[var(--color-secondary)] transform transition-transform duration-300 hover:scale-110"
               aria-label="Close menu"
             >
               <svg
@@ -140,12 +140,14 @@ const Header = () => {
             <ul className="mt-8 space-y-6 text-center text-xl text-[var(--color-secondary)]">
               {menuItems.map((item, index) => {
                 const id = item.toLowerCase().replace(/\s+/g, "-");
-
                 return (
-                  <li key={index} className="cursor-pointer">
+                  <li
+                    key={index}
+                    className="cursor-pointer transform transition-transform duration-300 hover:scale-105"
+                  >
                     <a
                       href={`#${id}`}
-                      className={`block px-4 py-2 rounded transition-colors duration-300 ease-in-out`}
+                      className="block px-4 py-2 rounded transition-colors duration-300 ease-in-out hover:bg-[var(--color-secondary)] hover:text-[var(--color-primary)]"
                       onClick={() => setShowMenu(false)}
                     >
                       {item}
@@ -154,14 +156,14 @@ const Header = () => {
                 );
               })}
             </ul>
-            <li>
+            <div className="mt-6">
               <button
-                className="w-full mt-4 px-4 py-3 rounded-full font-semibold bg-[var(--color-secondary)]/80 hover:bg-[var(--color-secondary)] transition-colors duration-300"
+                className="w-full px-4 py-3 rounded-full font-semibold bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-secondary-light)] hover:from-[var(--color-secondary-light)] hover:to-[var(--color-secondary)] transform transition-all duration-300 hover:scale-105"
                 onClick={() => navigate("/order")}
               >
                 ORDER NOW
               </button>
-            </li>
+            </div>
           </div>
         </div>
       )}
