@@ -48,11 +48,9 @@ const App = () => {
     const handleScrollSpy = () => {
       const scrollPos = window.scrollY;
       let currentSection = "";
-      // Loop through each section and update the activeSection based on its position
       sectionIds.forEach((id) => {
         const section = document.getElementById(id);
         if (section) {
-          // Adjust threshold (here using one-third of viewport height)
           if (section.offsetTop <= scrollPos + window.innerHeight / 3) {
             currentSection = id;
           }

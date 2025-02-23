@@ -27,6 +27,18 @@ const Header = () => {
     }
   }, [darkMode]);
 
+  // Disable background scroll when mobile menu is open
+  useEffect(() => {
+    if (showMenu) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [showMenu]);
+
   return (
     <header className="relative z-20 shadow-md">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
@@ -37,7 +49,7 @@ const Header = () => {
             alt="Nutcha Bites Logo"
             className="w-12 h-12 md:w-16 md:h-16 transition-transform duration-300 hover:scale-110"
           />
-          <h2 className="text-2xl font-bold text-[var(--color-primary)] ml-2">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-[var(--color-primary)] ml-2">
             NUTCHA BITES
           </h2>
         </div>
@@ -115,7 +127,14 @@ const Header = () => {
 
       {/* Mobile Menu Overlay with Enhanced Effects */}
       {showMenu && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-[var(--color-secondary)]/30 to-transparent backdrop-blur-sm ">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-[var(--color-secondary)]/30 to-transparent backdrop-blur-sm"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setShowMenu(false);
+            }
+          }}
+        >
           <div className="relative bg-[var(--color-primary)] rounded-2xl shadow-2xl p-8 w-11/12 max-w-md animate-slideDown transform transition-all duration-300 hover:scale-105">
             <button
               onClick={() => setShowMenu(false)}
@@ -137,7 +156,7 @@ const Header = () => {
                 />
               </svg>
             </button>
-            <ul className="mt-8 space-y-6 text-center text-xl text-[var(--color-secondary)]">
+            <ul className="mt-8 space-y-6 text-center text-lg sm:text-xl text-[var(--color-secondary)]">
               {menuItems.map((item, index) => {
                 const id = item.toLowerCase().replace(/\s+/g, "-");
                 return (
@@ -159,7 +178,10 @@ const Header = () => {
             <div className="mt-6">
               <button
                 className="w-full px-4 py-3 rounded-full font-semibold bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-secondary-light)] hover:from-[var(--color-secondary-light)] hover:to-[var(--color-secondary)] transform transition-all duration-300 hover:scale-105"
-                onClick={() => navigate("/order")}
+                onClick={() => {
+                  setShowMenu(false);
+                  navigate("/order");
+                }}
               >
                 ORDER NOW
               </button>
