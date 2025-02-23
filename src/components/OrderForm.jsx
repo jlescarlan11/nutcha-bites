@@ -495,6 +495,18 @@ const PaymentForm = ({
               />
             </div>
           </div>
+
+          {/* Mobile Credit Card Preview */}
+          <div className="mb-6 md:hidden flex justify-center items-center">
+            <CreditCard
+              number={buyerInfo.cardNumber}
+              name={buyerInfo.name}
+              expiry={buyerInfo.expiration.replace("/", "")}
+              cvc={buyerInfo.cvv}
+              focused=""
+            />
+          </div>
+
           {/* Voucher Code Input */}
           <div className="mt-6">
             <label
@@ -593,8 +605,8 @@ const PaymentForm = ({
             </p>
           </div>
         </div>
-        {/* Right Column: Credit Card Preview */}
-        <div className="w-full md:w-1/3 flex justify-center items-start mb-6 md:mb-0 transform scale-90">
+        {/* Desktop Credit Card Preview */}
+        <div className="w-full md:w-1/3 hidden md:flex justify-center items-start mb-6 md:mb-0 transform scale-90">
           <CreditCard
             number={buyerInfo.cardNumber}
             name={buyerInfo.name}
