@@ -9,6 +9,7 @@ import {
   FaFacebookMessenger,
   FaInstagram,
 } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 // Hook to manage email state and validation.
 const useEmailValidation = () => {
@@ -309,6 +310,8 @@ const NewsletterSignup = () => {
     }, 5000);
   };
 
+  const navigate = useNavigate();
+
   return (
     <section
       className="relative mt-32 bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-accent)] py-8 md:py-12 px-4 md:px-6 shadow-lg rounded-t-lg overflow-hidden"
@@ -424,7 +427,7 @@ const NewsletterSignup = () => {
               🎁 {reward}
             </motion.span>
             <motion.button
-              onClick={() => (window.location.href = "/order")}
+              onClick={() => navigate("/order")}
               whileHover={{
                 scale: 1.15,
                 transition: { ease: "easeOut", duration: 0.3 },
