@@ -240,7 +240,11 @@ const StickyNav2 = ({ activeSection, visible }) => {
                 <li className="mt-6">
                   <button
                     className="w-full px-4 py-3 rounded-full font-semibold bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-secondary-light)] hover:from-[var(--color-secondary-light)] hover:to-[var(--color-secondary)] transform transition-all duration-300 hover:scale-105"
-                    onClick={() => navigate("/order")}
+                    onClick={() => {
+                      navigate("/order");
+                      setIsMenuOpen(false);
+                      setShowMenu(false);
+                    }}
                   >
                     ORDER NOW
                   </button>
