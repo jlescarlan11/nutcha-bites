@@ -1,5 +1,7 @@
+// Testimonials.jsx
 import React, { useState, useEffect, useCallback } from "react";
 import { useSwipeable } from "react-swipeable";
+import { FaClipboard, FaCheck } from "react-icons/fa";
 import review1 from "../assets/review1.webp";
 import review2 from "../assets/review2.webp";
 import review3 from "../assets/review3.webp";
@@ -14,7 +16,7 @@ const testimonialsData = [
   {
     name: "Jen Jr.",
     review:
-      "Gagi Bro, ang sarap! Plus points for its Crisp and authentic texture!",
+      "Gagi Bro, ang sarap! Plus points for its crisp and authentic texture!",
     rating: 4,
     image: review2,
   },
@@ -32,6 +34,7 @@ const Testimonials = () => {
   const total = testimonialsData.length;
   const [paused, setPaused] = useState(false);
   const [selectedTestimonial, setSelectedTestimonial] = useState(null);
+  const [copyStatus, setCopyStatus] = useState("");
 
   // Auto slide effect with pause functionality
   useEffect(() => {
@@ -71,6 +74,14 @@ const Testimonials = () => {
     setPaused((prev) => !prev);
   };
 
+  // Handle share: copy testimonial review to clipboard
+  const handleShare = () => {
+    navigator.clipboard.writeText(selectedTestimonial.review).then(() => {
+      setCopyStatus("Copied!");
+      setTimeout(() => setCopyStatus(""), 2000);
+    });
+  };
+
   return (
     <section
       className="relative mx-4 sm:mx-8 md:mx-16 lg:mx-32 py-8 md:py-12 px-4"
@@ -101,7 +112,7 @@ const Testimonials = () => {
                 <img
                   src={testimonial.image}
                   alt={`${testimonial.name}'s review`}
-                  className="w-16 h-16 md:w-20 md:h-20 rounded-full mb-4 cursor-pointer hover:opacity-90"
+                  className="w-16 h-16 md:w-20 md:h-20 rounded-full mb-4 cursor-pointer hover:opacity-90 transition-transform duration-200 transform hover:scale-105"
                   loading="lazy"
                   onClick={() => setSelectedTestimonial(testimonial)}
                 />
@@ -131,7 +142,6 @@ const Testimonials = () => {
                     </svg>
                   ))}
                 </div>
-                {/* "View Details" button for mobile/tablet */}
                 <button
                   onClick={() => setSelectedTestimonial(testimonial)}
                   className="mt-2 px-4 py-1 text-sm bg-[var(--color-accent)]/80 text-[var(--color-primary)] rounded hover:bg-[var(--color-accent)]/90 transition"
@@ -142,10 +152,10 @@ const Testimonials = () => {
             ))}
           </div>
           {/* Progress Bar */}
-          <div className="absolute bottom-0 left-0 w-full h-1 bg-gray-300">
+          <div className="absolute bottom-0 left-0 w-full h-1 bg-gray-300 rounded">
             <div
-              key={current} // Reset the animation when the slide changes
-              className="h-1 bg-[var(--color-accent)]"
+              key={current}
+              className="h-1 bg-[var(--color-accent)] rounded"
               style={{
                 animation: paused ? "none" : "progress 5000ms linear forwards",
               }}
@@ -197,13 +207,13 @@ const Testimonials = () => {
       {selectedTestimonial && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
           <div
-            className="absolute inset-0 bg-black opacity-50"
+            className="absolute inset-0 bg-black bg-opacity-40 backdrop-blur-sm transition-opacity duration-300"
             onClick={() => setSelectedTestimonial(null)}
           ></div>
-          <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-md w-full p-6 mx-4 z-50 transition-all duration-300">
+          <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 mx-4 z-50 transition-transform duration-300 transform animate-modalIn">
             <button
               onClick={() => setSelectedTestimonial(null)}
-              className="absolute top-2 right-2 text-2xl text-[var(--color-secondary)] focus:outline-none"
+              className="absolute top-3 right-3 text-2xl text-[var(--color-secondary)] hover:text-[var(--color-accent)] focus:outline-none"
               aria-label="Close modal"
             >
               &times;
@@ -239,11 +249,32 @@ const Testimonials = () => {
                 </svg>
               ))}
             </div>
+            <div className="mt-4 flex justify-center items-center space-x-4">
+              <button
+                onClick={handleShare}
+                className="flex items-center px-3 py-2 border rounded-full text-sm font-medium transition-colors duration-300 hover:bg-[var(--color-accent)]/10 focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
+              >
+                <FaClipboard className="mr-2" />
+                Share
+              </button>
+              {copyStatus && (
+                <span className="text-sm text-green-500 transition-opacity duration-300">
+                  <FaCheck className="inline mr-1" /> {copyStatus}
+                </span>
+              )}
+            </div>
           </div>
         </div>
       )}
 
       <style>{`
+        @keyframes modalIn {
+          from { opacity: 0; transform: scale(0.95); }
+          to { opacity: 1; transform: scale(1); }
+        }
+        .animate-modalIn {
+          animation: modalIn 0.3s ease-out;
+        }
         @keyframes progress {
           from { width: 0%; }
           to { width: 100%; }

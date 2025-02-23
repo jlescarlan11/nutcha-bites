@@ -4,6 +4,15 @@ import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo2.svg";
 import { MobileMenuContext } from "../App";
 
+const menuItems = [
+  "Overview",
+  "Recipe",
+  "Our Vision",
+  "Testimonials",
+  "FAQs",
+  "Contact Us",
+];
+
 const Header = () => {
   const navigate = useNavigate();
   const { showMenu, setShowMenu } = useContext(MobileMenuContext);
@@ -19,35 +28,35 @@ const Header = () => {
   }, [darkMode]);
 
   return (
-    <header className="relative z-20">
+    <header className="relative z-20 shadow-md">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         {/* Logo Section */}
         <div className="flex items-center">
           <img
             src={logo}
             alt="Nutcha Bites Logo"
-            className="w-12 h-12 md:w-16 md:h-16 transition-transform duration-300 hover:scale-105"
+            className="w-12 h-12 md:w-16 md:h-16 transition-transform duration-300 hover:scale-110"
           />
-          <span className="ml-2 text-xl md:text-2xl font-semibold">
+          <span className="ml-2 text-xl md:text-2xl font-semibold tracking-wide">
             NUTCHA BITES
           </span>
         </div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-6">
+        <nav className="hidden md:flex gap-4 items-center space-x-6">
           <button
             onClick={() => navigate("/order")}
-            className="px-4 py-2 font-semibold bg-[var(--color-accent)]/80 text-[var(--color-primary)] hover:scale-105 transition-all duration-500 hover:bg-[var(--color-accent)]/90 focus:outline-none"
+            className="px-4 py-2 font-semibold bg-[var(--color-accent)]/80 text-[var(--color-primary)]/90 transition-transform duration-300 hover:scale-105 hover:bg-[var(--color-accent)]/90 focus:outline-none"
           >
             ORDER NOW
           </button>
           {/* Dark Mode Toggle */}
           <button
             onClick={() => setDarkMode(!darkMode)}
-            className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 transition-colors duration-300 focus:outline-none"
+            className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 transition-all duration-300 hover:scale-105 focus:outline-none"
+            aria-label="Toggle dark mode"
           >
             {darkMode ? (
-              // Moon icon for dark mode active
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6 text-gray-800 dark:text-gray-200"
@@ -63,7 +72,6 @@ const Header = () => {
                 />
               </svg>
             ) : (
-              // Sun icon for light mode active
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6 text-yellow-500"
@@ -88,10 +96,9 @@ const Header = () => {
           className="md:hidden focus:outline-none"
           aria-label="Open mobile menu"
         >
-          {/* Hamburger Icon */}
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-8 w-8 text-[var(--color-primary)]"
+            className="w-8 h-8 text-[var(--color-primary)] transition-transform duration-300"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -106,45 +113,56 @@ const Header = () => {
         </button>
       </div>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile Menu Overlay (Updated to include all sections) */}
       {showMenu && (
-        <div className="absolute top-0 left-0 w-full h-screen bg-[var(--color-primary)] flex flex-col items-center justify-center z-50 transition duration-300">
-          <button
-            onClick={() => setShowMenu(false)}
-            className="absolute top-4 right-4 text-white text-2xl focus:outline-none"
-            aria-label="Close mobile menu"
-          >
-            &times;
-          </button>
-          <nav className="space-y-6 text-2xl text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--color-secondary)]/20 backdrop-blur-sm transition-opacity duration-300">
+          <div className="relative bg-[var(--color-primary)] rounded-2xl shadow-2xl p-8 w-11/12 max-w-md animate-slideDown">
             <button
-              onClick={() => {
-                setShowMenu(false);
-                navigate("/");
-              }}
+              onClick={() => setShowMenu(false)}
+              className="absolute top-4 right-4 text-3xl focus:outline-none bg-transparent text-[var(--color-secondary)]"
+              aria-label="Close menu"
             >
-              Home
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-8 w-8"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
             </button>
-            <button
-              onClick={() => {
-                setShowMenu(false);
-                document
-                  .getElementById("overview")
-                  ?.scrollIntoView({ behavior: "smooth" });
-              }}
-            >
-              Overview
-            </button>
-            <button
-              onClick={() => {
-                setShowMenu(false);
-                navigate("/order");
-              }}
-            >
-              Order Now
-            </button>
-            {/* Add more nav items as needed */}
-          </nav>
+            <ul className="mt-8 space-y-6 text-center text-xl text-[var(--color-secondary)]">
+              {menuItems.map((item, index) => {
+                const id = item.toLowerCase().replace(/\s+/g, "-");
+
+                return (
+                  <li key={index} className="cursor-pointer">
+                    <a
+                      href={`#${id}`}
+                      className={`block px-4 py-2 rounded transition-colors duration-300 ease-in-out`}
+                      onClick={() => setShowMenu(false)}
+                    >
+                      {item}
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+            <li>
+              <button
+                className="w-full mt-4 px-4 py-3 rounded-full font-semibold bg-[var(--color-secondary)]/80 hover:bg-[var(--color-secondary)] transition-colors duration-300"
+                onClick={() => navigate("/order")}
+              >
+                ORDER NOW
+              </button>
+            </li>
+          </div>
         </div>
       )}
     </header>

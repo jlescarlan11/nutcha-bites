@@ -1,3 +1,4 @@
+// FAQS.jsx
 import React, {
   useState,
   useRef,
@@ -55,14 +56,14 @@ const FAQItem = ({ faq, isOpen, toggle, index }) => {
       <button
         onClick={() => toggle(index)}
         onKeyDown={handleKeyDown}
-        className="w-full flex justify-between items-center py-3 sm:py-4 text-left text-base sm:text-lg font-medium focus:outline-none focus:ring-2 bg-[var(--color-accent)] focus:ring-[var(--color-accent)]"
+        className="w-full flex justify-between items-center py-3 sm:py-4 text-left text-base sm:text-lg font-medium focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] transition-colors duration-300 bg-gradient-to-r from-white to-gray-100 dark:from-gray-800 dark:to-gray-700 hover:shadow-lg"
         aria-expanded={isOpen}
         aria-controls={`faq-answer-${index}`}
       >
         <span className="text-[var(--color-primary)]">{faq.question}</span>
         <svg
-          className={`w-6 h-6 transition-transform duration-300 ${
-            isOpen ? "rotate-180" : "rotate-0"
+          className={`w-6 h-6 transition-transform duration-300 transform ${
+            isOpen ? "rotate-45" : "rotate-0"
           }`}
           fill="none"
           stroke="currentColor"
@@ -73,7 +74,7 @@ const FAQItem = ({ faq, isOpen, toggle, index }) => {
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth="2"
-            d="M19 9l-7 7-7-7"
+            d="M12 4v16m8-8H4"
           />
         </svg>
       </button>
@@ -145,7 +146,6 @@ const FAQS = () => {
     setSearchTerm("");
   }, []);
 
-  // "Back to Top" button logic
   const scrollToTop = () => {
     document.getElementById("faq").scrollIntoView({ behavior: "smooth" });
   };
@@ -172,7 +172,7 @@ const FAQS = () => {
                 placeholder="Search FAQs..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full p-3 pl-10 pr-10 rounded border border-[var(--color-secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
+                className="w-full p-3 pl-10 pr-10 rounded border border-[var(--color-secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] transition"
                 aria-label="Search FAQs"
               />
               <div className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
@@ -228,12 +228,11 @@ const FAQS = () => {
             </p>
           )}
         </div>
-        {/* "Back to Top" button */}
         {filteredFaqs.length > 3 && (
           <div className="mt-6 text-center">
             <button
               onClick={scrollToTop}
-              className="px-4 py-2 bg-[var(--color-accent)]/80 text-[var(--color-primary)] rounded hover:bg-[var(--color-accent)]/90 transition"
+              className="px-4 py-2 bg-[var(--color-accent)]/80 text-[var(--color-primary)] rounded hover:bg-[var(--color-accent)]/90 transition shadow-md hover:shadow-lg"
             >
               Back to Top
             </button>

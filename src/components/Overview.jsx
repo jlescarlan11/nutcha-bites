@@ -6,7 +6,7 @@ const Overview = () => {
   return (
     <section
       aria-label="Overview Section"
-      className="mt-12 sm:mt-16 md:mt-32 max-w-6xl mx-auto px-4 py-12 transition-all duration-500"
+      className="mt-12 sm:mt-16 md:mt-32 max-w-6xl mx-auto px-4 py-12 animate-fadeIn transition-all duration-500"
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
         {/* Image Section */}
@@ -15,7 +15,7 @@ const Overview = () => {
             src={nutchaBites}
             alt="Delicious Nutcha Bites showcasing a modern twist on traditional flavors"
             loading="lazy"
-            className="w-full max-w-xs sm:max-w-sm rounded-lg shadow-lg object-cover transition-transform duration-300 hover:scale-105 hover:shadow-2xl"
+            className="w-full max-w-xs sm:max-w-sm rounded-lg shadow-2xl object-cover transition-transform duration-300 hover:scale-105"
           />
         </div>
         {/* Benefits Section */}

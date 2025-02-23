@@ -13,6 +13,8 @@ import Testimonials from "./components/Testimonials";
 import FAQS from "./components/FAQS";
 import NewsletterSignup from "./components/NewsletterSignup";
 import Footer from "./components/Footer";
+import ScrollProgress from "./components/ScrollProgress";
+import BackToTopButton from "./components/BackToTopButton"; // New cool feature!
 
 export const MobileMenuContext = createContext({
   showMenu: false,
@@ -35,7 +37,8 @@ const App = () => {
   return (
     <Router>
       <MobileMenuContext.Provider value={{ showMenu, setShowMenu }}>
-        <div className="min-h-screen flex flex-col">
+        <div className="min-h-screen flex flex-col relative">
+          <ScrollProgress />
           <Routes>
             <Route
               path="/"
@@ -43,11 +46,12 @@ const App = () => {
                 <>
                   <header className="relative">
                     <div
-                      className="min-h-screen bg-cover bg-center bg-no-repeat bg-fixed"
+                      className="min-h-screen bg-cover bg-center bg-fixed"
                       style={{ backgroundImage: `url(${background})` }}
                     >
-                      <div className="absolute inset-0 bg-[var(--color-secondary)]/50 backdrop-blur-sm" />
-                      <div className="relative z-10 text-[var(--color-primary)]">
+                      {/* Enhanced overlay with gradient, blur, and parallax effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-[rgba(0,0,0,0.4)] to-[rgba(0,0,0,0.8)] backdrop-blur-md" />
+                      <div className="relative z-10 text-white">
                         <Header />
                         <Home />
                       </div>
@@ -80,6 +84,7 @@ const App = () => {
                       <Footer />
                     </section>
                   </main>
+                  <BackToTopButton /> {/* New feature */}
                 </>
               }
             />

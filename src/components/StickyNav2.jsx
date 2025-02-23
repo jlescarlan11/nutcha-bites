@@ -1,3 +1,4 @@
+// StickyNav2.jsx
 import React, { useState, useEffect } from "react";
 import logo from "../assets/logo1.svg";
 import { useNavigate } from "react-router-dom";
@@ -43,14 +44,14 @@ const StickyNav2 = ({ activeSection, visible }) => {
       role="navigation"
       aria-label="Main Navigation"
     >
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-accent)] bg-opacity-90 rounded-full px-4 py-2 shadow-lg">
         {/* Logo */}
         <div className="flex items-center">
           <img src={logo} alt="Company Logo" className="w-16 h-auto" />
         </div>
 
         {/* Desktop Menu */}
-        <ul className="hidden md:flex items-center space-x-4 bg-gradient-to-tr from-[var(--color-secondary)] to-[var(--color-accent)] text-[var(--color-primary)] px-2 py-4 rounded-full opacity-95">
+        <ul className="hidden md:flex items-center space-x-4 text-[var(--color-primary)]">
           {menuItems.map((item, index) => {
             const id = item.toLowerCase().replace(/\s+/g, "-");
             const activeClass =
@@ -89,7 +90,7 @@ const StickyNav2 = ({ activeSection, visible }) => {
           >
             {isMenuOpen ? (
               <svg
-                className="w-8 h-8 text-gray-200"
+                className="w-8 h-8 text-white"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -119,49 +120,71 @@ const StickyNav2 = ({ activeSection, visible }) => {
           </button>
         </div>
       </div>
-      {/* Mobile Menu Dropdown */}
+
+      {/* Mobile Menu Modal (Updated) */}
       {isMenuOpen && (
-        <div className="md:hidden mt-4 bg-gradient-to-tr from-[var(--color-secondary)] to-[var(--color-accent)] rounded-xl opacity-95 p-4 transition-transform duration-300 transform origin-top scale-100 text-gray-200 shadow-lg">
-          <ul className="flex flex-col space-y-2">
-            {menuItems.map((item, index) => {
-              const id = item.toLowerCase().replace(/\s+/g, "-");
-              const activeClass =
-                activeSection === id
-                  ? "bg-[var(--color-primary)] text-[var(--color-secondary)]"
-                  : "hover:bg-[var(--color-primary)] hover:text-[var(--color-secondary)]";
-              return (
-                <li key={index} className="cursor-pointer">
-                  <a
-                    href={`#${id}`}
-                    className={`block px-4 py-2 rounded transition-colors duration-300 ease-in-out ${activeClass}`}
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {item}
-                  </a>
-                </li>
-              );
-            })}
-            <li>
-              <button
-                className="w-full mt-2 px-4 py-3 rounded-full font-semibold bg-[var(--color-secondary)]/80 hover:bg-[var(--color-secondary)] transition-colors duration-300"
-                onClick={() => navigate("/order")}
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm transition-opacity duration-300">
+          <div className="relative bg-[var(--color-primary)] rounded-2xl shadow-2xl p-8 w-11/12 max-w-sm animate-slideDown">
+            <button
+              onClick={() => setIsMenuOpen(false)}
+              className="absolute top-4 right-4 text-white text-3xl focus:outline-none"
+              aria-label="Close menu"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-8 w-8"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
               >
-                ORDER NOW
-              </button>
-            </li>
-            {/* Back to Top button inside mobile menu */}
-            <li>
-              <button
-                onClick={() => {
-                  window.scrollTo({ top: 0, behavior: "smooth" });
-                  setIsMenuOpen(false);
-                }}
-                className="mt-2 w-full px-4 py-2 rounded-full border border-gray-200 hover:bg-gray-200 transition"
-              >
-                Back to Top
-              </button>
-            </li>
-          </ul>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+            <ul className="mt-8 space-y-6 text-center text-xl text-white">
+              {menuItems.map((item, index) => {
+                const id = item.toLowerCase().replace(/\s+/g, "-");
+                const activeClass =
+                  activeSection === id
+                    ? "bg-[var(--color-primary)] text-[var(--color-secondary)]"
+                    : "hover:bg-[var(--color-primary)] hover:text-[var(--color-secondary)]";
+                return (
+                  <li key={index} className="cursor-pointer">
+                    <a
+                      href={`#${id}`}
+                      className={`block px-4 py-2 rounded transition-colors duration-300 ease-in-out ${activeClass}`}
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      {item}
+                    </a>
+                  </li>
+                );
+              })}
+              <li>
+                <button
+                  className="w-full mt-4 px-4 py-3 rounded-full font-semibold bg-[var(--color-secondary)]/80 hover:bg-[var(--color-secondary)] transition-colors duration-300"
+                  onClick={() => navigate("/order")}
+                >
+                  ORDER NOW
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => {
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                    setIsMenuOpen(false);
+                  }}
+                  className="mt-2 w-full px-4 py-2 rounded-full border border-gray-200 hover:bg-gray-200 transition"
+                >
+                  Back to Top
+                </button>
+              </li>
+            </ul>
+          </div>
         </div>
       )}
     </nav>

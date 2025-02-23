@@ -1,3 +1,4 @@
+// NewsletterSignup.jsx
 import React, { useState, useEffect } from "react";
 import { CheckCircleIcon, XCircleIcon, LoaderIcon, XIcon } from "lucide-react";
 import { FaGoogle } from "react-icons/fa";
@@ -59,7 +60,6 @@ const NewsletterSignup = () => {
   };
 
   const handleGoogleSubscribe = () => {
-    // Simulated Google subscription logic
     alert("Google subscription simulated!");
   };
 
@@ -104,8 +104,7 @@ const NewsletterSignup = () => {
                   ? "border-green-500 focus:ring-green-300"
                   : "border-red-500 focus:ring-red-300"
               }`}
-              initial={{ x: 0 }}
-              animate={{ x: !isValid ? [-5, 5, -5, 5, 0] : 0 }}
+              animate={!isValid ? { x: [-5, 5, -5, 5, 0] } : { x: 0 }}
               transition={{ duration: 0.3 }}
             />
             {!isValid && (
@@ -125,7 +124,6 @@ const NewsletterSignup = () => {
               </button>
             )}
           </div>
-
           <motion.button
             type="submit"
             whileHover={{ scale: 1.05 }}
@@ -146,7 +144,6 @@ const NewsletterSignup = () => {
             )}
           </motion.button>
         </motion.form>
-
         <AnimatePresence>
           {message && (
             <motion.div
@@ -175,8 +172,6 @@ const NewsletterSignup = () => {
             </motion.div>
           )}
         </AnimatePresence>
-
-        {/* Optional: Confetti animation on success */}
         <AnimatePresence>
           {submitted && status === "success" && (
             <motion.div
@@ -185,15 +180,20 @@ const NewsletterSignup = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
-              {[...Array(10)].map((_, i) => (
+              {[...Array(12)].map((_, i) => (
                 <motion.div
                   key={i}
                   className="w-3 h-3 bg-yellow-300 rounded-full absolute"
-                  initial={{ y: 0, x: 0, opacity: 1 }}
+                  initial={{
+                    scale: 0,
+                    x: Math.random() * 50 - 25,
+                    y: Math.random() * 50 - 25,
+                  }}
                   animate={{
-                    y: [0, 50, 100],
-                    x: [0, i % 2 === 0 ? -50 : 50],
-                    opacity: [1, 0],
+                    scale: [1, 1.2, 0],
+                    y: [0, 80 + Math.random() * 20],
+                    x: [0, (i % 2 === 0 ? -1 : 1) * (30 + Math.random() * 20)],
+                    opacity: [1, 0.8, 0],
                   }}
                   transition={{
                     duration: 1.5,
@@ -204,8 +204,6 @@ const NewsletterSignup = () => {
             </motion.div>
           )}
         </AnimatePresence>
-
-        {/* "Subscribe with Google" extra feature */}
         <div className="mt-6">
           <button
             onClick={handleGoogleSubscribe}
@@ -214,6 +212,11 @@ const NewsletterSignup = () => {
             <FaGoogle size={20} className="mr-2" />
             Subscribe with Google
           </button>
+        </div>
+        <div className="mt-4 text-sm text-gray-200">
+          <a href="#privacy" className="underline hover:text-gray-100">
+            Privacy Policy
+          </a>
         </div>
       </div>
     </section>

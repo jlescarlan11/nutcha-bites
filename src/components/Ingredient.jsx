@@ -1,5 +1,7 @@
+// Ingredient.jsx
 import React, { useState } from "react";
 import PropTypes from "prop-types";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 
 const ingredients = [
   {
@@ -42,10 +44,13 @@ const ingredients = [
   },
 ];
 
-const IngredientRow = ({ ingredient }) => {
+const IngredientRow = ({ ingredient, onSelect }) => {
   const { name, description, optional } = ingredient;
   return (
-    <tr className="hover:bg-[var(--color-secondary)]/10 transition-colors duration-200">
+    <tr
+      onClick={() => onSelect(ingredient)}
+      className="hover:bg-[var(--color-secondary)]/10 transition-colors duration-200 cursor-pointer"
+    >
       <td className="px-4 py-2 border-b border-[var(--color-secondary)]/20 text-[var(--color-secondary)]/70">
         {name}{" "}
         {optional && (
@@ -67,12 +72,16 @@ IngredientRow.propTypes = {
     description: PropTypes.string.isRequired,
     optional: PropTypes.bool,
   }).isRequired,
+  onSelect: PropTypes.func.isRequired,
 };
 
-const IngredientCard = ({ ingredient }) => {
+const IngredientCard = ({ ingredient, onSelect }) => {
   const { name, description, optional } = ingredient;
   return (
-    <div className="bg-white rounded shadow p-4 mb-4 transition-transform duration-200 transform hover:scale-105">
+    <div
+      onClick={() => onSelect(ingredient)}
+      className="bg-white dark:bg-gray-700 rounded-lg shadow-lg p-4 mb-4 transition-transform duration-200 transform hover:scale-105 cursor-pointer"
+    >
       <h3 className="text-lg font-semibold text-[var(--color-secondary)]">
         {name}{" "}
         {optional && (
@@ -92,14 +101,23 @@ IngredientCard.propTypes = {
     description: PropTypes.string.isRequired,
     optional: PropTypes.bool,
   }).isRequired,
+  onSelect: PropTypes.func.isRequired,
 };
 
 const Ingredients = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedIngredient, setSelectedIngredient] = useState(null);
+  const [favoriteIds, setFavoriteIds] = useState([]);
 
   const filteredIngredients = ingredients.filter((item) =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleFavoriteToggle = (id) => {
+    setFavoriteIds((prev) =>
+      prev.includes(id) ? prev.filter((favId) => favId !== id) : [...prev, id]
+    );
+  };
 
   return (
     <section
@@ -155,7 +173,11 @@ const Ingredients = () => {
                 </thead>
                 <tbody>
                   {filteredIngredients.map((item) => (
-                    <IngredientRow key={item.id} ingredient={item} />
+                    <IngredientRow
+                      key={item.id}
+                      ingredient={item}
+                      onSelect={setSelectedIngredient}
+                    />
                   ))}
                 </tbody>
               </table>
@@ -163,7 +185,11 @@ const Ingredients = () => {
             {/* Mobile/Card View */}
             <div className="block sm:hidden">
               {filteredIngredients.map((item) => (
-                <IngredientCard key={item.id} ingredient={item} />
+                <IngredientCard
+                  key={item.id}
+                  ingredient={item}
+                  onSelect={setSelectedIngredient}
+                />
               ))}
             </div>
           </>
@@ -175,6 +201,61 @@ const Ingredients = () => {
           </p>
         </div>
       </div>
+
+      {/* Ingredient Details Modal */}
+      {selectedIngredient && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div
+            className="absolute inset-0 bg-black bg-opacity-40 backdrop-blur-sm transition-opacity duration-300"
+            onClick={() => setSelectedIngredient(null)}
+          ></div>
+          <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 mx-4 z-50 transition-transform duration-300 transform animate-modalIn">
+            <button
+              onClick={() => setSelectedIngredient(null)}
+              className="absolute top-3 right-3 text-2xl text-[var(--color-secondary)] hover:text-[var(--color-accent)] focus:outline-none"
+              aria-label="Close modal"
+            >
+              &times;
+            </button>
+            <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">
+              {selectedIngredient.name}
+            </h3>
+            <p className="text-gray-700 dark:text-gray-300 mb-4">
+              {selectedIngredient.description}
+            </p>
+            {selectedIngredient.optional && (
+              <p className="text-sm text-gray-500 italic mb-4">
+                This ingredient is optional.
+              </p>
+            )}
+            <button
+              onClick={() => handleFavoriteToggle(selectedIngredient.id)}
+              className="flex items-center justify-center w-full px-4 py-2 border rounded-full text-sm font-medium transition-colors duration-300 hover:bg-[var(--color-accent)]/10"
+            >
+              {favoriteIds.includes(selectedIngredient.id) ? (
+                <>
+                  <FaHeart className="mr-2 text-[var(--color-accent)]" />{" "}
+                  Favorited
+                </>
+              ) : (
+                <>
+                  <FaRegHeart className="mr-2" /> Add to Favorites
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      )}
+
+      <style>{`
+        @keyframes modalIn {
+          from { opacity: 0; transform: scale(0.95); }
+          to { opacity: 1; transform: scale(1); }
+        }
+        .animate-modalIn {
+          animation: modalIn 0.3s ease-out;
+        }
+      `}</style>
     </section>
   );
 };
