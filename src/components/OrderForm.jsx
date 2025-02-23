@@ -897,7 +897,10 @@ const OrderForm = () => {
         {/* Scrollable Content */}
         <div
           className="overflow-y-auto p-6 relative sm:p-8"
-          style={{ maxHeight: "calc(100vh - 100px)" }}
+          style={{
+            maxHeight: "calc(100vh - 100px)",
+            WebkitOverflowScrolling: "touch",
+          }}
         >
           <ProgressBar step={step} />
           <AnimatePresence exitBeforeEnter>
