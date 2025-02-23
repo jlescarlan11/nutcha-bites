@@ -148,7 +148,7 @@ const FAQItem = ({ faq, isOpen, toggle, index }) => {
 
   // Vote Handlers:
   const handleUpVote = () => {
-    if (userVote === "up") return; // already voted up, do nothing
+    if (userVote === "up") return;
     if (userVote === "down") {
       setDownCount((prev) => (prev > 0 ? prev - 1 : 0));
     }
@@ -157,7 +157,7 @@ const FAQItem = ({ faq, isOpen, toggle, index }) => {
   };
 
   const handleDownVote = () => {
-    if (userVote === "down") return; // already voted down, do nothing
+    if (userVote === "down") return;
     if (userVote === "up") {
       setUpCount((prev) => (prev > 0 ? prev - 1 : 0));
     }
@@ -167,56 +167,58 @@ const FAQItem = ({ faq, isOpen, toggle, index }) => {
 
   return (
     <article className="border-b border-[var(--color-tertiary)]/30">
-      <header>
+      <header className="flex justify-between items-center ">
         <button
           onClick={() => toggle(index)}
           onKeyDown={handleKeyDown}
-          className="w-full flex justify-between text-[var(--color-secondary)]/80 items-center py-3 sm:py-4 text-left text-base sm:text-lg font-medium focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]/10 transition-colors duration-300 bg-[var(--color-secondary)]/10 hover:shadow-md"
+          className="flex-1 text-left py-3 sm:py-4 text-base sm:text-lg text-[var(--color-secondary)]/80 font-medium focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]/10 transition-colors duration-300 bg-[var(--color-secondary)]/10 hover:shadow-md"
           aria-expanded={isOpen}
           aria-controls={`faq-answer-${index}`}
         >
-          <span className="">{faq.question}</span>
-          <div className="flex gap-2 items-center space-x-2">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleFavorite();
-              }}
-              aria-label={
-                isFavorite ? "Remove from favorites" : "Mark as favorite"
-              }
-              className="focus:outline-none bg-transparent hover:scale-110 transition-transform duration-300"
-            >
-              <svg
-                className={`size-5 ${
-                  isFavorite
-                    ? "text-yellow-500"
-                    : "text-[var(--color-secondary)]/40"
-                }`}
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.966a1 1 0 00.95.69h4.178c.969 0 1.371 1.24.588 1.81l-3.385 2.455a1 1 0 00-.364 1.118l1.286 3.966c.3.921-.755 1.688-1.54 1.118L10 13.347l-3.385 2.455c-.784.57-1.84-.197-1.54-1.118l1.286-3.966a1 1 0 00-.364-1.118L2.612 9.393c-.783-.57-.38-1.81.588-1.81h4.178a1 1 0 00.95-.69l1.286-3.966z" />
-              </svg>
-            </button>
+          {faq.question}
+        </button>
+        <div className="flex gap-2 items-center px-2 ">
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleFavorite();
+            }}
+            role="button"
+            tabIndex={0}
+            aria-label={
+              isFavorite ? "Remove from favorites" : "Mark as favorite"
+            }
+            className="cursor-pointer focus:outline-none hover:scale-110 transition-transform duration-300"
+          >
             <svg
-              className={`w-6 h-6 transition-transform duration-300 transform ${
-                isOpen ? "rotate-45" : "rotate-0"
+              className={`size-5 ${
+                isFavorite
+                  ? "text-yellow-500"
+                  : "text-[var(--color-secondary)]/40"
               }`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
+              fill="currentColor"
+              viewBox="0 0 20 20"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M12 4v16m8-8H4"
-              />
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.966a1 1 0 00.95.69h4.178c.969 0 1.371 1.24.588 1.81l-3.385 2.455a1 1 0 00-.364 1.118l1.286 3.966c.3.921-.755 1.688-1.54 1.118L10 13.347l-3.385 2.455c-.784.57-1.84-.197-1.54-1.118l1.286-3.966a1 1 0 00-.364-1.118L2.612 9.393c-.783-.57-.38-1.81.588-1.81h4.178a1 1 0 00.95-.69l1.286-3.966z" />
             </svg>
           </div>
-        </button>
+          <svg
+            className={`w-6 h-6 transition-transform duration-300 transform ${
+              isOpen ? "rotate-45" : "rotate-0"
+            }`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M12 4v16m8-8H4"
+            />
+          </svg>
+        </div>
       </header>
       <div
         id={`faq-answer-${index}`}
@@ -229,12 +231,12 @@ const FAQItem = ({ faq, isOpen, toggle, index }) => {
           isOpen ? "opacity-100" : "opacity-0"
         }`}
       >
-        <div className="py-2 sm:py-3 px-4 sm:px-6 text-[var(--color-secondary)]/70">
+        <div className="py-2 sm:py-3 px-4 sm:px-6 text-[var(--color-secondary)]/70 mr-12">
           <p>{faq.answer}</p>
           {isOpen && (
             <div className="mt-4 flex flex-col sm:flex-row items-center justify-between">
               <div
-                className="flex gap-2 items-center  space-x-6"
+                className="flex gap-2 items-center space-x-6"
                 aria-live="polite"
               >
                 <button
@@ -248,7 +250,7 @@ const FAQItem = ({ faq, isOpen, toggle, index }) => {
                 </button>
                 <button
                   onClick={handleDownVote}
-                  className={`flex items-center space-x-1  bg-transparent text-[var(--color-secondary)]/70 focus:outline-none ${
+                  className={`flex items-center space-x-1 bg-transparent text-[var(--color-secondary)]/70 focus:outline-none ${
                     userVote === "down" ? "font-bold" : ""
                   }`}
                 >
@@ -340,10 +342,6 @@ const SuggestionForm = () => {
 };
 
 //
-// ThemeToggle Component
-//
-
-//
 // Main FAQS Component
 //
 const FAQS = () => {
@@ -351,16 +349,11 @@ const FAQS = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [theme, setTheme] = useState("light");
 
-  const toggleItem = useCallback(
-    (index) => {
-      setOpenItems((prev) =>
-        prev.includes(index)
-          ? prev.filter((i) => i !== index)
-          : [...prev, index]
-      );
-    },
-    [setOpenItems]
-  );
+  const toggleItem = useCallback((index) => {
+    setOpenItems((prev) =>
+      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
+    );
+  }, []);
 
   const filteredFaqs = useMemo(() => {
     return faqData
@@ -400,8 +393,6 @@ const FAQS = () => {
     document.getElementById("faq").scrollIntoView({ behavior: "smooth" });
   };
 
-  // Toggle theme and update document class
-
   return (
     <section
       id="faq"
@@ -427,7 +418,7 @@ const FAQS = () => {
           {filteredFaqs.length > 0 && (
             <button
               onClick={toggleAll}
-              className="mt-4 sm:mt-0 ml-auto p-2 bg-[var(--color-accent)]/80 text-[var(--color-primary)] rounded hover:bg-[var(--color-accent)]/90  transition-colors focus:outline-none focus:ring-2"
+              className="mt-4 sm:mt-0 ml-auto p-2 bg-[var(--color-accent)]/80 text-[var(--color-primary)] rounded hover:bg-[var(--color-accent)]/90 transition-colors focus:outline-none focus:ring-2"
             >
               {areAllExpanded ? "Collapse All" : "Expand All"}
             </button>

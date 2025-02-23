@@ -1,9 +1,9 @@
-// NewsletterSignup.jsx
-import React, { useState, useEffect } from "react";
-import { CheckCircleIcon, XCircleIcon, LoaderIcon, XIcon } from "lucide-react";
-import { FaGoogle } from "react-icons/fa";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { CheckCircleIcon, XCircleIcon, LoaderIcon, XIcon } from "lucide-react";
+import { FaGoogle, FaFacebook, FaTwitter } from "react-icons/fa";
 
+// Hook to manage email state and validation.
 const useEmailValidation = () => {
   const [email, setEmail] = useState(localStorage.getItem("email") || "");
   const [isValid, setIsValid] = useState(true);
@@ -22,12 +22,231 @@ const useEmailValidation = () => {
   return { email, setEmail, isValid, handleChange };
 };
 
+// Confetti component for celebration.
+const Confetti = () => (
+  <AnimatePresence>
+    <motion.div
+      className="absolute inset-0 pointer-events-none"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      {Array.from({ length: 15 }).map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute bg-yellow-300 rounded-full"
+          style={{
+            width: 8,
+            height: 8,
+            top: `${Math.random() * 100}%`,
+            left: `${Math.random() * 100}%`,
+          }}
+          animate={{ y: [0, 100], opacity: [1, 0] }}
+          transition={{ duration: 2, delay: i * 0.1, ease: "easeOut" }}
+        />
+      ))}
+    </motion.div>
+  </AnimatePresence>
+);
+
+// ProgressBar showing community growth.
+const ProgressBar = ({ progress }) => (
+  <div className="w-full max-w-md mx-auto mb-4 text-[var(--color-primary)]/70">
+    <div className="text-sm mb-1 ">
+      Join our community! {progress}% of our goal (100 subscribers) reached.
+    </div>
+    <div className="w-full bg-[var(--color-secondary)]/20 rounded-full h-2">
+      <motion.div
+        className="bg-green-700 h-2 rounded-full"
+        initial={{ width: 0 }}
+        animate={{ width: `${progress}%` }}
+        transition={{ duration: 1.5, ease: "easeOut" }}
+      />
+    </div>
+  </div>
+);
+
+// Animation variants.
+const pulseVariant = {
+  pulse: {
+    scale: [1, 1.05, 1],
+    transition: { duration: 1, repeat: Infinity, ease: "easeInOut" },
+  },
+};
+
+const flipVariant = {
+  initial: { rotateY: 90, opacity: 0 },
+  animate: {
+    rotateY: 0,
+    opacity: 1,
+    transition: { duration: 0.8, ease: "easeOut" },
+  },
+};
+
+// SpinWheelModal simulating a roulette wheel with enhanced interactive effects.
+const SpinWheelModal = ({ onClose }) => {
+  const modalRef = useRef(null);
+  const [spinning, setSpinning] = useState(false);
+  const [selectedReward, setSelectedReward] = useState("");
+
+  const rewards = [
+    "10% Off",
+    "Free Shipping",
+    "5% Off",
+    "No Prize",
+    "20% Off",
+    "Free Gift",
+  ];
+
+  useEffect(() => {
+    modalRef.current.focus();
+    const liveRegion = document.getElementById("live-announcement");
+    if (liveRegion) liveRegion.textContent = "Roulette modal opened";
+  }, []);
+
+  const spinWheel = () => {
+    setSpinning(true);
+    const randomReward = rewards[Math.floor(Math.random() * rewards.length)];
+    setTimeout(() => {
+      setSelectedReward(randomReward);
+      setSpinning(false);
+    }, 2000);
+  };
+
+  const handleClose = () => {
+    const liveRegion = document.getElementById("live-announcement");
+    if (liveRegion) liveRegion.textContent = "Roulette modal closed";
+    onClose(selectedReward);
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-[var(--color-secondary)]/30 to-transparent backdrop-blur-sm"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Reward Roulette"
+      tabIndex={-1}
+      ref={modalRef}
+    >
+      <motion.div
+        className="bg-[var(--color-primary)] p-8 rounded-lg shadow-xs text-center relative"
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{
+          scale: 1,
+          opacity: 1,
+          boxShadow: "0 0 5px rgba(0,255,0,0.8)",
+        }}
+        exit={{ scale: 0, opacity: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+      >
+        <div className="relative mx-auto mb-4 w-48 h-48 rounded-full border-4 border-[var(--color-accent)]/70 flex items-center justify-center overflow-hidden">
+          <motion.div
+            className="absolute inset-0 flex items-center text-[var(--color-secondary)]/70 justify-center text-2xl font-bold"
+            animate={{ rotate: spinning ? 1080 : 0 }}
+            transition={{ duration: 2, ease: "easeOut" }}
+          >
+            {spinning ? (
+              "Spinning..."
+            ) : selectedReward ? (
+              <motion.span
+                variants={flipVariant}
+                initial="initial"
+                animate="animate"
+                className="inline-block"
+              >
+                <motion.span variants={pulseVariant} animate="pulse">
+                  {selectedReward}
+                </motion.span>
+              </motion.span>
+            ) : (
+              "?"
+            )}
+          </motion.div>
+          {!spinning && !selectedReward && (
+            <div className="absolute inset-0 grid grid-cols-3 grid-rows-3 text-xs text-[var(--color-secondary)]/50">
+              {[
+                "10% Off",
+                "Free Shipping",
+                "5% Off",
+                "No Prize",
+                "20% Off",
+                "Free Gift",
+                "Try Again",
+                "Bonus",
+                "Extra 5% Off",
+              ].map((text, i) => (
+                <div
+                  key={i}
+                  className="flex items-center justify-center border border-dashed border-[var(--color-secondary)]-200"
+                >
+                  {text}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        {!spinning && !selectedReward && (
+          <motion.button
+            onClick={spinWheel}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="mb-4 px-4 py-2 bg-[var(--color-accent)]/60 text-[var(--color-primary)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/40"
+          >
+            Spin Roulette
+          </motion.button>
+        )}
+        {selectedReward && (
+          <motion.button
+            onClick={handleClose}
+            whileHover={{
+              scale: 1.1,
+              transition: { ease: "easeOut", duration: 0.3 },
+            }}
+            whileTap={{ scale: 0.95 }}
+            className="mb-4 px-4 py-2 bg-[var(--color-accent)]/60 text-[var(--color-primary)]/90 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
+          >
+            Claim Reward
+          </motion.button>
+        )}
+      </motion.div>
+    </div>
+  );
+};
+
+const shakeVariant = {
+  shake: { x: [0, -5, 5, -5, 5, 0], transition: { duration: 0.4 } },
+  normal: { x: 0 },
+};
+
 const NewsletterSignup = () => {
   const { email, setEmail, isValid, handleChange } = useEmailValidation();
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState(""); // "success" or "error"
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [recentSignups, setRecentSignups] = useState(
+    Math.floor(Math.random() * 50) + 50
+  );
+  const [showSpinWheel, setShowSpinWheel] = useState(false);
+  const [reward, setReward] = useState("");
+  const [shakeInput, setShakeInput] = useState(false);
+  const [shareMessage, setShareMessage] = useState("");
+  const [progress, setProgress] = useState(0);
+  const subscriberGoal = 100;
+  const shareTimeoutRef = useRef(null);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRecentSignups((prev) => {
+        const newCount = prev + Math.floor(Math.random() * 3);
+        setProgress(
+          Math.min(100, Math.floor((newCount / subscriberGoal) * 100))
+        );
+        return newCount;
+      });
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,20 +256,18 @@ const NewsletterSignup = () => {
     if (!isValid || !email) {
       setMessage("Please enter a valid email address.");
       setStatus("error");
+      setShakeInput(true);
+      setTimeout(() => setShakeInput(false), 400);
       return;
     }
 
     setLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate API request
-      setMessage("🎉 Thank you for joining our Matcha Revolution!");
+      await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulated API call
+      setMessage("🎉 You're in! Get ready to spin the roulette for a reward.");
       setStatus("success");
       setSubmitted(true);
-      // Optionally trigger confetti animation here
-      setTimeout(() => {
-        setSubmitted(false);
-        setEmail("");
-      }, 3000);
+      setShowSpinWheel(true);
     } catch (error) {
       setMessage("❌ Something went wrong. Please try again.");
       setStatus("error");
@@ -59,29 +276,53 @@ const NewsletterSignup = () => {
     }
   };
 
-  const handleGoogleSubscribe = () => {
-    alert("Google subscription simulated!");
+  const updateShareMessage = (platform) => {
+    setShareMessage(`Shared on ${platform}!`);
+    if (shareTimeoutRef.current) clearTimeout(shareTimeoutRef.current);
+    shareTimeoutRef.current = setTimeout(() => {
+      setShareMessage("");
+      shareTimeoutRef.current = null;
+    }, 2000);
+  };
+
+  const handleGoogleSubscribe = () => updateShareMessage("Google");
+  const handleFacebookSubscribe = () => updateShareMessage("Facebook");
+  const handleTwitterShare = () => updateShareMessage("Twitter");
+
+  const handleModalClose = (selectedReward) => {
+    setReward(selectedReward);
+    setShowSpinWheel(false);
+    setTimeout(() => {
+      setSubmitted(false);
+      setEmail("");
+      setReward("");
+    }, 5000);
   };
 
   return (
-    <section className="relative mt-16 md:mt-32 bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-accent)] text-[var(--color-primary)] py-8 md:py-12 px-4 md:px-6 shadow-lg rounded-t-lg overflow-hidden">
+    <section
+      className="relative mt-16 md:mt-32 bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-accent)]  py-8 md:py-12 px-4 md:px-6 shadow-lg rounded-t-lg overflow-hidden"
+      aria-live="polite"
+    >
+      {/* Live region for accessibility announcements */}
+      <div id="live-announcement" className="sr-only" aria-live="assertive" />
       <div className="max-w-4xl mx-auto text-center relative">
         <motion.h2
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-3xl md:text-4xl font-extrabold mb-4"
+          className="text-3xl md:text-4xl font-extrabold mb-4 text-[var(--color-primary)]/90"
         >
           🍵 Join Our Matcha Revolution
         </motion.h2>
-        <p className="mb-8 text-base md:text-lg">
-          Subscribe to receive updates, exclusive recipes, and promotions
-          directly to your inbox.
+        <p className="mb-8 text-base md:text-lg text-[var(--color-primary)]/90">
+          Subscribe to receive exclusive recipes, updates, and rewards directly
+          in your inbox.
         </p>
+        <ProgressBar progress={progress} />
         <motion.form
           onSubmit={handleSubmit}
           className="flex flex-col sm:flex-row justify-center items-center"
-          aria-live="assertive"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
@@ -99,57 +340,42 @@ const NewsletterSignup = () => {
               placeholder="Enter your email"
               aria-invalid={!isValid}
               aria-describedby={!isValid ? "email-error" : undefined}
-              className={`p-3 pr-10 rounded-md w-full sm:w-80 md:w-96 border transition focus:ring-2 outline-none ${
+              className={`p-3 pr-10 rounded-md w-full sm:w-80 md:w-96 border border-[var(--color-primary)]/40 text-[var(--color-primary)]/90 focus:ring-2 outline-none transition ${
                 isValid
-                  ? "border-green-500 focus:ring-green-300"
-                  : "border-red-500 focus:ring-red-300"
+                  ? "border-[var(--color-accent)]/30 focus:ring-[var(--color-accent)]/40"
+                  : "border-red-300 focus:ring-red-400"
               }`}
-              animate={!isValid ? { x: [-5, 5, -5, 5, 0] } : { x: 0 }}
-              transition={{ duration: 0.3 }}
+              variants={shakeVariant}
+              animate={shakeInput ? "shake" : "normal"}
             />
-            {!isValid && (
-              <XCircleIcon
-                className="absolute right-3 top-3 text-red-500"
-                size={20}
-              />
-            )}
-            {email && (
-              <button
-                type="button"
-                className="absolute right-2 top-2 text-[var(--color-primary)] hover:text-[var(--color-accent)]"
-                onClick={() => setEmail("")}
-                aria-label="Clear email input"
-              >
-                <XIcon size={18} />
-              </button>
-            )}
           </div>
           <motion.button
             type="submit"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="bg-[var(--color-primary)] text-[var(--color-accent)] font-semibold p-3 rounded-md hover:bg-gray-200 transition flex items-center ml-0 sm:ml-4 mt-4 sm:mt-0 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-[var(--color-primary)]/80 text-[var(--color-accent)]/70 font-semibold p-3 rounded-md hover:bg-[var(--color-primary)]/60 transition flex items-center ml-0 sm:ml-4 mt-4 sm:mt-0 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={loading}
           >
             {loading ? (
               <motion.span
                 animate={{ rotate: 360 }}
-                transition={{ repeat: Infinity, duration: 1 }}
-                className="mr-2"
+                transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                className=""
               >
                 <LoaderIcon size={18} />
               </motion.span>
             ) : (
-              "Subscribe"
+              "Subscribe & Spin!"
             )}
           </motion.button>
         </motion.form>
         <AnimatePresence>
           {message && (
             <motion.div
-              key="message"
               className={`mt-4 text-lg flex items-center justify-center ${
-                status === "success" ? "text-green-500" : "text-red-500"
+                status === "success"
+                  ? "text-[var(--color-primary)]/60"
+                  : "text-red-300"
               }`}
               role="alert"
               initial={{ opacity: 0, y: -10 }}
@@ -172,53 +398,78 @@ const NewsletterSignup = () => {
             </motion.div>
           )}
         </AnimatePresence>
-        <AnimatePresence>
-          {submitted && status === "success" && (
+        {reward && (
+          <motion.div
+            className="mt-6 p-4 bg-[var(--color-secondary)]/20 text-green-300 rounded-md shadow-md flex flex-col items-center justify-center"
+            variants={flipVariant}
+            initial="initial"
+            animate="animate"
+            exit={{ opacity: 0, y: 10 }}
+          >
+            <motion.span
+              className="text-xl font-bold mb-2"
+              variants={pulseVariant}
+              animate="pulse"
+            >
+              🎁 {reward}
+            </motion.span>
+            <motion.button
+              onClick={() => (window.location.href = "/order")}
+              whileHover={{
+                scale: 1.15,
+                transition: { ease: "easeOut", duration: 0.3 },
+              }}
+              whileTap={{ scale: 0.95 }}
+              className="px-6 py-2 bg-green-600 text-[var(--color-primary)]/90 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mb-2"
+            >
+              Shop Now
+            </motion.button>
             <motion.div
-              className="absolute inset-0 flex items-center justify-center pointer-events-none"
+              className="text-sm text-blue-500"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              transition={{ delay: 0.5 }}
             >
-              {[...Array(12)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  className="w-3 h-3 bg-yellow-300 rounded-full absolute"
-                  initial={{
-                    scale: 0,
-                    x: Math.random() * 50 - 25,
-                    y: Math.random() * 50 - 25,
-                  }}
-                  animate={{
-                    scale: [1, 1.2, 0],
-                    y: [0, 80 + Math.random() * 20],
-                    x: [0, (i % 2 === 0 ? -1 : 1) * (30 + Math.random() * 20)],
-                    opacity: [1, 0.8, 0],
-                  }}
-                  transition={{
-                    duration: 1.5,
-                    delay: i * 0.1,
-                  }}
-                />
-              ))}
+              Congratulations! Enjoy your reward.
             </motion.div>
-          )}
-        </AnimatePresence>
-        <div className="mt-6">
+          </motion.div>
+        )}
+        <div className="mt-6 flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 gap-2 items-stretch">
           <button
             onClick={handleGoogleSubscribe}
-            className="flex items-center justify-center mx-auto px-4 py-2 border border-[var(--color-primary)] rounded-md text-[var(--color-primary)] hover:bg-[var(--color-primary)] hover:text-[var(--color-accent)] transition"
+            className="flex items-center justify-center px-4 py-2 border border-[var(--color-secondary)]/10 rounded-md  dark:hover:bg-[var(--color-secondary)]/30 transition"
           >
             <FaGoogle size={20} className="mr-2" />
             Subscribe with Google
           </button>
+          <button
+            onClick={handleFacebookSubscribe}
+            className="flex items-center flex-grow justify-center px-4 py-2 border border-[var(--color-secondary)]/10 rounded-md  dark:hover:bg-[var(--color-secondary)]/30 transition"
+          >
+            <FaFacebook size={20} className="mr-2" />
+            Subscribe with Facebook
+          </button>
+          <button
+            onClick={handleTwitterShare}
+            className="flex items-center flex-grow justify-center px-4 py-2 border border-[var(--color-secondary)]/10 rounded-md  dark:hover:bg-[var(--color-secondary)]/30 transition"
+          >
+            <FaTwitter size={20} className="mr-2" />
+            Share on Twitter
+          </button>
         </div>
-        <div className="mt-4 text-sm text-gray-200">
-          <a href="#privacy" className="underline hover:text-gray-100">
-            Privacy Policy
-          </a>
-        </div>
+        {shareMessage && (
+          <div className="mt-4 text-sm text-[var(--color-primary)]/30">
+            {shareMessage}
+          </div>
+        )}
+        <p className="mt-6 text-sm text-[var(--color-primary)]/50">
+          🔥 {recentSignups}+ people joined recently! Don’t miss out.
+        </p>
       </div>
+      <AnimatePresence>
+        {showSpinWheel && <SpinWheelModal onClose={handleModalClose} />}
+      </AnimatePresence>
+      {submitted && status === "success" && <Confetti />}
     </section>
   );
 };
