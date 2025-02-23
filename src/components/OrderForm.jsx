@@ -483,39 +483,35 @@ const PaymentForm = ({
               name="cardNumber"
               required
             />
-            <div className="grid grid-cols-2 gap-6 sm:grid-cols-1">
-              <div className="flex flex-col">
-                <InputField
-                  id="expiration"
-                  label="Expiration Date"
-                  type="text"
-                  value={buyerInfo.expiration}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  placeholder="MM/YY"
-                  error={errors.expiration}
-                  maxLength={5}
-                  name="expiration"
-                  required
-                  className="h-full"
-                />
-              </div>
-              <div className="flex flex-col">
-                <InputField
-                  id="cvv"
-                  label="CVV"
-                  type="text"
-                  value={buyerInfo.cvv}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  placeholder="123"
-                  error={errors.cvv}
-                  maxLength={4}
-                  name="cvv"
-                  required
-                  className="h-full"
-                />
-              </div>
+            <div className="grid grid-cols-2 gap-6 sm:grid-cols-1 items-start">
+              <InputField
+                id="expiration"
+                label="Expiration Date"
+                type="text"
+                value={buyerInfo.expiration}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                placeholder="MM/YY"
+                error={errors.expiration}
+                maxLength={5}
+                name="expiration"
+                required
+                className="h-full"
+              />
+              <InputField
+                id="cvv"
+                label="CVV"
+                type="text"
+                value={buyerInfo.cvv}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                placeholder="123"
+                error={errors.cvv}
+                maxLength={4}
+                name="cvv"
+                required
+                className="h-full"
+              />
             </div>
           </div>
 
