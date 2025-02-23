@@ -12,15 +12,15 @@ const Overview = () => {
         {/* Image Section */}
         <div className="flex justify-center">
           <img
-            src={nutchaBites} // Ensure your actual image path is correct
+            src={nutchaBites}
             alt="Delicious Nutcha Bites showcasing a modern twist on traditional flavors"
             loading="lazy"
-            className="w-full max-w-xs sm:max-w-sm rounded-lg shadow-lg object-cover transition-transform duration-300 hover:scale-105"
+            className="w-full max-w-xs sm:max-w-sm rounded-lg shadow-lg object-cover transition-transform duration-300 hover:scale-105 hover:shadow-2xl"
           />
         </div>
         {/* Benefits Section */}
         <div className="space-y-4">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[var(--color-secondary, #4A5568)]/80">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[var(--color-secondary)]/80">
             When Tradition Meets{" "}
             <span aria-live="polite">
               <Typewriter
@@ -44,7 +44,7 @@ const Overview = () => {
             </span>
           </h2>
 
-          <ul className="space-y-2 text-base sm:text-lg text-[var(--color-secondary, #4A5568)]/70">
+          <ul className="space-y-2 text-base sm:text-lg text-[var(--color-secondary)]/70">
             {[
               "Irresistibly crunchy texture",
               "Unique fusion of matcha and muscovado flavors",
@@ -52,9 +52,9 @@ const Overview = () => {
             ].map((benefit, idx) => (
               <li
                 key={idx}
-                className="flex items-center transition-colors duration-300 hover:text-[var(--color-accent, #F56565)]/80"
+                className="flex items-center transition-colors duration-300 hover:text-[var(--color-accent)]/80"
               >
-                <span className="mr-2 text-[var(--color-accent, #F56565)]/60 text-lg sm:text-xl">
+                <span className="mr-2 text-[var(--color-accent)]/60 text-lg sm:text-xl">
                   ✅
                 </span>
                 <span>{benefit}</span>

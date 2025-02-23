@@ -6,7 +6,6 @@ import React, {
   useCallback,
 } from "react";
 
-// FAQ data remains unchanged.
 const faqData = [
   {
     question: "How long is the shelf life of Nutcha Bites?",
@@ -35,19 +34,16 @@ const faqData = [
   },
 ];
 
-// FAQItem component handles the individual FAQ logic and animation.
 const FAQItem = ({ faq, isOpen, toggle, index }) => {
   const contentRef = useRef(null);
   const [height, setHeight] = useState("0px");
 
-  // Measure content height and update opacity for a smooth animation.
   useEffect(() => {
     if (contentRef.current) {
       setHeight(isOpen ? `${contentRef.current.scrollHeight}px` : "0px");
     }
   }, [isOpen, faq.answer]);
 
-  // Toggle FAQ on Enter or Space key press.
   const handleKeyDown = (event) => {
     if (event.key === "Enter" || event.key === " ") {
       toggle(index);
@@ -101,11 +97,9 @@ const FAQItem = ({ faq, isOpen, toggle, index }) => {
 };
 
 const FAQS = () => {
-  // Manage open items, search term, and dark mode state.
   const [openItems, setOpenItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Memoized toggle for a single FAQ item.
   const toggleItem = useCallback(
     (index) => {
       setOpenItems((prev) =>
@@ -117,7 +111,6 @@ const FAQS = () => {
     [setOpenItems]
   );
 
-  // Filter FAQs based on the search term (case-insensitive).
   const filteredFaqs = useMemo(() => {
     return faqData
       .map((faq, idx) => ({ ...faq, originalIndex: idx }))
@@ -128,7 +121,6 @@ const FAQS = () => {
       );
   }, [searchTerm]);
 
-  // Determine if all filtered FAQs are currently expanded.
   const areAllExpanded = useMemo(() => {
     return (
       filteredFaqs.length > 0 &&
@@ -136,37 +128,36 @@ const FAQS = () => {
     );
   }, [openItems, filteredFaqs]);
 
-  // Toggle expansion for all filtered FAQs.
   const toggleAll = useCallback(() => {
     if (areAllExpanded) {
-      // Collapse all
       setOpenItems((prev) =>
         prev.filter(
           (index) => !filteredFaqs.some((faq) => faq.originalIndex === index)
         )
       );
     } else {
-      // Expand all filtered FAQs by adding their original indices.
       const openIndices = filteredFaqs.map((faq) => faq.originalIndex);
       setOpenItems((prev) => Array.from(new Set([...prev, ...openIndices])));
     }
   }, [areAllExpanded, filteredFaqs]);
 
-  // Clear the search input.
   const clearSearch = useCallback(() => {
     setSearchTerm("");
   }, []);
 
+  // "Back to Top" button logic
+  const scrollToTop = () => {
+    document.getElementById("faq").scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
-    // Adding a dynamic dark mode class to the section
     <section
       id="faq"
       role="region"
       aria-labelledby="faq-heading"
-      className={`mt-32 px-4 sm:px-6 md:px-8 transition-colors`}
+      className="mt-32 px-4 sm:px-6 md:px-8 transition-colors"
     >
       <div className="max-w-4xl mx-auto">
-        {/* Dark mode toggle */}
         <h2
           id="faq-heading"
           className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-6"
@@ -175,7 +166,6 @@ const FAQS = () => {
         </h2>
         <div className="mt-6 flex flex-col sm:flex-row items-center justify-between">
           <div className="w-full sm:w-1/2 md:w-1/3 relative">
-            {/* Search input with an embedded search icon */}
             <div className="relative">
               <input
                 type="text"
@@ -238,6 +228,17 @@ const FAQS = () => {
             </p>
           )}
         </div>
+        {/* "Back to Top" button */}
+        {filteredFaqs.length > 3 && (
+          <div className="mt-6 text-center">
+            <button
+              onClick={scrollToTop}
+              className="px-4 py-2 bg-[var(--color-accent)]/80 text-[var(--color-primary)] rounded hover:bg-[var(--color-accent)]/90 transition"
+            >
+              Back to Top
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );

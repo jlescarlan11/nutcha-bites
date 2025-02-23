@@ -19,9 +19,7 @@ const StickyNav2 = ({ activeSection, visible }) => {
     setIsMenuOpen((prev) => !prev);
   };
 
-  // Removed: useEffect for clicking outside the menu to close it
-
-  // Keep close on "Escape" key press if desired
+  // Close menu on Escape key press
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === "Escape") {
@@ -123,7 +121,7 @@ const StickyNav2 = ({ activeSection, visible }) => {
       </div>
       {/* Mobile Menu Dropdown */}
       {isMenuOpen && (
-        <div className="md:hidden mt-4 bg-gradient-to-tr from-[var(--color-secondary)] to-[var(--color-accent)] rounded-xl opacity-95 p-4 transition-transform duration-300 transform origin-top scale-100 text-gray-200">
+        <div className="md:hidden mt-4 bg-gradient-to-tr from-[var(--color-secondary)] to-[var(--color-accent)] rounded-xl opacity-95 p-4 transition-transform duration-300 transform origin-top scale-100 text-gray-200 shadow-lg">
           <ul className="flex flex-col space-y-2">
             {menuItems.map((item, index) => {
               const id = item.toLowerCase().replace(/\s+/g, "-");
@@ -149,6 +147,18 @@ const StickyNav2 = ({ activeSection, visible }) => {
                 onClick={() => navigate("/order")}
               >
                 ORDER NOW
+              </button>
+            </li>
+            {/* Back to Top button inside mobile menu */}
+            <li>
+              <button
+                onClick={() => {
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                  setIsMenuOpen(false);
+                }}
+                className="mt-2 w-full px-4 py-2 rounded-full border border-gray-200 hover:bg-gray-200 transition"
+              >
+                Back to Top
               </button>
             </li>
           </ul>

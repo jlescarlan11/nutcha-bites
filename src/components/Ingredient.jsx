@@ -1,4 +1,3 @@
-// Ingredients.jsx
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 
@@ -103,7 +102,10 @@ const Ingredients = () => {
   );
 
   return (
-    <section id="ingredients" className="mt-20 py-12 px-4 sm:px-6 lg:px-8">
+    <section
+      id="ingredients"
+      className="mt-20 py-12 px-4 sm:px-6 lg:px-8 transition-all duration-300"
+    >
       <div className="max-w-4xl mx-auto">
         <h2 className="text-2xl sm:text-3xl font-bold text-center text-[var(--color-secondary)]/80 mb-6">
           Ingredients
@@ -112,44 +114,60 @@ const Ingredients = () => {
           We believe in authenticity and transparency. Here’s exactly what goes
           into every bite of Nutcha Bites:
         </p>
-        <div className="mb-6">
+        <div className="mb-6 flex items-center justify-center space-x-2">
           <input
             type="text"
             placeholder="Search ingredients..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full p-2 border rounded focus:outline-none focus:ring focus:border-[var(--color-secondary)] transition"
+            className="w-full max-w-md p-2 border rounded focus:outline-none focus:ring focus:border-[var(--color-secondary)] transition"
           />
+          {searchTerm && (
+            <button
+              onClick={() => setSearchTerm("")}
+              className="px-3 py-2 border rounded text-[var(--color-secondary)] hover:bg-[var(--color-secondary)]/10 transition"
+            >
+              Clear
+            </button>
+          )}
         </div>
-        {/* Desktop/Table View */}
-        <div className="hidden sm:block overflow-x-auto">
-          <table className="min-w-full w-full border-collapse">
-            <caption className="sr-only">
-              List of ingredients for Nutcha Bites
-            </caption>
-            <thead>
-              <tr>
-                <th className="px-4 py-2 border-b-2 border-[var(--color-secondary)]/30 text-left text-[var(--color-secondary)]/80 text-lg sm:text-xl">
-                  Ingredient
-                </th>
-                <th className="px-4 py-2 border-b-2 border-[var(--color-secondary)]/30 text-left text-[var(--color-secondary)]/80 text-lg sm:text-xl">
-                  Description
-                </th>
-              </tr>
-            </thead>
-            <tbody>
+        {filteredIngredients.length === 0 ? (
+          <p className="text-center text-[var(--color-secondary)]/70">
+            No ingredients found.
+          </p>
+        ) : (
+          <>
+            {/* Desktop/Table View */}
+            <div className="hidden sm:block overflow-x-auto">
+              <table className="min-w-full w-full border-collapse transition-all duration-300">
+                <caption className="sr-only">
+                  List of ingredients for Nutcha Bites
+                </caption>
+                <thead>
+                  <tr>
+                    <th className="px-4 py-2 border-b-2 border-[var(--color-secondary)]/30 text-left text-[var(--color-secondary)]/80 text-lg sm:text-xl">
+                      Ingredient
+                    </th>
+                    <th className="px-4 py-2 border-b-2 border-[var(--color-secondary)]/30 text-left text-[var(--color-secondary)]/80 text-lg sm:text-xl">
+                      Description
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredIngredients.map((item) => (
+                    <IngredientRow key={item.id} ingredient={item} />
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {/* Mobile/Card View */}
+            <div className="block sm:hidden">
               {filteredIngredients.map((item) => (
-                <IngredientRow key={item.id} ingredient={item} />
+                <IngredientCard key={item.id} ingredient={item} />
               ))}
-            </tbody>
-          </table>
-        </div>
-        {/* Mobile/Card View */}
-        <div className="block sm:hidden">
-          {filteredIngredients.map((item) => (
-            <IngredientCard key={item.id} ingredient={item} />
-          ))}
-        </div>
+            </div>
+          </>
+        )}
         <div className="mt-8 text-center">
           <p className="text-[var(--color-secondary)]/70 italic">
             Our expert process transforms these high-quality ingredients into

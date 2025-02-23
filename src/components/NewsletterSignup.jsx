@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { CheckCircleIcon, XCircleIcon, LoaderIcon, XIcon } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion"; // Added AnimatePresence for smooth animations
+import { FaGoogle } from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
 
 const useEmailValidation = () => {
   const [email, setEmail] = useState(localStorage.getItem("email") || "");
@@ -41,7 +42,6 @@ const NewsletterSignup = () => {
     setLoading(true);
     try {
       await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate API request
-
       setMessage("🎉 Thank you for joining our Matcha Revolution!");
       setStatus("success");
       setSubmitted(true);
@@ -58,9 +58,14 @@ const NewsletterSignup = () => {
     }
   };
 
+  const handleGoogleSubscribe = () => {
+    // Simulated Google subscription logic
+    alert("Google subscription simulated!");
+  };
+
   return (
     <section className="relative mt-16 md:mt-32 bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-accent)] text-[var(--color-primary)] py-8 md:py-12 px-4 md:px-6 shadow-lg rounded-t-lg overflow-hidden">
-      <div className="max-w-4xl mx-auto text-center">
+      <div className="max-w-4xl mx-auto text-center relative">
         <motion.h2
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -199,6 +204,17 @@ const NewsletterSignup = () => {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* "Subscribe with Google" extra feature */}
+        <div className="mt-6">
+          <button
+            onClick={handleGoogleSubscribe}
+            className="flex items-center justify-center mx-auto px-4 py-2 border border-[var(--color-primary)] rounded-md text-[var(--color-primary)] hover:bg-[var(--color-primary)] hover:text-[var(--color-accent)] transition"
+          >
+            <FaGoogle size={20} className="mr-2" />
+            Subscribe with Google
+          </button>
+        </div>
       </div>
     </section>
   );

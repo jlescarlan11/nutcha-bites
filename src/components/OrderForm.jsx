@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import CreditCard from "react-credit-cards";
 import "react-credit-cards/es/styles-compiled.css";
 import nutchaOriginal from "../assets/nutchaOverview.webp";
+import { motion } from "framer-motion";
 
 // Sample product list
 const products = [
@@ -421,7 +422,7 @@ const OrderForm = () => {
   const [orderSubmitted, setOrderSubmitted] = useState(false);
   const navigate = useNavigate();
 
-  // Disable background scroll while modal is open
+  // Disable background scroll while OrderForm modal is open
   useEffect(() => {
     const originalStyle = window.getComputedStyle(document.body).overflow;
     document.body.style.overflow = "hidden";
@@ -430,7 +431,7 @@ const OrderForm = () => {
     };
   }, []);
 
-  // Helper: Validate Step 1 inputs
+  // Validate customer info inputs (Step 1)
   const validateStep1 = () => {
     const newErrors = {};
     if (!buyerInfo.name.trim()) newErrors.name = "Full Name is required";
@@ -445,7 +446,7 @@ const OrderForm = () => {
     return newErrors;
   };
 
-  // Helper: Move to payment step after validating customer info
+  // Move to payment step after validating customer info
   const handleNext = () => {
     const step1Errors = validateStep1();
     if (Object.keys(step1Errors).length > 0) {

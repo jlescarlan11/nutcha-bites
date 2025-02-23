@@ -31,6 +31,7 @@ const Testimonials = () => {
   const [current, setCurrent] = useState(0);
   const total = testimonialsData.length;
   const [paused, setPaused] = useState(false);
+  const [selectedTestimonial, setSelectedTestimonial] = useState(null);
 
   // Auto slide effect with pause functionality
   useEffect(() => {
@@ -100,8 +101,9 @@ const Testimonials = () => {
                 <img
                   src={testimonial.image}
                   alt={`${testimonial.name}'s review`}
-                  className="w-16 h-16 md:w-20 md:h-20 rounded-full mb-4"
+                  className="w-16 h-16 md:w-20 md:h-20 rounded-full mb-4 cursor-pointer hover:opacity-90"
                   loading="lazy"
+                  onClick={() => setSelectedTestimonial(testimonial)}
                 />
                 <p className="text-base md:text-lg italic text-[var(--color-secondary)]/70">
                   "{testimonial.review}"
@@ -129,6 +131,13 @@ const Testimonials = () => {
                     </svg>
                   ))}
                 </div>
+                {/* "View Details" button for mobile/tablet */}
+                <button
+                  onClick={() => setSelectedTestimonial(testimonial)}
+                  className="mt-2 px-4 py-1 text-sm bg-[var(--color-accent)]/80 text-[var(--color-primary)] rounded hover:bg-[var(--color-accent)]/90 transition"
+                >
+                  View Details
+                </button>
               </div>
             ))}
           </div>
@@ -183,6 +192,57 @@ const Testimonials = () => {
           {paused ? "Play" : "Pause"}
         </button>
       </div>
+
+      {/* Testimonial Details Modal */}
+      {selectedTestimonial && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div
+            className="absolute inset-0 bg-black opacity-50"
+            onClick={() => setSelectedTestimonial(null)}
+          ></div>
+          <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-md w-full p-6 mx-4 z-50 transition-all duration-300">
+            <button
+              onClick={() => setSelectedTestimonial(null)}
+              className="absolute top-2 right-2 text-2xl text-[var(--color-secondary)] focus:outline-none"
+              aria-label="Close modal"
+            >
+              &times;
+            </button>
+            <img
+              src={selectedTestimonial.image}
+              alt={`${selectedTestimonial.name}'s review`}
+              className="w-20 h-20 rounded-full mx-auto mb-4"
+            />
+            <p className="text-base md:text-lg italic text-[var(--color-secondary)]/70 mb-2">
+              "{selectedTestimonial.review}"
+            </p>
+            <p className="text-[var(--color-secondary)]/90 font-semibold">
+              {selectedTestimonial.name}
+            </p>
+            <div
+              className="flex mt-2 justify-center"
+              aria-label={`Rating: ${selectedTestimonial.rating} out of 5`}
+            >
+              {[...Array(5)].map((_, i) => (
+                <svg
+                  key={i}
+                  className={`w-5 h-5 ${
+                    i < selectedTestimonial.rating
+                      ? "text-yellow-400"
+                      : "text-gray-300"
+                  }`}
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  aria-hidden="true"
+                >
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.959a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.37 2.448a1 1 0 00-.364 1.118l1.286 3.959c.3.921-.755 1.688-1.54 1.118l-3.37-2.448a1 1 0 00-1.175 0l-3.37 2.448c-.784.57-1.838-.197-1.54-1.118l1.286-3.959a1 1 0 00-.364-1.118L2.07 9.386c-.783-.57-.38-1.81.588-1.81h4.162a1 1 0 00.95-.69l1.286-3.959z" />
+                </svg>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       <style>{`
         @keyframes progress {
           from { width: 0%; }
