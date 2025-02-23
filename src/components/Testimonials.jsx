@@ -1,5 +1,4 @@
-// Testimonials.jsx
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import FocusLock from "react-focus-lock";
 import { useSwipeable } from "react-swipeable";
@@ -57,7 +56,6 @@ const RatingStars = ({ rating, size = "w-5 h-5" }) => (
   </div>
 );
 
-// Modal component: copyStatus state is now local and the share function uses testimonial.review
 const TestimonialModal = ({
   testimonial,
   onClose,
@@ -67,13 +65,25 @@ const TestimonialModal = ({
   bookmarked,
 }) => {
   const [copyStatus, setCopyStatus] = useState("");
+  const modalRef = useRef(null);
+  const lastFocusedElementRef = useRef(null);
 
+  // Save the last focused element and focus the modal on mount
   useEffect(() => {
+    lastFocusedElementRef.current = document.activeElement;
+    if (modalRef.current) {
+      modalRef.current.focus();
+    }
     const handleEsc = (e) => {
       if (e.key === "Escape") onClose();
     };
     window.addEventListener("keydown", handleEsc);
-    return () => window.removeEventListener("keydown", handleEsc);
+    return () => {
+      window.removeEventListener("keydown", handleEsc);
+      if (lastFocusedElementRef.current) {
+        lastFocusedElementRef.current.focus();
+      }
+    };
   }, [onClose]);
 
   const handleShare = () => {
@@ -94,13 +104,19 @@ const TestimonialModal = ({
       className="fixed inset-0 flex items-center justify-center z-50"
       role="dialog"
       aria-modal="true"
+      aria-labelledby="modalHeading"
+      aria-describedby="modalReview"
     >
       <div
         className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-[var(--color-secondary)]/30 to-transparent backdrop-blur-sm"
         onClick={onClose}
       ></div>
       <FocusLock>
-        <div className="relative bg-[var(--color-primary)] rounded-2xl shadow-2xl max-w-md w-full p-6 mx-4 z-50 transition-transform duration-300 transform animate-modalIn modal-container">
+        <div
+          ref={modalRef}
+          tabIndex="-1"
+          className="relative bg-[var(--color-primary)] rounded-2xl shadow-2xl max-w-sm w-full p-6 z-50 transition-transform duration-300 transform animate-modalIn modal-container"
+        >
           <div className="flex justify-end">
             <button
               onClick={onClose}
@@ -113,29 +129,32 @@ const TestimonialModal = ({
           <img
             src={testimonial.image}
             alt={`${testimonial.name}'s review`}
-            className="size-20 rounded-full mx-auto mb-4"
+            className="w-20 h-20 rounded-full mx-auto mb-4"
             loading="lazy"
           />
-          <p className="text-base md:text-lg italic text-[var(--color-secondary)]/70 mb-2">
+          <p
+            id="modalReview"
+            className="text-base md:text-lg italic text-[var(--color-secondary)]/70 mb-2"
+          >
             "{testimonial.review}"
           </p>
           <p className="text-[var(--color-secondary)]/90 font-semibold">
             - {testimonial.name}
           </p>
-          <div className="flex items-center justify-center">
+          <div className="flex items-center justify-center my-2">
             <RatingStars rating={testimonial.rating} size="w-5 h-5" />
           </div>
           <div className="mt-4 flex flex-row gap-2 justify-center items-center space-y-2 sm:space-y-0 sm:space-x-4">
             <button
               onClick={handleShare}
-              className="flex items-center px-3 py-2 border rounded-full text-sm font-medium transition-colors duration-300 hover:bg-[var(--color-accent)]/70 focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
+              className="flex items-center px-3 py-2 border rounded-full text-xs font-medium transition-colors duration-300 hover:bg-[var(--color-accent)]/70 focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]/30"
             >
               <FaClipboard className="mr-2" />
               Share
             </button>
             <button
               onClick={onLike}
-              className="flex items-center px-3 py-2 border rounded-full text-sm font-medium transition-colors duration-300 hover:bg-[var(--color-accent)]/70 focus:outline-none focus:ring-2 focus:ring-red-300 icon-button"
+              className="flex items-center px-3 py-2 border rounded-full text-xs font-medium transition-colors duration-300 hover:bg-[var(--color-accent)]/70 focus:outline-none focus:ring-2 focus:ring-red-300"
               title={likes[testimonial.name]?.liked ? "Unlike" : "Like"}
             >
               {likes[testimonial.name]?.liked ? (
@@ -147,7 +166,7 @@ const TestimonialModal = ({
             </button>
             <button
               onClick={onBookmark}
-              className="flex items-center px-3 py-2 border rounded-full text-sm font-medium transition-colors duration-300 hover:bg-[var(--color-accent)]/70 focus:outline-none focus:ring-2 focus:ring-blue-300 icon-button"
+              className="flex items-center px-3 py-2 border rounded-full text-xs font-medium transition-colors duration-300 hover:bg-[var(--color-accent)]/70 focus:outline-none focus:ring-2 focus:ring-blue-300"
               title={bookmarked ? "Remove Bookmark" : "Bookmark"}
             >
               {bookmarked ? (
@@ -307,7 +326,7 @@ const Testimonials = () => {
                       e.stopPropagation();
                       handleLikeForTestimonial(testimonial);
                     }}
-                    className="flex items-center bg-transparent text-red-500 hover:text-red-600 icon-button"
+                    className="flex items-center bg-transparent text-red-500 hover:text-red-600"
                     title={likes[testimonial.name]?.liked ? "Unlike" : "Like"}
                     aria-label="Like testimonial"
                   >
@@ -325,7 +344,7 @@ const Testimonials = () => {
                       e.stopPropagation();
                       handleBookmarkForTestimonial(testimonial);
                     }}
-                    className="flex items-center bg-transparent text-blue-500 hover:text-blue-600 icon-button"
+                    className="flex items-center bg-transparent text-blue-500 hover:text-blue-600"
                     title={
                       bookmarks[testimonial.name]
                         ? "Remove Bookmark"
@@ -349,7 +368,7 @@ const Testimonials = () => {
                 <p className="text-base md:text-lg italic text-[var(--color-secondary)]/70">
                   "{testimonial.review}"
                 </p>
-                <p className="text-[var(--color-secondary)]/90 font-semibold mt-2">
+                <p className="text-[var(--color-secondary)]/90 font-semibold mt-2 text-lg">
                   {testimonial.name}
                 </p>
                 <RatingStars
@@ -380,14 +399,14 @@ const Testimonials = () => {
         </div>
         <button
           onClick={handlePrev}
-          className="absolute left-1 sm:left-3 top-1/2 transform -translate-y-1/2 bg-[var(--color-secondary)]/80 text-[var(--color-primary)] p-2 sm:p-3 rounded-full focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
+          className="absolute left-1 sm:left-3 top-1/2 transform -translate-y-1/2 bg-[var(--color-secondary)]/80 text-[var(--color-primary)] p-2 sm:p-3 rounded-full focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]/30"
           aria-label="Previous testimonial"
         >
           ◀
         </button>
         <button
           onClick={handleNext}
-          className="absolute right-1 sm:right-3 top-1/2 transform -translate-y-1/2 bg-[var(--color-secondary)]/80 text-[var(--color-primary)] p-2 sm:p-3 rounded-full focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
+          className="absolute right-1 sm:right-3 top-1/2 transform -translate-y-1/2 bg-[var(--color-secondary)]/80 text-[var(--color-primary)] p-2 sm:p-3 rounded-full focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]/30"
           aria-label="Next testimonial"
         >
           ▶
@@ -397,7 +416,7 @@ const Testimonials = () => {
             <button
               key={index}
               onClick={() => setCurrent(index)}
-              className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] ${
+              className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]/30 ${
                 current === index
                   ? "bg-[var(--color-accent)]/50"
                   : "bg-[var(--color-secondary)]/30"
@@ -422,28 +441,19 @@ const Testimonials = () => {
         />
       )}
       <style>{`
-        .icon-button {
-          transition: transform 0.2s ease-in-out;
-        }
-        .icon-button:hover {
-          transform: scale(1.1);
-        }
         @keyframes modalIn {
           from { opacity: 0; transform: scale(0.95); }
           to { opacity: 1; transform: scale(1); }
-        }
-        .animate-modalIn {
-          animation: modalIn 0.3s ease-out;
         }
         @keyframes progress {
           from { width: 0%; }
           to { width: 100%; }
         }
-        @media (max-width: 640px) {
-          .modal-container {
-            padding: 1rem;
-            border-radius: 1rem;
-          }
+        /* Global focus style for consistency across forms */
+        button:focus,
+        [tabindex]:focus {
+          outline: 1px solid var(--color-accent);
+          outline-offset: 2px;
         }
       `}</style>
     </section>

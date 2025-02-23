@@ -497,7 +497,7 @@ const PaymentForm = ({
           </div>
 
           {/* Mobile Credit Card Preview */}
-          <div className="mb-6 md:hidden flex justify-center items-center">
+          <div className="mb-6 md:hidden flex justify-center items-center scale-90">
             <CreditCard
               number={buyerInfo.cardNumber}
               name={buyerInfo.name}
