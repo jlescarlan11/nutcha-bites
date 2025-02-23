@@ -362,12 +362,14 @@ const NewsletterSignup = () => {
 
   // When the spin modal closes, check for a matching voucher and save it.
   const handleModalClose = (selectedReward) => {
-    setReward(selectedReward);
     const voucher = vouchers.find(
       (v) => v.reward.toLowerCase() === selectedReward.toLowerCase()
     );
     if (voucher) {
       localStorage.setItem("newsletterVoucher", JSON.stringify(voucher));
+      setReward(voucher); // Now reward is an object with both reward and code.
+    } else {
+      setReward({ reward: selectedReward, code: "N/A" });
     }
     setShowSpinWheel(false);
     setTimeout(() => {
@@ -495,7 +497,7 @@ const NewsletterSignup = () => {
               variants={pulseVariant}
               animate="pulse"
             >
-              🎁 {reward}
+              🎁 {reward.reward} - use {reward.code} to redeem the reward
             </motion.span>
             <motion.button
               onClick={() => navigate("/order")}
@@ -519,6 +521,7 @@ const NewsletterSignup = () => {
             </motion.div>
           </motion.div>
         )}
+
         <div className="mt-6 flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 gap-2 items-stretch">
           <button
             onClick={handleGoogleSubscribe}

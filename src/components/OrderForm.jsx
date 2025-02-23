@@ -376,6 +376,7 @@ const PaymentForm = ({
       .replace(/(.{4})/g, "$1 ")
       .trim();
 
+  // Voucher validation
   const [voucherFeedback, setVoucherFeedback] = useState(null);
 
   const validateVoucher = useCallback(
@@ -410,6 +411,13 @@ const PaymentForm = ({
     [validateVoucher]
   );
 
+  // Automatically validate saved voucher code
+  useEffect(() => {
+    if (buyerInfo.voucherCode.trim() !== "") {
+      debouncedValidateVoucher(buyerInfo.voucherCode);
+    }
+  }, [buyerInfo.voucherCode, debouncedValidateVoucher]);
+
   const handleVoucherChange = useCallback(
     (e) => {
       const { value } = e.target;
@@ -419,14 +427,13 @@ const PaymentForm = ({
     [setBuyerInfo, debouncedValidateVoucher]
   );
 
-  // Updated price calculation to handle FREEGIFT voucher
+  // Price calculations
   const basePrice = selectedProduct.price * quantity;
   let shippingFee = 50;
   let discountAmount = 0;
 
   if (reward) {
     if (/free\s+product/i.test(reward)) {
-      // For FREEGIFT voucher, subtract the price of one unit
       discountAmount = quantity >= 1 ? selectedProduct.price : 0;
     } else {
       let discountPercentage = 0;
@@ -476,33 +483,39 @@ const PaymentForm = ({
               name="cardNumber"
               required
             />
-            <div className="grid grid-cols-2 gap-6">
-              <InputField
-                id="expiration"
-                label="Expiration Date"
-                type="text"
-                value={buyerInfo.expiration}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                placeholder="MM/YY"
-                error={errors.expiration}
-                maxLength={5}
-                name="expiration"
-                required
-              />
-              <InputField
-                id="cvv"
-                label="CVV"
-                type="text"
-                value={buyerInfo.cvv}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                placeholder="123"
-                error={errors.cvv}
-                maxLength={4}
-                name="cvv"
-                required
-              />
+            <div className="grid grid-cols-2 gap-6 sm:grid-cols-1">
+              <div className="flex flex-col">
+                <InputField
+                  id="expiration"
+                  label="Expiration Date"
+                  type="text"
+                  value={buyerInfo.expiration}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  placeholder="MM/YY"
+                  error={errors.expiration}
+                  maxLength={5}
+                  name="expiration"
+                  required
+                  className="h-full"
+                />
+              </div>
+              <div className="flex flex-col">
+                <InputField
+                  id="cvv"
+                  label="CVV"
+                  type="text"
+                  value={buyerInfo.cvv}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  placeholder="123"
+                  error={errors.cvv}
+                  maxLength={4}
+                  name="cvv"
+                  required
+                  className="h-full"
+                />
+              </div>
             </div>
           </div>
 
@@ -643,7 +656,7 @@ const PaymentForm = ({
         </div>
       </div>
       {/* Action Buttons */}
-      <div className="flex flex-col  gap-4 sm:flex-row justify-between mt-8">
+      <div className="flex flex-col gap-4 sm:flex-row justify-between mt-8">
         <motion.button
           onClick={onBack}
           whileHover={{ scale: 1.05 }}
@@ -673,7 +686,7 @@ const PaymentForm = ({
           onClick={onBack}
           whileHover={{ scale: 1.05 }}
           type="button"
-          className=" block sm:hidden sm:mb-0 px-8 py-3 rounded-full transition-shadow shadow-md"
+          className="block sm:hidden sm:mb-0 px-8 py-3 rounded-full transition-shadow shadow-md"
           style={{ backgroundColor: "var(--color-secondary)", color: "#fff" }}
         >
           Back
@@ -815,7 +828,8 @@ const OrderForm = () => {
     cardNumber: "",
     expiration: "",
     cvv: "",
-    voucherCode: localStorage.getItem("newsletterReward") || "",
+    voucherCode:
+      JSON.parse(localStorage.getItem("newsletterVoucher"))?.code || "",
   });
   const [errors, setErrors] = useState({});
   const [step, setStep] = useState(1);
