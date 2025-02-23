@@ -589,7 +589,8 @@ const PaymentForm = ({
                 {/free\s+product/i.test(reward) ? (
                   <p style={{ color: "green" }}>
                     <strong>Discount:</strong> -₱
-                    {selectedProduct.price.toFixed(2)} (Free Product Voucher)
+                    {selectedProduct.price.toFixed(2)} (Free One Product
+                    Voucher)
                   </p>
                 ) : (
                   <>
@@ -740,7 +741,7 @@ const Confirmation = ({
           /free\s+product/i.test(reward) ? (
             <p style={{ color: "green" }}>
               <strong>Discount:</strong> -₱{selectedProduct.price.toFixed(2)}{" "}
-              (Free Product Voucher)
+              (Free One Product Voucher)
             </p>
           ) : (
             <>
