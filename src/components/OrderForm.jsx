@@ -67,7 +67,7 @@ const ProgressBar = ({ step }) => (
         className="h-2 rounded-full"
         style={{
           background:
-            "linear-gradient(to right, var(--color-tertiary), var(--color-accent))",
+            "linear-gradient(to right, var(--color-secondary), var(--color-accent))",
         }}
         initial={{ width: 0 }}
         animate={{ width: `${(step / 2) * 100}%` }}
@@ -307,7 +307,7 @@ const CustomerOrderForm = ({
           className="px-8 py-3 rounded-full transition-transform shadow-md"
           style={{
             background:
-              "linear-gradient(to right, var(--color-tertiary), var(--color-accent))",
+              "linear-gradient(to right, var(--color-secondary), var(--color-accent))",
             color: "#fff",
           }}
         >
@@ -663,7 +663,7 @@ const PaymentForm = ({
           }`}
           style={{
             background:
-              "linear-gradient(to right, var(--color-tertiary), var(--color-accent))",
+              "linear-gradient(to right, var(--color-secondary), var(--color-accent))",
             color: "#fff",
           }}
         >
@@ -706,10 +706,7 @@ const Confirmation = ({
         borderColor: "var(--color-secondary)",
       }}
     >
-      <h1
-        className="text-3xl font-extrabold text-center mb-4"
-        style={{ color: "var(--color-tertiary)" }}
-      >
+      <h1 className="text-3xl font-extrabold text-[var(--color-secondary)]/80 text-center mb-4">
         Nutcha Bites
       </h1>
       <h2
@@ -922,7 +919,7 @@ const OrderForm = () => {
           className="sticky top-0 z-10 p-6 flex justify-between items-center border-b"
           style={{
             background:
-              "linear-gradient(to right, var(--color-tertiary), var(--color-accent))",
+              "linear-gradient(to right, var(--color-secondary), var(--color-accent))",
             borderColor: "var(--color-secondary)",
           }}
         >
