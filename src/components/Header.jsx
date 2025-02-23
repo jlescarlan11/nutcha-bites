@@ -22,16 +22,16 @@ const Header = ({ darkMode, setDarkMode }) => {
   // Toggle dark mode by adding/removing a "dark" class on the documentElement.
 
   // Disable background scroll when mobile menu is open
-  // useEffect(() => {
-  //   if (showMenu) {
-  //     document.body.style.overflow = "hidden";
-  //   } else {
-  //     document.body.style.overflow = "";
-  //   }
-  //   return () => {
-  //     document.body.style.overflow = "";
-  //   };
-  // }, [showMenu]);
+  useEffect(() => {
+    if (showMenu) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [showMenu]);
 
   const toggleDarkMode = () => {
     setDarkMode((prev) => !prev);

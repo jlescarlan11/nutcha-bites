@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@mui/icons-material": "^6.4.5",
+    "@mui/material": "^6.4.5",
     "@tailwindcss/vite": "^4.0.8",
     "framer-motion": "^12.4.7",
     "lucide-react": "^0.475.0",

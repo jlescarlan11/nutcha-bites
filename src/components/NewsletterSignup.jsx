@@ -1,14 +1,8 @@
 //NewsletterSignup.jsx
 import React, { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircleIcon, XCircleIcon, LoaderIcon, XIcon } from "lucide-react";
-import {
-  FaGoogle,
-  FaFacebook,
-  FaTwitter,
-  FaFacebookMessenger,
-  FaInstagram,
-} from "react-icons/fa";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { CheckCircleIcon, XCircleIcon, LoaderIcon } from "lucide-react";
+import { FaGoogle, FaFacebook, FaInstagram } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 // Hook to manage email state and validation.
@@ -31,68 +25,68 @@ const useEmailValidation = () => {
 };
 
 // Confetti component for celebration.
-const Confetti = () => (
-  <AnimatePresence>
-    <motion.div
-      className="absolute inset-0 pointer-events-none"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-    >
-      {Array.from({ length: 15 }).map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute bg-yellow-300 rounded-full"
-          style={{
-            width: 8,
-            height: 8,
-            top: `${Math.random() * 100}%`,
-            left: `${Math.random() * 100}%`,
-          }}
-          animate={{ y: [0, 100], opacity: [1, 0] }}
-          transition={{ duration: 2, delay: i * 0.1, ease: "easeOut" }}
-        />
-      ))}
-    </motion.div>
-  </AnimatePresence>
-);
-
-// ProgressBar showing community growth.
-const ProgressBar = ({ progress }) => (
-  <div className="w-full max-w-md mx-auto mb-4 text-[var(--color-primary)]/70">
-    <div className="text-sm mb-1 ">
-      Join our community! {progress}% of our goal (100 subscribers) reached.
-    </div>
-    <div className="w-full bg-[var(--color-secondary)]/20 rounded-full h-2">
+const Confetti = () => {
+  const shouldReduceMotion = useReducedMotion();
+  return (
+    <AnimatePresence>
       <motion.div
-        className="bg-green-700 h-2 rounded-full"
-        initial={{ width: 0 }}
-        animate={{ width: `${progress}%` }}
-        transition={{ duration: 1.5, ease: "easeOut" }}
-      />
-    </div>
-  </div>
-);
-
-// Animation variants.
-const pulseVariant = {
-  pulse: {
-    scale: [1, 1.05, 1],
-    transition: { duration: 1, repeat: Infinity, ease: "easeInOut" },
-  },
+        className="absolute inset-0 pointer-events-none"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+      >
+        {Array.from({ length: 15 }).map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute bg-yellow-300 rounded-full"
+            style={{
+              width: 8,
+              height: 8,
+              top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              y: [0, shouldReduceMotion ? 10 : 100],
+              opacity: [1, 0],
+            }}
+            transition={{
+              duration: shouldReduceMotion ? 0.1 : 2,
+              delay: i * (shouldReduceMotion ? 0.05 : 0.1),
+              ease: shouldReduceMotion ? "linear" : "easeOut",
+            }}
+          />
+        ))}
+      </motion.div>
+    </AnimatePresence>
+  );
 };
 
-const flipVariant = {
-  initial: { rotateY: 90, opacity: 0 },
-  animate: {
-    rotateY: 0,
-    opacity: 1,
-    transition: { duration: 0.8, ease: "easeOut" },
-  },
+// ProgressBar showing community growth.
+const ProgressBar = ({ progress }) => {
+  const shouldReduceMotion = useReducedMotion();
+  return (
+    <div className="w-full max-w-md mx-auto mb-4 text-[var(--color-primary)]/70">
+      <div className="text-sm mb-1">
+        Join our community! {progress}% of our goal (100 subscribers) reached.
+      </div>
+      <div className="w-full bg-[var(--color-secondary)]/20 rounded-full h-2">
+        <motion.div
+          className="bg-green-700 h-2 rounded-full"
+          initial={{ width: 0 }}
+          animate={{ width: `${progress}%` }}
+          transition={{
+            duration: shouldReduceMotion ? 0.1 : 1.5,
+            ease: shouldReduceMotion ? "linear" : "easeOut",
+          }}
+        />
+      </div>
+    </div>
+  );
 };
 
 // SpinWheelModal simulating a roulette wheel with enhanced interactive effects.
 const SpinWheelModal = ({ onClose }) => {
+  const shouldReduceMotion = useReducedMotion();
   const modalRef = useRef(null);
   const [spinning, setSpinning] = useState(false);
   const [selectedReward, setSelectedReward] = useState("");
@@ -109,22 +103,58 @@ const SpinWheelModal = ({ onClose }) => {
   useEffect(() => {
     modalRef.current.focus();
     const liveRegion = document.getElementById("live-announcement");
-    if (liveRegion) liveRegion.textContent = "Roulette modal opened";
+    if (liveRegion)
+      liveRegion.textContent =
+        "Reward Roulette modal opened. Use Escape key to close.";
   }, []);
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Escape") {
+      handleClose();
+    }
+  };
 
   const spinWheel = () => {
     setSpinning(true);
     const randomReward = rewards[Math.floor(Math.random() * rewards.length)];
-    setTimeout(() => {
-      setSelectedReward(randomReward);
-      setSpinning(false);
-    }, 2000);
+    setTimeout(
+      () => {
+        setSelectedReward(randomReward);
+        setSpinning(false);
+      },
+      shouldReduceMotion ? 100 : 2000
+    );
   };
 
   const handleClose = () => {
     const liveRegion = document.getElementById("live-announcement");
-    if (liveRegion) liveRegion.textContent = "Roulette modal closed";
+    if (liveRegion) liveRegion.textContent = "Reward Roulette modal closed.";
     onClose(selectedReward);
+  };
+
+  // Define flip variant inside the component
+  const flipVariant = {
+    initial: { rotateY: 90, opacity: 0 },
+    animate: {
+      rotateY: 0,
+      opacity: 1,
+      transition: {
+        duration: shouldReduceMotion ? 0.1 : 0.8,
+        ease: shouldReduceMotion ? "linear" : "easeOut",
+      },
+    },
+  };
+
+  // Define pulse variant inside the component
+  const pulseVariant = {
+    pulse: {
+      scale: [1, shouldReduceMotion ? 1 : 1.05, 1],
+      transition: {
+        duration: shouldReduceMotion ? 0.1 : 1,
+        repeat: Infinity,
+        ease: shouldReduceMotion ? "linear" : "easeInOut",
+      },
+    },
   };
 
   return (
@@ -132,10 +162,18 @@ const SpinWheelModal = ({ onClose }) => {
       className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-[var(--color-secondary)]/30 to-transparent backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
-      aria-label="Reward Roulette"
-      tabIndex={-1}
+      aria-labelledby="spinWheelModalTitle"
+      aria-describedby="spinWheelModalDesc"
+      tabIndex={0}
       ref={modalRef}
+      onKeyDown={handleKeyDown}
     >
+      <h3 id="spinWheelModalTitle" className="sr-only">
+        Reward Roulette
+      </h3>
+      <p id="spinWheelModalDesc" className="sr-only">
+        Spin the roulette to win a reward. Press Escape to close the modal.
+      </p>
       <motion.div
         className="bg-[var(--color-primary)] p-8 rounded-lg shadow-xs text-center relative"
         initial={{ scale: 0, opacity: 0 }}
@@ -145,13 +183,19 @@ const SpinWheelModal = ({ onClose }) => {
           boxShadow: "0 0 5px rgba(0,255,0,0.8)",
         }}
         exit={{ scale: 0, opacity: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
+        transition={{
+          duration: shouldReduceMotion ? 0.1 : 0.8,
+          ease: shouldReduceMotion ? "linear" : "easeOut",
+        }}
       >
         <div className="relative mx-auto mb-4 w-48 h-48 rounded-full border-4 border-[var(--color-accent)]/70 flex items-center justify-center overflow-hidden">
           <motion.div
-            className="absolute inset-0 flex items-center text-[var(--color-secondary)]/70 justify-center text-2xl font-bold"
+            className="absolute inset-0 flex items-center justify-center text-[var(--color-secondary)]/70 text-2xl font-bold"
             animate={{ rotate: spinning ? 1080 : 0 }}
-            transition={{ duration: 2, ease: "easeOut" }}
+            transition={{
+              duration: shouldReduceMotion ? 0.1 : 2,
+              ease: shouldReduceMotion ? "linear" : "easeOut",
+            }}
           >
             {spinning ? (
               "Spinning..."
@@ -171,7 +215,7 @@ const SpinWheelModal = ({ onClose }) => {
             )}
           </motion.div>
           {!spinning && !selectedReward && (
-            <div className="absolute inset-0 grid grid-cols-3 grid-rows-3 text-xs text-[var(--color-secondary)]/50">
+            <div className="absolute inset-0 grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs text-[var(--color-secondary)]/50">
               {[
                 "10% Off",
                 "Free Shipping",
@@ -199,6 +243,7 @@ const SpinWheelModal = ({ onClose }) => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="mb-4 px-4 py-2 bg-[var(--color-accent)]/60 text-[var(--color-primary)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/40"
+            aria-label="Spin the roulette"
           >
             Spin Roulette
           </motion.button>
@@ -208,10 +253,14 @@ const SpinWheelModal = ({ onClose }) => {
             onClick={handleClose}
             whileHover={{
               scale: 1.1,
-              transition: { ease: "easeOut", duration: 0.3 },
+              transition: {
+                ease: shouldReduceMotion ? "linear" : "easeOut",
+                duration: shouldReduceMotion ? 0.1 : 0.3,
+              },
             }}
             whileTap={{ scale: 0.95 }}
             className="mb-4 px-4 py-2 bg-[var(--color-accent)]/60 text-[var(--color-primary)]/90 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
+            aria-label="Claim your reward"
           >
             Claim Reward
           </motion.button>
@@ -227,6 +276,7 @@ const shakeVariant = {
 };
 
 const NewsletterSignup = () => {
+  const shouldReduceMotion = useReducedMotion();
   const { email, setEmail, isValid, handleChange } = useEmailValidation();
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState(""); // "success" or "error"
@@ -242,6 +292,42 @@ const NewsletterSignup = () => {
   const [progress, setProgress] = useState(0);
   const subscriberGoal = 100;
   const shareTimeoutRef = useRef(null);
+  const liveRegionRef = useRef(null);
+  const navigate = useNavigate();
+
+  // Define animation variants inside the component so we can use shouldReduceMotion
+  const pulseVariant = {
+    pulse: {
+      scale: [1, shouldReduceMotion ? 1 : 1.05, 1],
+      transition: {
+        duration: shouldReduceMotion ? 0.1 : 1,
+        repeat: Infinity,
+        ease: shouldReduceMotion ? "linear" : "easeInOut",
+      },
+    },
+  };
+
+  const flipVariant = {
+    initial: { rotateY: 90, opacity: 0 },
+    animate: {
+      rotateY: 0,
+      opacity: 1,
+      transition: {
+        duration: shouldReduceMotion ? 0.1 : 0.8,
+        ease: shouldReduceMotion ? "linear" : "easeOut",
+      },
+    },
+  };
+
+  useEffect(() => {
+    if (liveRegionRef.current && status) {
+      const announcement =
+        status === "success"
+          ? "Subscription successful. Reward roulette available."
+          : "Error: " + message;
+      liveRegionRef.current.textContent = announcement;
+    }
+  }, [status, message]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -271,7 +357,9 @@ const NewsletterSignup = () => {
 
     setLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulated API call
+      await new Promise((resolve) =>
+        setTimeout(resolve, shouldReduceMotion ? 100 : 1500)
+      ); // Simulated API call
       setMessage("🎉 You're in! Get ready to spin the roulette for a reward.");
       setStatus("success");
       setSubmitted(true);
@@ -297,33 +385,49 @@ const NewsletterSignup = () => {
   const handleFacebookSubscribe = () => updateShareMessage("Facebook");
   const handleInstagramShare = () => updateShareMessage("Instagram");
 
-  // Save the reward from the spin to localStorage for use in OrderForm.
   const handleModalClose = (selectedReward) => {
     setReward(selectedReward);
     localStorage.setItem("newsletterReward", selectedReward);
     setShowSpinWheel(false);
-    // Optionally, you might want to keep the reward visible or clear it after some time.
-    setTimeout(() => {
-      setSubmitted(false);
-      setEmail("");
-      // Do not clear reward here if you want it available for the order form.
-    }, 5000);
+    setTimeout(
+      () => {
+        setSubmitted(false);
+        setEmail("");
+      },
+      shouldReduceMotion ? 100 : 5000
+    );
   };
-
-  const navigate = useNavigate();
 
   return (
     <section
-      className="relative mt-32 bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-accent)] py-8 md:py-12 px-4 md:px-6 shadow-lg rounded-t-lg overflow-hidden"
+      className="relative mt-24 md:mt-32 bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-accent)] py-8 md:py-12 px-4 md:px-6 shadow-lg rounded-t-lg overflow-hidden"
       aria-live="polite"
     >
-      {/* Live region for accessibility announcements */}
-      <div id="live-announcement" className="sr-only" aria-live="assertive" />
+      {/* Inline style to respect prefers-reduced-motion globally */}
+      <style>{`
+        @media (prefers-reduced-motion: reduce) {
+          * {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+            scroll-behavior: auto !important;
+          }
+        }
+      `}</style>
+      <div
+        id="live-announcement"
+        ref={liveRegionRef}
+        className="sr-only"
+        aria-live="assertive"
+      />
       <div className="max-w-4xl mx-auto text-center relative">
         <motion.h2
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{
+            duration: shouldReduceMotion ? 0.1 : 0.5,
+            ease: shouldReduceMotion ? "linear" : "easeOut",
+          }}
           className="text-3xl md:text-4xl font-extrabold mb-4 text-[var(--color-primary)]/90"
         >
           🍵 Join Our Matcha Revolution
@@ -338,7 +442,8 @@ const NewsletterSignup = () => {
           className="flex flex-col sm:flex-row justify-center items-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
+          transition={{ delay: shouldReduceMotion ? 0.1 : 0.3 }}
+          aria-label="Newsletter Signup Form"
         >
           <div className="relative w-full sm:w-auto">
             <label htmlFor="email" className="sr-only">
@@ -353,6 +458,7 @@ const NewsletterSignup = () => {
               placeholder="Enter your email"
               aria-invalid={!isValid}
               aria-describedby={!isValid ? "email-error" : undefined}
+              aria-label="Email address input field"
               className={`p-3 pr-10 rounded-md w-full sm:w-80 md:w-96 border border-[var(--color-primary)]/40 text-[var(--color-primary)]/90 focus:ring-2 outline-none transition ${
                 isValid
                   ? "border-[var(--color-accent)]/30 focus:ring-[var(--color-accent)]/40"
@@ -368,12 +474,16 @@ const NewsletterSignup = () => {
             whileTap={{ scale: 0.95 }}
             className="bg-[var(--color-primary)]/80 text-[var(--color-secondary)]/70 font-semibold p-3 rounded-md hover:bg-[var(--color-primary)]/60 transition flex items-center ml-0 sm:ml-4 mt-4 sm:mt-0 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={loading}
+            aria-label="Submit your email to subscribe and spin the reward roulette"
           >
             {loading ? (
               <motion.span
                 animate={{ rotate: 360 }}
-                transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-                className=""
+                transition={{
+                  repeat: Infinity,
+                  duration: shouldReduceMotion ? 0.1 : 1,
+                  ease: "linear",
+                }}
               >
                 <LoaderIcon size={18} />
               </motion.span>
@@ -394,12 +504,19 @@ const NewsletterSignup = () => {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
+              transition={{
+                duration: shouldReduceMotion ? 0.1 : 0.4,
+                ease: shouldReduceMotion ? "linear" : "easeOut",
+              }}
             >
               {status === "success" ? (
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  transition={{ type: "spring", stiffness: 300 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: shouldReduceMotion ? 100 : 300,
+                  }}
                   className="mr-2"
                 >
                   <CheckCircleIcon size={20} />
@@ -430,10 +547,14 @@ const NewsletterSignup = () => {
               onClick={() => navigate("/order")}
               whileHover={{
                 scale: 1.15,
-                transition: { ease: "easeOut", duration: 0.3 },
+                transition: {
+                  ease: shouldReduceMotion ? "linear" : "easeOut",
+                  duration: shouldReduceMotion ? 0.1 : 0.3,
+                },
               }}
               whileTap={{ scale: 0.95 }}
               className="px-6 py-2 bg-green-600 text-[var(--color-primary)]/90 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mb-2"
+              aria-label="Proceed to shop using your reward"
             >
               Shop Now
             </motion.button>
@@ -441,7 +562,7 @@ const NewsletterSignup = () => {
               className="text-sm text-blue-500"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
+              transition={{ delay: shouldReduceMotion ? 0.1 : 0.5 }}
             >
               Congratulations! Enjoy your reward.
             </motion.div>
@@ -451,6 +572,7 @@ const NewsletterSignup = () => {
           <button
             onClick={handleGoogleSubscribe}
             className="flex items-center justify-center px-4 py-2 border border-[var(--color-secondary)]/10 rounded-md dark:hover:bg-[var(--color-secondary)]/30 transition"
+            aria-label="Subscribe with Google"
           >
             <FaGoogle size={20} className="mr-2" />
             Subscribe with Google
@@ -458,6 +580,7 @@ const NewsletterSignup = () => {
           <button
             onClick={handleFacebookSubscribe}
             className="flex items-center flex-grow justify-center px-4 py-2 border border-[var(--color-secondary)]/10 rounded-md dark:hover:bg-[var(--color-secondary)]/30 transition"
+            aria-label="Subscribe with Facebook"
           >
             <FaFacebook size={20} className="mr-2" />
             Subscribe with Facebook
@@ -465,13 +588,17 @@ const NewsletterSignup = () => {
           <button
             onClick={handleInstagramShare}
             className="flex items-center flex-grow justify-center px-4 py-2 border border-[var(--color-secondary)]/10 rounded-md dark:hover:bg-[var(--color-secondary)]/30 transition"
+            aria-label="Subscribe with Instagram"
           >
             <FaInstagram size={20} className="mr-2" />
             Subscribe with Instagram
           </button>
         </div>
         {shareMessage && (
-          <div className="mt-4 text-sm text-[var(--color-primary)]/30">
+          <div
+            className="mt-4 text-sm text-[var(--color-primary)]/30"
+            role="status"
+          >
             {shareMessage}
           </div>
         )}
