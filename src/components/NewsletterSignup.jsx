@@ -1,3 +1,4 @@
+//NewsletterSignup.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircleIcon, XCircleIcon, LoaderIcon, XIcon } from "lucide-react";
@@ -295,19 +296,22 @@ const NewsletterSignup = () => {
   const handleFacebookSubscribe = () => updateShareMessage("Facebook");
   const handleInstagramShare = () => updateShareMessage("Instagram");
 
+  // Save the reward from the spin to localStorage for use in OrderForm.
   const handleModalClose = (selectedReward) => {
     setReward(selectedReward);
+    localStorage.setItem("newsletterReward", selectedReward);
     setShowSpinWheel(false);
+    // Optionally, you might want to keep the reward visible or clear it after some time.
     setTimeout(() => {
       setSubmitted(false);
       setEmail("");
-      setReward("");
+      // Do not clear reward here if you want it available for the order form.
     }, 5000);
   };
 
   return (
     <section
-      className="relative mt-32 bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-accent)]  py-8 md:py-12 px-4 md:px-6 shadow-lg rounded-t-lg overflow-hidden"
+      className="relative mt-32 bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-accent)] py-8 md:py-12 px-4 md:px-6 shadow-lg rounded-t-lg overflow-hidden"
       aria-live="polite"
     >
       {/* Live region for accessibility announcements */}
@@ -443,21 +447,21 @@ const NewsletterSignup = () => {
         <div className="mt-6 flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 gap-2 items-stretch">
           <button
             onClick={handleGoogleSubscribe}
-            className="flex items-center justify-center px-4 py-2 border border-[var(--color-secondary)]/10 rounded-md  dark:hover:bg-[var(--color-secondary)]/30 transition"
+            className="flex items-center justify-center px-4 py-2 border border-[var(--color-secondary)]/10 rounded-md dark:hover:bg-[var(--color-secondary)]/30 transition"
           >
             <FaGoogle size={20} className="mr-2" />
             Subscribe with Google
           </button>
           <button
             onClick={handleFacebookSubscribe}
-            className="flex items-center flex-grow justify-center px-4 py-2 border border-[var(--color-secondary)]/10 rounded-md  dark:hover:bg-[var(--color-secondary)]/30 transition"
+            className="flex items-center flex-grow justify-center px-4 py-2 border border-[var(--color-secondary)]/10 rounded-md dark:hover:bg-[var(--color-secondary)]/30 transition"
           >
             <FaFacebook size={20} className="mr-2" />
             Subscribe with Facebook
           </button>
           <button
             onClick={handleInstagramShare}
-            className="flex items-center flex-grow justify-center px-4 py-2 border border-[var(--color-secondary)]/10 rounded-md  dark:hover:bg-[var(--color-secondary)]/30 transition"
+            className="flex items-center flex-grow justify-center px-4 py-2 border border-[var(--color-secondary)]/10 rounded-md dark:hover:bg-[var(--color-secondary)]/30 transition"
           >
             <FaInstagram size={20} className="mr-2" />
             Subscribe with Instagram

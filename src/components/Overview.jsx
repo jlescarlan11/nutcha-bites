@@ -34,7 +34,7 @@ const Overview = () => {
           </div>
           {/* Benefits Section */}
           <div className="space-y-4">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[var(--color-secondary)]/80">
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[var(--color-secondary)]/80">
               When Tradition Meets{" "}
               <span aria-live="polite">
                 <Typewriter
