@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import CreditCard from "react-credit-cards";
@@ -48,22 +48,40 @@ const stepVariants = {
   },
 };
 
+// Helper: debounce function
+function debounce(func, wait) {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
+}
+
 // Enhanced ProgressBar with gradient & smooth transitions
 const ProgressBar = ({ step }) => (
-  <div className="mb-4">
-    <div className="w-full bg-gray-300 h-2 rounded overflow-hidden">
+  <div className="mb-6">
+    <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
       <motion.div
-        className="h-2 rounded bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600"
+        className="h-2 rounded-full"
+        style={{
+          background:
+            "linear-gradient(to right, var(--color-tertiary), var(--color-accent))",
+        }}
         initial={{ width: 0 }}
         animate={{ width: `${(step / 2) * 100}%` }}
         transition={{ duration: 0.5 }}
       />
     </div>
-    <p className="text-center text-sm mt-1 text-gray-700">Step {step} of 2</p>
+    <p
+      className="text-center text-sm mt-2"
+      style={{ color: "var(--color-secondary)" }}
+    >
+      Step {step} of 2
+    </p>
   </div>
 );
 
-// Reusable InputField component with error support
+// Reusable InputField component with animated error feedback
 const InputField = ({
   id,
   label,
@@ -75,10 +93,11 @@ const InputField = ({
   error,
   ...rest
 }) => (
-  <div>
+  <div className="mb-4">
     <label
       htmlFor={id}
-      className="block font-medium text-gray-700 dark:text-gray-300"
+      className="block font-medium mb-1"
+      style={{ color: "var(--color-secondary)" }}
     >
       {label}
     </label>
@@ -89,16 +108,25 @@ const InputField = ({
       onChange={onChange}
       onBlur={onBlur}
       placeholder={placeholder}
-      className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-shadow shadow-sm ${
+      className={`w-full p-4 rounded-md border focus:outline-none focus:ring-4 transition-shadow shadow-sm ${
         error ? "border-red-500" : "border-gray-300"
       }`}
       {...rest}
     />
-    {error && (
-      <span role="alert" className="text-red-500 text-xs">
-        {error}
-      </span>
-    )}
+    <AnimatePresence>
+      {error && (
+        <motion.span
+          key="error"
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -4 }}
+          role="alert"
+          className="mt-1 block text-red-500 text-xs"
+        >
+          {error}
+        </motion.span>
+      )}
+    </AnimatePresence>
   </div>
 );
 
@@ -116,23 +144,41 @@ const CustomerOrderForm = ({
 }) => {
   const navigate = useNavigate();
 
+  const validateField = useCallback(
+    (name, value) => {
+      let error = "";
+      if (!value.trim()) {
+        error = `${name} is required`;
+      } else {
+        if (name === "email" && !/\S+@\S+\.\S+/.test(value)) {
+          error = "Email format is invalid";
+        }
+      }
+      setErrors((prev) => ({ ...prev, [name]: error }));
+    },
+    [setErrors]
+  );
+
+  const debouncedValidateField = useMemo(
+    () => debounce(validateField, 500),
+    [validateField]
+  );
+
   const handleChange = useCallback(
     (e) => {
       const { name, value } = e.target;
       setBuyerInfo((prev) => ({ ...prev, [name]: value }));
-      setErrors((prev) => ({ ...prev, [name]: "" }));
+      debouncedValidateField(name, value);
     },
-    [setBuyerInfo, setErrors]
+    [setBuyerInfo, debouncedValidateField]
   );
 
   const handleBlur = useCallback(
     (e) => {
       const { name, value } = e.target;
-      if (!value.trim()) {
-        setErrors((prev) => ({ ...prev, [name]: `${name} is required` }));
-      }
+      validateField(name, value);
     },
-    [setErrors]
+    [validateField]
   );
 
   const handleProductChange = useCallback(
@@ -146,46 +192,51 @@ const CustomerOrderForm = ({
   const totalPrice = (selectedProduct.price * quantity).toFixed(2);
 
   return (
-    <div>
-      <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">
-        Customer &amp; Order Details
+    <div className="px-4 py-6">
+      <h2
+        className="text-2xl font-semibold mb-6"
+        style={{ color: "var(--color-secondary)" }}
+      >
+        Customer & Order Details
       </h2>
-      <div className="flex flex-col md:flex-row md:space-x-6 space-y-6 md:space-y-0">
+      <div className="flex flex-col md:flex-row md:space-x-8 space-y-8 md:space-y-0">
         {/* Customer Information */}
-        <div className="w-full md:w-1/2 space-y-4">
-          <h3 className="text-lg font-bold text-gray-700 dark:text-gray-300">
+        <div className="w-full md:w-1/2">
+          <h3
+            className="text-xl font-bold mb-4"
+            style={{ color: "var(--color-secondary)" }}
+          >
             Customer Information
           </h3>
-          {[
-            { id: "name", type: "text", placeholder: "Enter your name" },
-            { id: "email", type: "email", placeholder: "Enter your email" },
-            { id: "phone", type: "tel", placeholder: "Enter your phone" },
-            { id: "address", type: "text", placeholder: "Enter your address" },
-          ].map(({ id, type, placeholder }) => (
+          {["name", "email", "phone", "address"].map((field) => (
             <InputField
-              key={id}
-              id={id}
-              label={id.charAt(0).toUpperCase() + id.slice(1)}
-              type={type}
-              value={buyerInfo[id]}
+              key={field}
+              id={field}
+              label={field.charAt(0).toUpperCase() + field.slice(1)}
+              type={field === "email" ? "email" : "text"}
+              value={buyerInfo[field]}
               onChange={handleChange}
               onBlur={handleBlur}
-              placeholder={placeholder}
-              error={errors[id]}
-              name={id}
+              placeholder={`Enter your ${field}`}
+              error={errors[field]}
+              name={field}
               required
             />
           ))}
         </div>
         {/* Order Details */}
-        <div className="w-full md:w-1/2 space-y-4">
-          <h3 className="text-lg font-bold text-gray-700 dark:text-gray-300">
+        <div className="w-full md:w-1/2">
+          <h3
+            className="text-xl font-bold mb-4"
+            style={{ color: "var(--color-secondary)" }}
+          >
             Order Details
           </h3>
-          <div>
+          <div className="mb-4">
             <label
               htmlFor="product"
-              className="block font-medium text-gray-700 dark:text-gray-300"
+              className="block font-medium mb-1"
+              style={{ color: "var(--color-secondary)" }}
             >
               Select Product
             </label>
@@ -193,7 +244,7 @@ const CustomerOrderForm = ({
               id="product"
               value={selectedProduct.id}
               onChange={handleProductChange}
-              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-shadow shadow-sm"
+              className="w-full p-4 border rounded-md focus:outline-none focus:ring-4 focus:ring-blue-300 shadow-sm transition-shadow"
             >
               {products.map((product) => (
                 <option key={product.id} value={product.id}>
@@ -212,21 +263,33 @@ const CustomerOrderForm = ({
             }
             placeholder="Enter quantity"
           />
-          <div className="mt-4 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
-            <h3 className="font-bold mb-2 text-gray-800 dark:text-gray-100">
+          <div
+            className="mt-6 p-6 rounded-lg shadow-lg border"
+            style={{
+              backgroundColor: "var(--color-primary)",
+              borderColor: "var(--color-secondary)",
+            }}
+          >
+            <h3
+              className="font-bold text-xl mb-3"
+              style={{ color: "var(--color-secondary)" }}
+            >
               Order Summary
             </h3>
             <div className="flex items-center space-x-4">
               <img
                 src={selectedProduct.image}
                 alt={selectedProduct.name}
-                className="w-16 h-16 object-cover rounded-lg"
+                className="w-16 h-16 object-cover rounded-md"
               />
               <div>
-                <p className="text-gray-700 dark:text-gray-300">
+                <p style={{ color: "var(--color-secondary)" }}>
                   {selectedProduct.name}
                 </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p
+                  className="text-sm"
+                  style={{ color: "var(--color-secondary)" }}
+                >
                   x {quantity} = ₱{totalPrice}
                 </p>
               </div>
@@ -235,11 +298,16 @@ const CustomerOrderForm = ({
         </div>
       </div>
       {/* Next Button */}
-      <div className="flex justify-end mt-6">
+      <div className="flex justify-end mt-8">
         <motion.button
           onClick={onNext}
           whileHover={{ scale: 1.05 }}
-          className="bg-blue-500 text-white px-6 py-3 rounded-full hover:bg-blue-600 transition flex items-center"
+          className="px-8 py-3 rounded-full transition-transform shadow-md"
+          style={{
+            background:
+              "linear-gradient(to right, var(--color-tertiary), var(--color-accent))",
+            color: "#fff",
+          }}
         >
           Next: Payment Details
         </motion.button>
@@ -248,7 +316,7 @@ const CustomerOrderForm = ({
   );
 };
 
-// PaymentForm component (Step 2) with credit card preview on the right
+// PaymentForm component (Step 2)
 const PaymentForm = ({
   buyerInfo,
   setBuyerInfo,
@@ -257,28 +325,47 @@ const PaymentForm = ({
   onBack,
   onSubmit,
   isSubmitting,
-  onApplyVoucher,
   selectedProduct,
   quantity,
   reward,
+  setReward,
 }) => {
+  const validatePaymentField = useCallback(
+    (name, value) => {
+      let error = "";
+      if (!value.trim()) {
+        error = `${name} is required`;
+      } else if (
+        name === "expiration" &&
+        !/^(0[1-9]|1[0-2])\/\d{2}$/.test(value)
+      ) {
+        error = "Expiration must be in MM/YY format";
+      }
+      setErrors((prev) => ({ ...prev, [name]: error }));
+    },
+    [setErrors]
+  );
+
+  const debouncedValidatePaymentField = useMemo(
+    () => debounce(validatePaymentField, 500),
+    [validatePaymentField]
+  );
+
   const handleChange = useCallback(
     (e) => {
       const { name, value } = e.target;
       setBuyerInfo((prev) => ({ ...prev, [name]: value }));
-      setErrors((prev) => ({ ...prev, [name]: "" }));
+      debouncedValidatePaymentField(name, value);
     },
-    [setBuyerInfo, setErrors]
+    [setBuyerInfo, debouncedValidatePaymentField]
   );
 
   const handleBlur = useCallback(
     (e) => {
       const { name, value } = e.target;
-      if (!value.trim()) {
-        setErrors((prev) => ({ ...prev, [name]: `${name} is required` }));
-      }
+      validatePaymentField(name, value);
     },
-    [setErrors]
+    [validatePaymentField]
   );
 
   const formatCardNumber = (value) =>
@@ -287,7 +374,49 @@ const PaymentForm = ({
       .replace(/(.{4})/g, "$1 ")
       .trim();
 
-  // Compute purchase summary details
+  const [voucherFeedback, setVoucherFeedback] = useState(null);
+
+  const validateVoucher = useCallback(
+    (code) => {
+      if (!code.trim()) {
+        setVoucherFeedback(null);
+        setReward("");
+        return;
+      }
+      const matchedVoucher = vouchers.find(
+        (v) => v.code.toUpperCase() === code.trim().toUpperCase()
+      );
+      if (matchedVoucher) {
+        setVoucherFeedback({
+          status: "success",
+          message: `Voucher Applied: ${matchedVoucher.description}`,
+        });
+        setReward(matchedVoucher.description);
+      } else {
+        setVoucherFeedback({
+          status: "error",
+          message: "Invalid voucher code",
+        });
+        setReward("");
+      }
+    },
+    [setReward]
+  );
+
+  const debouncedValidateVoucher = useMemo(
+    () => debounce(validateVoucher, 500),
+    [validateVoucher]
+  );
+
+  const handleVoucherChange = useCallback(
+    (e) => {
+      const { value } = e.target;
+      setBuyerInfo((prev) => ({ ...prev, voucherCode: value }));
+      debouncedValidateVoucher(value);
+    },
+    [setBuyerInfo, debouncedValidateVoucher]
+  );
+
   const basePrice = selectedProduct.price * quantity;
   let shippingFee = 50;
   let discountPercentage = 0;
@@ -300,14 +429,23 @@ const PaymentForm = ({
   const finalPrice = basePrice - discountAmount + shippingFee;
 
   return (
-    <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
-      <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">
+    <div
+      className="p-6 sm:p-8 rounded-lg shadow-lg border"
+      style={{
+        backgroundColor: "var(--color-primary)",
+        borderColor: "var(--color-secondary)",
+      }}
+    >
+      <h2
+        className="text-2xl font-semibold mb-6"
+        style={{ color: "var(--color-secondary)" }}
+      >
         Payment Details
       </h2>
-      <div className="flex flex-col md:flex-row gap-6">
+      <div className="flex flex-col md:flex-row gap-8">
         {/* Left Column: Payment Inputs & Voucher/Purchase Summary */}
-        <div className="flex-1 space-y-4">
-          <div className="space-y-4">
+        <div className="flex-1">
+          <div className="space-y-6">
             <InputField
               id="cardNumber"
               label="Card Number"
@@ -328,7 +466,7 @@ const PaymentForm = ({
               name="cardNumber"
               required
             />
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-6">
               <InputField
                 id="expiration"
                 label="Expiration Date"
@@ -357,84 +495,106 @@ const PaymentForm = ({
               />
             </div>
           </div>
-          {/* Voucher Selection */}
-          <div>
+          {/* Voucher Code Input */}
+          <div className="mt-6">
             <label
-              htmlFor="voucherSelect"
-              className="block font-medium text-gray-700 dark:text-gray-300"
+              htmlFor="voucherCode"
+              className="block font-medium mb-1"
+              style={{ color: "var(--color-secondary)" }}
             >
-              Select Voucher
+              Voucher Code
             </label>
-            <select
-              id="voucherSelect"
+            <input
+              list="voucherOptions"
+              id="voucherCode"
               name="voucherCode"
               value={buyerInfo.voucherCode}
-              onChange={handleChange}
-              className="w-full p-3 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-shadow"
-            >
-              <option value="">-- Choose a voucher --</option>
+              onChange={handleVoucherChange}
+              placeholder="Enter voucher code"
+              className={`w-full p-4 rounded-md border focus:outline-none transition-shadow shadow-sm ${
+                voucherFeedback && voucherFeedback.status === "error"
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-300 focus:ring-blue-300"
+              }`}
+            />
+            <datalist id="voucherOptions">
               {vouchers.map((voucher) => (
-                <option key={voucher.code} value={voucher.code}>
-                  {voucher.description}
-                </option>
+                <option key={voucher.code} value={voucher.code} />
               ))}
-            </select>
-            {errors.voucherCode && (
-              <span role="alert" className="text-red-500 text-xs">
-                {errors.voucherCode}
-              </span>
-            )}
-            <motion.button
-              onClick={onApplyVoucher}
-              whileHover={{ scale: 1.05 }}
-              type="button"
-              className="mt-2 bg-green-500 text-white px-4 py-2 rounded-full hover:bg-green-600 transition duration-300"
-            >
-              Apply Voucher
-            </motion.button>
+            </datalist>
+            <AnimatePresence>
+              {voucherFeedback && voucherFeedback.message && (
+                <motion.div
+                  key="voucherFeedback"
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  className="mt-1 text-xs"
+                  style={{
+                    color: voucherFeedback.status === "error" ? "red" : "green",
+                  }}
+                >
+                  {voucherFeedback.message}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
           {/* Purchase Summary */}
-          <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-md border">
-            <h3 className="font-bold text-lg text-gray-800 dark:text-gray-100 mb-2">
+          <div
+            className="mt-8 p-6 rounded-lg shadow-md border"
+            style={{
+              backgroundColor: "var(--color-primary)",
+              borderColor: "var(--color-secondary)",
+            }}
+          >
+            <h3
+              className="font-bold text-xl mb-3"
+              style={{ color: "var(--color-secondary)" }}
+            >
               Purchase Summary
             </h3>
-            <p>
+            <p style={{ color: "var(--color-secondary)" }}>
               <strong>Product:</strong> {selectedProduct.name}
             </p>
-            <p>
+            <p style={{ color: "var(--color-secondary)" }}>
               <strong>Quantity:</strong> {quantity}
             </p>
-            <p>
+            <p style={{ color: "var(--color-secondary)" }}>
               <strong>Base Price:</strong> ₱{basePrice.toFixed(2)}
             </p>
             {reward ? (
               <>
                 {discountPercentage > 0 && (
-                  <p className="text-green-600">
+                  <p style={{ color: "green" }}>
                     <strong>Discount:</strong> -₱{discountAmount.toFixed(2)} (
                     {reward})
                   </p>
                 )}
                 {discountPercentage === 0 &&
                   /free\s+(delivery|shipping)/i.test(reward) && (
-                    <p className="text-green-600">
+                    <p style={{ color: "green" }}>
                       <strong>Free Shipping Voucher Applied</strong>
                     </p>
                   )}
               </>
             ) : (
-              <p className="text-gray-600">No voucher applied</p>
+              <p style={{ color: "var(--color-secondary)" }}>
+                No voucher applied
+              </p>
             )}
-            <p>
+            <p style={{ color: "var(--color-secondary)" }}>
               <strong>Shipping Fee:</strong> ₱{shippingFee.toFixed(2)}
             </p>
-            <p className="mt-2 font-bold">
+            <p
+              className="mt-3 font-bold"
+              style={{ color: "var(--color-secondary)" }}
+            >
               <strong>Total Price:</strong> ₱{finalPrice.toFixed(2)}
             </p>
           </div>
         </div>
         {/* Right Column: Credit Card Preview */}
-        <div className="w-full md:w-1/3 flex justify-center items-center">
+        <div className="w-full md:w-1/3 flex justify-center items-start mb-6 md:mb-0 transform scale-90">
           <CreditCard
             number={buyerInfo.cardNumber}
             name={buyerInfo.name}
@@ -445,12 +605,13 @@ const PaymentForm = ({
         </div>
       </div>
       {/* Action Buttons */}
-      <div className="flex justify-between mt-6">
+      <div className="flex flex-col sm:flex-row justify-between mt-8">
         <motion.button
           onClick={onBack}
           whileHover={{ scale: 1.05 }}
           type="button"
-          className="bg-gray-500 text-white px-6 py-3 rounded-full hover:bg-gray-600 transition"
+          className="mb-4 sm:mb-0 px-8 py-3 rounded-full transition-shadow shadow-md"
+          style={{ backgroundColor: "var(--color-secondary)", color: "#fff" }}
         >
           Back
         </motion.button>
@@ -459,9 +620,14 @@ const PaymentForm = ({
           whileHover={{ scale: 1.05 }}
           type="button"
           disabled={isSubmitting}
-          className={`w-full sm:w-auto bg-gradient-to-r from-green-400 to-blue-500 text-white px-6 py-3 rounded-full hover:from-green-500 hover:to-blue-600 transition ${
+          className={`w-full sm:w-auto px-8 py-3 rounded-full transition-shadow shadow-md ${
             isSubmitting ? "opacity-50 cursor-not-allowed" : ""
           }`}
+          style={{
+            background:
+              "linear-gradient(to right, var(--color-tertiary), var(--color-accent))",
+            color: "#fff",
+          }}
         >
           {isSubmitting ? "Processing..." : "Confirm Order"}
         </motion.button>
@@ -470,7 +636,7 @@ const PaymentForm = ({
   );
 };
 
-// Confirmation page showing detailed breakdown and applied voucher
+// Confirmation page
 const Confirmation = ({
   buyerInfo,
   selectedProduct,
@@ -490,56 +656,71 @@ const Confirmation = ({
   const finalPrice = baseProductPrice - discountAmount + shippingFee;
 
   return (
-    <div className="p-6 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md mx-auto relative border border-gray-200 dark:border-gray-700">
-      <h1 className="text-2xl font-bold text-center text-yellow-600 mb-4">
+    <div
+      className="p-6 rounded-xl w-full max-w-md mx-auto my-4 shadow-xl border"
+      style={{
+        backgroundColor: "var(--color-primary)",
+        borderColor: "var(--color-secondary)",
+      }}
+    >
+      <h1
+        className="text-3xl font-extrabold text-center mb-4"
+        style={{ color: "var(--color-tertiary)" }}
+      >
         Nutcha Bites
       </h1>
-      <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">
+      <h2
+        className="text-2xl font-semibold mb-6 text-center"
+        style={{ color: "var(--color-secondary)" }}
+      >
         Order Confirmation
       </h2>
-      <p className="mb-2 text-gray-700 dark:text-gray-300">
+      <p className="mb-4" style={{ color: "var(--color-secondary)" }}>
         Thank you, {buyerInfo.name}! Your order has been confirmed.
       </p>
-      <div className="p-4 bg-white dark:bg-gray-700 rounded-lg shadow-md mb-4 border">
-        <p>
+      <div
+        className="p-4 rounded-lg shadow-md mb-6 border"
+        style={{
+          backgroundColor: "var(--color-primary)",
+          borderColor: "var(--color-secondary)",
+        }}
+      >
+        <p style={{ color: "var(--color-secondary)" }}>
           <strong>Product:</strong> {selectedProduct.name}
         </p>
-        <p>
+        <p style={{ color: "var(--color-secondary)" }}>
           <strong>Quantity:</strong> {quantity}
         </p>
-        <p>
+        <p style={{ color: "var(--color-secondary)" }}>
           <strong>Base Price:</strong> ₱{baseProductPrice.toFixed(2)}
         </p>
         {discountAmount > 0 && (
-          <p className="text-green-600">
+          <p style={{ color: "green" }}>
             <strong>Discount:</strong> -₱{discountAmount.toFixed(2)} ({reward})
           </p>
         )}
-        <p>
+        <p style={{ color: "var(--color-secondary)" }}>
           <strong>Shipping Fee:</strong> ₱{shippingFee.toFixed(2)}
         </p>
-        <p className="mt-2 font-bold">
+        <p
+          className="mt-3 font-bold"
+          style={{ color: "var(--color-secondary)" }}
+        >
           <strong>Total Price:</strong> ₱{finalPrice.toFixed(2)}
         </p>
       </div>
       {reward && (
-        <div className="mb-4 text-green-700 text-center">
+        <div className="mb-6 text-center" style={{ color: "green" }}>
           Voucher Applied: <span className="font-semibold">{reward}</span>
         </div>
       )}
       <motion.button
         onClick={() => navigate("/")}
         whileHover={{ scale: 1.05 }}
-        className="w-full bg-gray-500 text-white p-3 rounded-full hover:bg-gray-600 transition mt-4 px-6"
+        className="w-full p-3 rounded-full mt-4 shadow-md"
+        style={{ backgroundColor: "var(--color-secondary)", color: "#fff" }}
       >
         Back to Home
-      </motion.button>
-      <motion.button
-        onClick={onReset}
-        whileHover={{ scale: 1.05 }}
-        className="w-full bg-blue-500 text-white p-3 rounded-full hover:bg-blue-600 transition mt-2 px-6"
-      >
-        Reset Order
       </motion.button>
     </div>
   );
@@ -547,8 +728,6 @@ const Confirmation = ({
 
 const OrderForm = () => {
   const navigate = useNavigate();
-
-  // Load saved customer details (non-sensitive) from localStorage
   const savedCustomerInfo = JSON.parse(
     localStorage.getItem("customerDetails") || "{}"
   );
@@ -571,7 +750,6 @@ const OrderForm = () => {
   const [orderSubmitted, setOrderSubmitted] = useState(false);
   const [reward, setReward] = useState("");
 
-  // Save customer details (non-sensitive) whenever they change
   useEffect(() => {
     const { name, email, phone, address } = buyerInfo;
     localStorage.setItem(
@@ -580,7 +758,6 @@ const OrderForm = () => {
     );
   }, [buyerInfo.name, buyerInfo.email, buyerInfo.phone, buyerInfo.address]);
 
-  // Disable background scroll while the modal is open
   useEffect(() => {
     const originalStyle = window.getComputedStyle(document.body).overflow;
     document.body.style.overflow = "hidden";
@@ -612,40 +789,6 @@ const OrderForm = () => {
     setStep(2);
   }, [validateStep1]);
 
-  const resetOrder = useCallback(() => {
-    // Reset order but keep the saved customer details
-    setBuyerInfo((prev) => ({
-      ...prev,
-      cardNumber: "",
-      expiration: "",
-      cvv: "",
-      voucherCode: localStorage.getItem("newsletterReward") || "",
-    }));
-    setErrors({});
-    setStep(1);
-    setSelectedProduct(products[0]);
-    setQuantity(1);
-    setReward("");
-    setOrderSubmitted(false);
-  }, []);
-
-  // Apply voucher from the selected voucher in the dropdown
-  const handleApplyVoucher = useCallback(() => {
-    if (!buyerInfo.voucherCode.trim()) {
-      setErrors((prev) => ({
-        ...prev,
-        voucherCode: "Please select a voucher",
-      }));
-      return;
-    }
-    const selectedVoucher = vouchers.find(
-      (v) => v.code === buyerInfo.voucherCode.trim()
-    );
-    if (selectedVoucher) {
-      setReward(selectedVoucher.description);
-    }
-  }, [buyerInfo.voucherCode]);
-
   const handlePaymentSubmit = useCallback(async () => {
     const newErrors = {};
     if (!buyerInfo.cardNumber.trim())
@@ -663,7 +806,6 @@ const OrderForm = () => {
     setIsSubmitting(true);
     await new Promise((resolve) => setTimeout(resolve, 1500));
     setIsSubmitting(false);
-    // Automatically apply voucher if not applied manually
     if (!reward && buyerInfo.voucherCode.trim() !== "") {
       const selectedVoucher = vouchers.find(
         (v) => v.code === buyerInfo.voucherCode.trim()
@@ -683,28 +825,41 @@ const OrderForm = () => {
         quantity={quantity}
         reward={reward}
         navigate={navigate}
-        onReset={resetOrder}
       />
     );
   }
 
   return (
     <motion.div
-      className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm flex justify-center items-center p-4"
+      className="fixed inset-0 flex justify-center items-center p-4 z-50"
+      style={{ backgroundColor: "rgba(0,0,0,0.7)" }}
       variants={containerVariants}
       initial="hidden"
       animate="visible"
       exit="exit"
     >
       <motion.div
-        className="w-full max-w-3xl bg-white dark:bg-gray-800 rounded-2xl shadow-2xl mx-auto max-h-screen flex flex-col overflow-hidden border border-gray-200 dark:border-gray-700"
+        className="w-full max-w-3xl sm:mx-4 md:mx-auto rounded-2xl shadow-2xl overflow-auto border"
+        style={{
+          backgroundColor: "var(--color-primary)",
+          borderColor: "var(--color-secondary)",
+        }}
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.3 }}
       >
         {/* Sticky Header */}
-        <header className="sticky top-0 bg-gradient-to-r from-blue-500 to-blue-600 dark:from-gray-700 dark:to-gray-900 z-10 p-4 flex justify-between items-center border-b border-gray-300">
-          <h1 className="text-2xl font-bold text-white">Nutcha Bites</h1>
+        <header
+          className="sticky top-0 z-10 p-6 flex justify-between items-center border-b"
+          style={{
+            background:
+              "linear-gradient(to right, var(--color-tertiary), var(--color-accent))",
+            borderColor: "var(--color-secondary)",
+          }}
+        >
+          <h1 className="text-3xl font-extrabold" style={{ color: "#fff" }}>
+            Nutcha Bites
+          </h1>
           <motion.button
             whileHover={{ scale: 1.2, rotate: 90 }}
             className="cursor-pointer text-white focus:outline-none"
@@ -727,10 +882,10 @@ const OrderForm = () => {
             </svg>
           </motion.button>
         </header>
-        {/* Scrollable Content with AnimatePresence for step transitions */}
+        {/* Scrollable Content */}
         <div
-          className="overflow-y-auto p-6 relative scrollbar-thin scrollbar-thumb-gray-300"
-          style={{ maxHeight: "calc(100vh - 80px)" }}
+          className="overflow-y-auto p-6 relative sm:p-8"
+          style={{ maxHeight: "calc(100vh - 100px)" }}
         >
           <ProgressBar step={step} />
           <AnimatePresence exitBeforeEnter>
@@ -771,10 +926,10 @@ const OrderForm = () => {
                   onBack={() => setStep(1)}
                   onSubmit={handlePaymentSubmit}
                   isSubmitting={isSubmitting}
-                  onApplyVoucher={handleApplyVoucher}
                   selectedProduct={selectedProduct}
                   quantity={quantity}
                   reward={reward}
+                  setReward={setReward}
                 />
               </motion.div>
             )}
