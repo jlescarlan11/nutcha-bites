@@ -83,7 +83,6 @@ const ProgressBar = ({ step }) => (
   </div>
 );
 
-// Reusable InputField component with animated error feedback
 const InputField = ({
   id,
   label,
@@ -96,13 +95,16 @@ const InputField = ({
   ...rest
 }) => (
   <div className="mb-4">
-    <label
-      htmlFor={id}
-      className="block font-medium mb-1"
-      style={{ color: "var(--color-secondary)" }}
-    >
-      {label}
-    </label>
+    {/* Force equal label height */}
+    <div className="min-h-12 sm:min-h-7 flex items-center">
+      <label
+        htmlFor={id}
+        className="block font-medium mb-1"
+        style={{ color: "var(--color-secondary)" }}
+      >
+        {label}
+      </label>
+    </div>
     <input
       id={id}
       type={type}
@@ -496,7 +498,6 @@ const PaymentForm = ({
                 maxLength={5}
                 name="expiration"
                 required
-                className="h-full"
               />
               <InputField
                 id="cvv"
@@ -510,7 +511,6 @@ const PaymentForm = ({
                 maxLength={4}
                 name="cvv"
                 required
-                className="h-full"
               />
             </div>
           </div>
