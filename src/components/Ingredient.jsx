@@ -164,7 +164,7 @@ const Ingredients = () => {
               placeholder="Search ingredients..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full p-2 pr-10 border rounded focus:outline-none border-[var(--color-secondary)]/80 focus:ring focus:border-[var(--color-secondary)] transition"
+              className="w-full p-2 pr-10 border border-[var(--color-secondary)]/40 text-[var(--color-secondary)]/90 rounded focus:outline-none  focus:ring focus:border-[var(--color-secondary)] transition"
               onFocus={() => setSearchActive(true)}
             />
             {searchTerm && (
