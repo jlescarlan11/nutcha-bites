@@ -643,12 +643,12 @@ const PaymentForm = ({
         </div>
       </div>
       {/* Action Buttons */}
-      <div className="flex flex-col sm:flex-row justify-between mt-8">
+      <div className="flex flex-col  gap-4 sm:flex-row justify-between mt-8">
         <motion.button
           onClick={onBack}
           whileHover={{ scale: 1.05 }}
           type="button"
-          className="mb-4 sm:mb-0 px-8 py-3 rounded-full transition-shadow shadow-md"
+          className="mb-4 sm:mb-0 px-8 hidden sm:block py-3 rounded-full transition-shadow shadow-md"
           style={{ backgroundColor: "var(--color-secondary)", color: "#fff" }}
         >
           Back
@@ -668,6 +668,15 @@ const PaymentForm = ({
           }}
         >
           {isSubmitting ? "Processing..." : "Confirm Order"}
+        </motion.button>
+        <motion.button
+          onClick={onBack}
+          whileHover={{ scale: 1.05 }}
+          type="button"
+          className=" block sm:hidden sm:mb-0 px-8 py-3 rounded-full transition-shadow shadow-md"
+          style={{ backgroundColor: "var(--color-secondary)", color: "#fff" }}
+        >
+          Back
         </motion.button>
       </div>
     </div>
