@@ -18,8 +18,10 @@ const products = [
 // Available vouchers for the customer
 const vouchers = [
   { code: "NEWSLETTER10", description: "10% Off Newsletter Signup" },
+  { code: "NEWSLETTER20", description: "20% Off Newsletter Signup" },
   { code: "FREESHIP", description: "Free Shipping Voucher" },
   { code: "SAVE20", description: "20% Off Special Offer" },
+  { code: "FREEGIFT", description: "Free One Product Voucher" },
 ];
 
 // Variants for the modal container animation
@@ -417,15 +419,23 @@ const PaymentForm = ({
     [setBuyerInfo, debouncedValidateVoucher]
   );
 
+  // Updated price calculation to handle FREEGIFT voucher
   const basePrice = selectedProduct.price * quantity;
   let shippingFee = 50;
-  let discountPercentage = 0;
+  let discountAmount = 0;
+
   if (reward) {
-    const discountMatch = reward.match(/(\d+)%\s*Off/i);
-    if (discountMatch) discountPercentage = parseFloat(discountMatch[1]);
-    if (/free\s+(delivery|shipping)/i.test(reward)) shippingFee = 0;
+    if (/free\s+product/i.test(reward)) {
+      // For FREEGIFT voucher, subtract the price of one unit
+      discountAmount = quantity >= 1 ? selectedProduct.price : 0;
+    } else {
+      let discountPercentage = 0;
+      const discountMatch = reward.match(/(\d+)%\s*Off/i);
+      if (discountMatch) discountPercentage = parseFloat(discountMatch[1]);
+      discountAmount = basePrice * (discountPercentage / 100);
+      if (/free\s+(delivery|shipping)/i.test(reward)) shippingFee = 0;
+    }
   }
-  const discountAmount = basePrice * (discountPercentage / 100);
   const finalPrice = basePrice - discountAmount + shippingFee;
 
   return (
@@ -576,18 +586,33 @@ const PaymentForm = ({
             </p>
             {reward ? (
               <>
-                {discountPercentage > 0 && (
+                {/free\s+product/i.test(reward) ? (
                   <p style={{ color: "green" }}>
-                    <strong>Discount:</strong> -₱{discountAmount.toFixed(2)} (
-                    {reward})
+                    <strong>Discount:</strong> -₱
+                    {selectedProduct.price.toFixed(2)} (Free Product Voucher)
                   </p>
+                ) : (
+                  <>
+                    {(() => {
+                      let discountPercentage = 0;
+                      const discountMatch = reward.match(/(\d+)%\s*Off/i);
+                      if (discountMatch)
+                        discountPercentage = parseFloat(discountMatch[1]);
+                      return discountPercentage > 0 ? (
+                        <p style={{ color: "green" }}>
+                          <strong>Discount:</strong> -₱
+                          {discountAmount.toFixed(2)} ({reward})
+                        </p>
+                      ) : null;
+                    })()}
+                    {!/(\d+)%\s*Off/i.test(reward) &&
+                      /free\s+(delivery|shipping)/i.test(reward) && (
+                        <p style={{ color: "green" }}>
+                          <strong>Free Shipping Voucher Applied</strong>
+                        </p>
+                      )}
+                  </>
                 )}
-                {discountPercentage === 0 &&
-                  /free\s+(delivery|shipping)/i.test(reward) && (
-                    <p style={{ color: "green" }}>
-                      <strong>Free Shipping Voucher Applied</strong>
-                    </p>
-                  )}
               </>
             ) : (
               <p style={{ color: "var(--color-secondary)" }}>
@@ -655,16 +680,21 @@ const Confirmation = ({
   quantity,
   reward,
   navigate,
-  onReset,
 }) => {
   const baseProductPrice = selectedProduct.price * quantity;
   let shippingFee = 50;
   if (reward && /free\s+(delivery|shipping)/i.test(reward)) shippingFee = 0;
 
-  let discountPercentage = 0;
-  const discountMatch = reward && reward.match(/(\d+)%\s*Off/i);
-  if (discountMatch) discountPercentage = parseFloat(discountMatch[1]);
-  const discountAmount = baseProductPrice * (discountPercentage / 100);
+  let discountAmount = 0;
+  if (reward && /free\s+product/i.test(reward)) {
+    discountAmount = quantity >= 1 ? selectedProduct.price : 0;
+  } else if (reward) {
+    let discountPercentage = 0;
+    const discountMatch = reward.match(/(\d+)%\s*Off/i);
+    if (discountMatch) discountPercentage = parseFloat(discountMatch[1]);
+    discountAmount = baseProductPrice * (discountPercentage / 100);
+  }
+
   const finalPrice = baseProductPrice - discountAmount + shippingFee;
 
   return (
@@ -706,10 +736,36 @@ const Confirmation = ({
         <p style={{ color: "var(--color-secondary)" }}>
           <strong>Base Price:</strong> ₱{baseProductPrice.toFixed(2)}
         </p>
-        {discountAmount > 0 && (
-          <p style={{ color: "green" }}>
-            <strong>Discount:</strong> -₱{discountAmount.toFixed(2)} ({reward})
-          </p>
+        {reward ? (
+          /free\s+product/i.test(reward) ? (
+            <p style={{ color: "green" }}>
+              <strong>Discount:</strong> -₱{selectedProduct.price.toFixed(2)}{" "}
+              (Free Product Voucher)
+            </p>
+          ) : (
+            <>
+              {(() => {
+                let discountPercentage = 0;
+                const discountMatch = reward.match(/(\d+)%\s*Off/i);
+                if (discountMatch)
+                  discountPercentage = parseFloat(discountMatch[1]);
+                return discountPercentage > 0 ? (
+                  <p style={{ color: "green" }}>
+                    <strong>Discount:</strong> -₱{discountAmount.toFixed(2)} (
+                    {reward})
+                  </p>
+                ) : null;
+              })()}
+              {!/(\d+)%\s*Off/i.test(reward) &&
+                /free\s+(delivery|shipping)/i.test(reward) && (
+                  <p style={{ color: "green" }}>
+                    <strong>Free Shipping Voucher Applied</strong>
+                  </p>
+                )}
+            </>
+          )
+        ) : (
+          <p style={{ color: "var(--color-secondary)" }}>No voucher applied</p>
         )}
         <p style={{ color: "var(--color-secondary)" }}>
           <strong>Shipping Fee:</strong> ₱{shippingFee.toFixed(2)}
