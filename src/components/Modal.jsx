@@ -158,14 +158,14 @@ const Modal = ({ onClose }) => {
             <button
               onClick={handlePrevChapter}
               disabled={currentChapter === 0}
-              className="px-4 py-2 bg-[var(--color-secondary)]/20 text-[var(--color-secondary)] rounded disabled:opacity-50"
+              className="px-4 py-2 bg-[var(--color-secondary)]/20 text-[var(--color-secondary)]/80 rounded disabled:opacity-50"
             >
               Prev
             </button>
             <button
               onClick={handleNextChapter}
               disabled={currentChapter === chapters.length - 1}
-              className="px-4 py-2 bg-[var(--color-secondary)]/20 text-[var(--color-secondary)] rounded disabled:opacity-50"
+              className="px-4 py-2 bg-[var(--color-secondary)]/20 text-[var(--color-secondary)]/80 rounded disabled:opacity-50"
             >
               Next
             </button>

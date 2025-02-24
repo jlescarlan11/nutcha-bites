@@ -68,21 +68,16 @@ const TestimonialModal = ({
   const modalRef = useRef(null);
   const lastFocusedElementRef = useRef(null);
 
-  // Save the last focused element and focus the modal on mount
   useEffect(() => {
     lastFocusedElementRef.current = document.activeElement;
-    if (modalRef.current) {
-      modalRef.current.focus();
-    }
+    if (modalRef.current) modalRef.current.focus();
     const handleEsc = (e) => {
       if (e.key === "Escape") onClose();
     };
     window.addEventListener("keydown", handleEsc);
     return () => {
       window.removeEventListener("keydown", handleEsc);
-      if (lastFocusedElementRef.current) {
-        lastFocusedElementRef.current.focus();
-      }
+      lastFocusedElementRef.current && lastFocusedElementRef.current.focus();
     };
   }, [onClose]);
 
@@ -108,14 +103,14 @@ const TestimonialModal = ({
       aria-describedby="modalReview"
     >
       <div
-        className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-[var(--color-secondary)]/30 to-transparent backdrop-blur-sm"
+        className="fixed inset-0 bg-gradient-to-br from-[var(--color-secondary)]/30 to-transparent backdrop-blur-sm"
         onClick={onClose}
       ></div>
       <FocusLock>
         <div
           ref={modalRef}
           tabIndex="-1"
-          className="relative bg-[var(--color-primary)] rounded-2xl shadow-2xl max-w-sm w-full p-6 z-50 transition-transform duration-300 transform animate-modalIn modal-container"
+          className="relative bg-[var(--color-primary)] rounded-2xl shadow-2xl max-w-sm w-full p-6 z-50 transition-transform duration-300 transform animate-modalIn"
         >
           <div className="flex justify-end">
             <button
@@ -144,7 +139,7 @@ const TestimonialModal = ({
           <div className="flex items-center justify-center my-2">
             <RatingStars rating={testimonial.rating} size="w-5 h-5" />
           </div>
-          <div className="mt-4 flex flex-row gap-2 justify-center items-center space-y-2 sm:space-y-0 sm:space-x-4">
+          <div className="mt-4 flex flex-row gap-2 justify-center">
             <button
               onClick={handleShare}
               className="flex items-center px-3 py-2 border rounded-full text-xs font-medium transition-colors duration-300 hover:bg-[var(--color-accent)]/70 focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]/30"
@@ -286,7 +281,7 @@ const Testimonials = () => {
 
   return (
     <section
-      className="relative mt-24 mx-4 sm:mx-8 overflow-hidden md:mx-16 lg:mx-32 py-8 md:py-12 px-4"
+      className="relative mt-24 mx-4 sm:mx-8 overflow-hidden md:mx-16 lg:mx-32 py-8 md:py-12 px-4 bg-[var(--color-primary)]"
       aria-label="Testimonials Slider"
       onKeyDown={handleKeyDown}
       tabIndex="0"
@@ -387,10 +382,11 @@ const Testimonials = () => {
               </div>
             ))}
           </div>
+          {/* Progress bar at the bottom border of the card */}
           <div className="absolute bottom-0 left-0 w-full h-1 bg-[var(--color-secondary)]/20 rounded">
             <div
-              key={current}
-              className="h-1 bg-[var(--color-accent)]/80 rounded"
+              key={`progress-${current}`}
+              className="h-1 bg-[var(--color-accent)] rounded"
               style={{
                 animation: paused ? "none" : "progress 5000ms linear forwards",
               }}
@@ -434,9 +430,9 @@ const Testimonials = () => {
         <TestimonialModal
           testimonial={selectedTestimonial}
           onClose={() => setSelectedTestimonial(null)}
-          onLike={handleLike}
+          onLike={() => handleLikeForTestimonial(selectedTestimonial)}
           likes={likes}
-          onBookmark={handleBookmark}
+          onBookmark={() => handleBookmarkForTestimonial(selectedTestimonial)}
           bookmarked={bookmarks[selectedTestimonial.name] || false}
         />
       )}
@@ -449,7 +445,7 @@ const Testimonials = () => {
           from { width: 0%; }
           to { width: 100%; }
         }
-        /* Global focus style for consistency across forms */
+        /* Global focus style for consistency */
         button:focus,
         [tabindex]:focus {
           outline: 1px solid var(--color-accent);
