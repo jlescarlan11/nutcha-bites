@@ -10,23 +10,24 @@ const Modal = ({ onClose }) => {
   const chapters = [
     {
       id: 1,
-      title: "Chapter 1: A Legacy Begins",
+      title: "Chapter 1: The Roots of Bandi",
       content:
-        "Our journey began in the heart of the Philippines, where a family legacy in culinary arts sparked a passion for preserving time-honored recipes. Founded with humble beginnings, every dish was crafted with care and an unwavering commitment to quality.",
+        "In the vibrant province of Iloilo, Bandi has long been a cherished delicacy—a crunchy, caramelized peanut snack loved for its rich flavors and satisfying texture. Passed down through generations, this humble treat has been a staple in Filipino gatherings, a symbol of tradition and craftsmanship.",
     },
     {
       id: 2,
-      title: "Chapter 2: Bridging Cultures",
+      title: "Chapter 2: A Bold Fusion",
       content:
-        "As we evolved, we embraced the distinctive flavors of Japanese matcha, merging them with cherished Filipino traditions. This cultural fusion was not without its challenges, yet it paved the way for innovative culinary techniques that set us apart.",
+        "Inspired by the delicate, earthy essence of Japanese Matcha, we saw an opportunity to reimagine Bandi. By blending premium matcha with the sweetness of caramelized peanuts, we created a unique twist that balances tradition with innovation—introducing a fresh yet familiar taste experience.",
     },
     {
       id: 3,
-      title: "Chapter 3: A Commitment to Excellence",
+      title: "Chapter 3: Crafting the Future",
       content:
-        "Today, our brand stands as a testament to relentless dedication and excellence. We honor our rich heritage while pioneering new culinary frontiers, ensuring every product reflects our legacy, integrity, and passion for the art of flavor.",
+        "Nutcha Bites represents our commitment to preserving Iloilo’s heritage while embracing global flavors. Each bite reflects the harmony of past and present, ensuring that Bandi continues to evolve while staying true to its roots. This is just the beginning of our journey in redefining tradition, one bite at a time.",
     },
   ];
+
   const [currentChapter, setCurrentChapter] = useState(0);
 
   // Touch event state for swipe detection
