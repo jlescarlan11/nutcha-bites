@@ -24,8 +24,13 @@ const vouchers = [
   },
   {
     reward: "No Prize",
-    code: "NONE",
+    code: "0DISCOUNT",
     description: "No Prize Voucher",
+  },
+  {
+    reward: "5% OFF",
+    code: "NEWSLETTER5",
+    description: "5% Off Newsletter Signup",
   },
 ];
 

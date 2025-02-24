@@ -15,13 +15,14 @@ const products = [
   },
 ];
 
-// Available vouchers for the customer
 const vouchers = [
   { code: "NEWSLETTER10", description: "10% Off Newsletter Signup" },
   { code: "NEWSLETTER20", description: "20% Off Newsletter Signup" },
   { code: "FREESHIP", description: "Free Shipping Voucher" },
   { code: "SAVE20", description: "20% Off Special Offer" },
   { code: "FREEGIFT", description: "Free One Product Voucher" },
+  { code: "0DISCOUNT", description: "No Prize Voucher" },
+  { code: "NEWSLETTER5", description: "5% Off Newsletter Signup" },
 ];
 
 // Variants for the modal container animation
@@ -356,7 +357,6 @@ const PaymentForm = ({
       .replace(/(.{4})/g, "$1 ")
       .trim();
 
-  // Voucher validation
   const [voucherFeedback, setVoucherFeedback] = useState(null);
 
   const validateVoucher = useCallback(
@@ -413,14 +413,21 @@ const PaymentForm = ({
   let discountAmount = 0;
 
   if (reward) {
+    // "Free One Product Voucher" takes precedence
     if (/free\s+product/i.test(reward)) {
       discountAmount = quantity >= 1 ? selectedProduct.price : 0;
-    } else {
-      let discountPercentage = 0;
+    }
+    // "Free Shipping Voucher" applies free shipping
+    else if (/free\s+(delivery|shipping)/i.test(reward)) {
+      shippingFee = 0;
+    }
+    // Handle discount percentages (e.g., "10% Off Newsletter Signup")
+    else {
       const discountMatch = reward.match(/(\d+)%\s*Off/i);
-      if (discountMatch) discountPercentage = parseFloat(discountMatch[1]);
-      discountAmount = basePrice * (discountPercentage / 100);
-      if (/free\s+(delivery|shipping)/i.test(reward)) shippingFee = 0;
+      if (discountMatch) {
+        const discountPercentage = parseFloat(discountMatch[1]);
+        discountAmount = basePrice * (discountPercentage / 100);
+      }
     }
   }
   const finalPrice = basePrice - discountAmount + shippingFee;
