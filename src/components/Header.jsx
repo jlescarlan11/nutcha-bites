@@ -171,7 +171,7 @@ const Header = () => {
                 })}
                 <li className="mt-4">
                   <button
-                    className="w-full px-4 py-2 rounded-full font-semibold transition-all bg-[var(--color-accent)]/90 text-[var(--color-primary)]/90 hover:bg-[var(--color-accent)]/80 hover:text-[var(--color-primary)]/80 hover:scale-95 duration-500 ease-in-out"
+                    className="w-full px-4 py-2 rounded-full font-semibold transition-all bg-[var(--color-accent)] text-[var(--color-primary)]/90 hover:bg-[var(--color-accent)]/80 hover:text-[var(--color-primary)]/80 hover:scale-95 duration-500 ease-in-out"
                     onClick={() => {
                       setShowMenu(false);
                       navigate("/order");

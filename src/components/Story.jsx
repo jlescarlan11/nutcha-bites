@@ -88,7 +88,7 @@ const Story = () => {
         <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[var(--color-primary)]/90 mb-4 sm:mb-6">
           Our Vision
         </h2>
-        <p className="text-base sm:text-lg md:text-2xl text-[var(--color-primary)]/80 mb-6 sm:mb-8">
+        <p className="text-base sm:text-lg md:text-2xl text-[var(--color-primary)]/90 font-medium mb-6 sm:mb-8">
           Nutcha Bites is a fusion of Filipino tradition and Japanese
           innovation. Born from a passion for culinary artistry, we blend the
           rich heritage of Filipino bandi with the vibrant, earthy notes of
@@ -96,19 +96,19 @@ const Story = () => {
           excellence.
         </p>
         <figure className="max-w-xl mx-auto mb-8">
-          <blockquote className="text-[var(--color-primary)]/70 italic border-l-4 pl-4 border-green-500">
+          <blockquote className=" text-xs font-extralight text-[var(--color-primary)]/90 italic border-l-4 pl-4 border-green-400">
             "Nutcha Bites bring together the soul of Filipino flavors and the
             spirit of Japanese matcha. Every bite is a journey through tradition
             and modern taste."
           </blockquote>
-          <figcaption className="text-green-300 mt-4">
+          <figcaption className="text-green-400 opacity-90 mt-4">
             - A Satisfied Customer
           </figcaption>
         </figure>
         <div className="flex flex-col sm:flex-row items-center gap-2 justify-center space-y-4 sm:space-y-0 sm:space-x-4">
           <button
             onClick={() => navigate("/order")}
-            className="px-6 py-3 bg-[var(--color-accent)]/50 text-[var(--color-primary)] rounded-full hover:bg-[var(--color-accent)]/60 transition-transform duration-300 focus:outline-none transform hover:scale-105"
+            className="px-6 py-3 bg-[var(--color-accent)] text-[var(--color-primary)] rounded-full hover:bg-[var(--color-accent)]/90 transition-transform duration-300 focus:outline-none transform hover:-translate-y-0.5"
           >
             Order Now
           </button>
@@ -124,7 +124,7 @@ const Story = () => {
           </CSSTransition>
           <button
             onClick={() => setShowModal(true)}
-            className="px-6 py-3 bg-[var(--color-primary)]/90 text-[var(--color-accent)]/50 rounded-full hover:bg-[var(--color-primary)] transition-transform duration-300 focus:outline-none transform hover:scale-105"
+            className="px-6 py-3 bg-[var(--color-primary)] text-[var(--color-accent)] rounded-full hover:bg-[var(--color-primary)] transition-transform duration-300 focus:outline-none transform hover:-translate-y-0.5"
           >
             Read More
           </button>

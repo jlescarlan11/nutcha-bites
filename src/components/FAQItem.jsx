@@ -61,12 +61,12 @@ const FAQItem = ({ faq, isOpen, toggle, index }) => {
   };
 
   return (
-    <article className="border-b border-[var(--color-tertiary)]/30">
+    <article className="border-b border-[var(--color-tertiary)]/20">
       <header className="flex justify-between items-center">
         <button
           onClick={() => toggle(index)}
           onKeyDown={handleKeyDown}
-          className="flex-1 text-left py-3 sm:py-4 text-base sm:text-lg text-[var(--color-secondary)]/80 font-medium focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]/10 transition-colors duration-300 bg-[var(--color-secondary)]/10 hover:shadow-md"
+          className="flex-1 text-left py-3 sm:py-4 text-base sm:text-lg text-[var(--color-secondary)]/80 font-medium focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]/10 transition-colors duration-300 bg-[var(--color-secondary)]/5 hover:shadow-md"
           aria-expanded={isOpen}
           aria-controls={`faq-answer-${index}`}
         >

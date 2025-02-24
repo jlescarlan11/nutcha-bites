@@ -16,7 +16,7 @@ const Home = () => {
         <div className="mt-8">
           <button
             onClick={() => navigate("/order")}
-            className="px-6 py-3 font-semibold text-lg sm:text-xl transition-all duration-500 ease-in-out hover:bg-[var(--color-accent)]/90 hover:scale-105 bg-[var(--color-accent)]/80 text-[var(--color-primary)]/90 rounded shadow-lg"
+            className="px-6 py-3 font-semibold text-lg sm:text-xl transition-all duration-500 ease-in-out hover:bg-[var(--color-accent)] hover:scale-105 bg-[var(--color-accent)]/80 text-[var(--color-primary)]/90 rounded shadow-lg"
           >
             Order Now
           </button>

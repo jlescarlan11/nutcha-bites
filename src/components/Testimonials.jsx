@@ -142,14 +142,14 @@ const TestimonialModal = ({
           <div className="mt-4 flex flex-row gap-2 justify-center">
             <button
               onClick={handleShare}
-              className="flex items-center px-3 py-2 border rounded-full text-xs font-medium transition-colors duration-300 hover:bg-[var(--color-accent)]/70 focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]/30"
+              className="flex items-center px-3 py-2 border border-[var(--color-tertiary)]/20 rounded-full text-xs font-medium transition-colors duration-300 bg-[var(--color-secondary)]/10 hover:bg-[var(--color-accent)]/30 focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]/40"
             >
               <FaClipboard className="mr-2" />
-              Share
+              Copy
             </button>
             <button
               onClick={onLike}
-              className="flex items-center px-3 py-2 border rounded-full text-xs font-medium transition-colors duration-300 hover:bg-[var(--color-accent)]/70 focus:outline-none focus:ring-2 focus:ring-red-300"
+              className="flex items-center px-3 py-2 border border-[var(--color-tertiary)]/20 rounded-full text-xs font-medium transition-colors duration-300 bg-[var(--color-secondary)]/10 hover:bg-[var(--color-accent)]/30 focus:outline-none focus:ring-1  focus:ring-red-200"
               title={likes[testimonial.name]?.liked ? "Unlike" : "Like"}
             >
               {likes[testimonial.name]?.liked ? (
@@ -161,7 +161,7 @@ const TestimonialModal = ({
             </button>
             <button
               onClick={onBookmark}
-              className="flex items-center px-3 py-2 border rounded-full text-xs font-medium transition-colors duration-300 hover:bg-[var(--color-accent)]/70 focus:outline-none focus:ring-2 focus:ring-blue-300"
+              className="flex items-center px-3 py-2 border border-[var(--color-tertiary)]/20 rounded-full text-xs font-medium transition-colors duration-300 bg-[var(--color-secondary)]/10 hover:bg-[var(--color-accent)]/30 focus:outline-none focus:ring-1  focus:ring-blue-200"
               title={bookmarked ? "Remove Bookmark" : "Bookmark"}
             >
               {bookmarked ? (
@@ -300,7 +300,7 @@ const Testimonials = () => {
           What Our Customers Say
         </h2>
         <div
-          className="overflow-hidden bg-[var(--color-secondary)]/10 border border-[var(--color-tertiary)]/10 rounded-2xl relative w-full"
+          className="overflow-hidden bg-[var(--color-primary)] border border-[var(--color-tertiary)]/10 shadow-xs rounded-2xl relative w-full"
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
         >
@@ -375,7 +375,7 @@ const Testimonials = () => {
                     e.stopPropagation();
                     setSelectedTestimonial(testimonial);
                   }}
-                  className="mt-2 px-4 py-1 text-sm bg-[var(--color-accent)]/80 text-[var(--color-primary)]/90 rounded hover:bg-[var(--color-accent)]/90 transition"
+                  className="mt-2 px-4 py-1 text-sm bg-[var(--color-accent)] text-[var(--color-primary)]/90 rounded hover:bg-[var(--color-accent)]/90 transition"
                 >
                   View Details
                 </button>
@@ -393,20 +393,6 @@ const Testimonials = () => {
             ></div>
           </div>
         </div>
-        <button
-          onClick={handlePrev}
-          className="absolute left-1 sm:left-3 top-1/2 transform -translate-y-1/2 bg-[var(--color-secondary)]/80 text-[var(--color-primary)] p-2 sm:p-3 rounded-full focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]/30"
-          aria-label="Previous testimonial"
-        >
-          ◀
-        </button>
-        <button
-          onClick={handleNext}
-          className="absolute right-1 sm:right-3 top-1/2 transform -translate-y-1/2 bg-[var(--color-secondary)]/80 text-[var(--color-primary)] p-2 sm:p-3 rounded-full focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]/30"
-          aria-label="Next testimonial"
-        >
-          ▶
-        </button>
         <div className="flex justify-center mt-4 space-x-2">
           {testimonialsData.map((_, index) => (
             <button
@@ -421,6 +407,20 @@ const Testimonials = () => {
               aria-current={current === index ? "true" : "false"}
             />
           ))}
+          <button
+            onClick={handlePrev}
+            className="absolute left-1 sm:left-3 top-11/12 transform -translate-y-1/2 bg-[var(--color-accent)]/50 text-[var(--color-primary)] p-2 sm:p-3 rounded-full focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]/30"
+            aria-label="Previous testimonial"
+          >
+            ◀
+          </button>
+          <button
+            onClick={handleNext}
+            className="absolute right-1 sm:right-3 top-11/12 transform -translate-y-1/2 bg-[var(--color-accent)]/50 text-[var(--color-primary)] p-2 sm:p-3 rounded-full focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]/30"
+            aria-label="Next testimonial"
+          >
+            ▶
+          </button>
         </div>
         <div className="block sm:hidden mt-4 text-sm text-[var(--color-secondary)]/50">
           Swipe left or right to navigate

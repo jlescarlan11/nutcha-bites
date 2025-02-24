@@ -46,7 +46,7 @@ const SuggestionForm = () => {
           <button
             type="submit"
             disabled={submitting}
-            className={`px-4 py-2 bg-[var(--color-accent)]/80 text-[var(--color-primary)]/90 rounded transition ${
+            className={`px-4 py-2 bg-[var(--color-accent)] text-[var(--color-primary)]/90 rounded transition ${
               submitting
                 ? "opacity-70 cursor-not-allowed"
                 : "hover:bg-[var(--color-accent)]/90"

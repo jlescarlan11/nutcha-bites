@@ -132,7 +132,7 @@ const FAQS = () => {
           {filteredFaqs.length > 0 && (
             <button
               onClick={toggleAll}
-              className="mt-4 sm:mt-0 ml-auto p-2 bg-[var(--color-accent)]/80 text-[var(--color-primary)] rounded hover:bg-[var(--color-accent)]/90 transition-colors focus:outline-none focus:ring-2"
+              className="mt-4 sm:mt-0 ml-auto p-2 bg-[var(--color-accent)] text-[var(--color-primary)] rounded hover:bg-[var(--color-accent)]/90 transition-colors focus:outline-none focus:ring-2"
               aria-label={
                 areAllExpanded ? "Collapse all FAQs" : "Expand all FAQs"
               }
@@ -162,7 +162,7 @@ const FAQS = () => {
           <div className="mt-6 text-center">
             <button
               onClick={scrollToTop}
-              className="px-4 py-2 bg-[var(--color-accent)]/80 text-[var(--color-primary)] rounded hover:bg-[var(--color-accent)]/90 transition shadow-md hover:shadow-lg"
+              className="px-4 py-2 bg-[var(--color-accent)] text-[var(--color-primary)] rounded hover:bg-[var(--color-accent)]/90 transition shadow-md hover:shadow-lg"
               aria-label="Back to the first FAQ"
             >
               Back to First FAQ
