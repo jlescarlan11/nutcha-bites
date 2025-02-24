@@ -301,10 +301,25 @@ const NewsletterSignup = () => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-        const data = await response.json();
-        const count = data.subscriberCount;
-        setRecentSignups(count);
-        setProgress(Math.min(100, Math.floor((count / subscriberGoal) * 100)));
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const data = await response.json();
+          const count = data.subscriberCount;
+          setRecentSignups(count);
+          setProgress(
+            Math.min(100, Math.floor((count / subscriberGoal) * 100))
+          );
+        } else {
+          // If the response is not JSON, use fallback simulation without throwing.
+          console.warn("Response not JSON, using fallback simulation.");
+          setRecentSignups((prev) => {
+            const newCount = prev + Math.floor(Math.random() * 3);
+            setProgress(
+              Math.min(100, Math.floor((newCount / subscriberGoal) * 100))
+            );
+            return newCount;
+          });
+        }
       } catch (error) {
         console.error("Failed to fetch subscriber count:", error);
         // Fallback: simulate incremental increases.
