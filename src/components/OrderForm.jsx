@@ -785,7 +785,7 @@ const OrderForm = () => {
 
   useEffect(() => {
     const originalStyle = window.getComputedStyle(document.body).overflow;
-    document.body.style.overflow = "hidden";
+    document.body.style.overflow = "auto";
     return () => {
       document.body.style.overflow = originalStyle;
     };
@@ -861,8 +861,8 @@ const OrderForm = () => {
 
   return (
     <motion.div
-      className="fixed inset-0 flex justify-center items-center p-4 z-50"
-      style={{ backgroundColor: "rgba(0,0,0,0.7)" }}
+      className="fixed top-8 bottom-8 left-0 right-0 flex justify-center items-center p-4 z-50"
+      style={{ backgroundColor: "var(--color-primary)" }}
       variants={containerVariants}
       initial="hidden"
       animate="visible"
