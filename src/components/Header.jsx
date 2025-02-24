@@ -11,7 +11,7 @@ const menuItems = [
   "Our Vision",
   "Testimonials",
   "FAQs",
-  "Contact Us",
+  "Newsletter Sign Up",
 ];
 
 const Header = () => {

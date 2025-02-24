@@ -24,7 +24,7 @@ const menuItems = [
   "Our Vision",
   "Testimonials",
   "FAQs",
-  "Contact Us",
+  "Newsletter Sign Up",
 ];
 
 // Utility: Throttle Function

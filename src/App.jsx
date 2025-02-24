@@ -13,6 +13,9 @@ import Testimonials from "./components/Testimonials";
 import FAQS from "./components/FAQS";
 import NewsletterSignup from "./components/NewsletterSignup";
 // import AdVideo from "./components/AdVideo";
+
+// import AccessibleContactForm from "./components/AccessibleContactForm";
+
 import Footer from "./components/Footer";
 import ScrollProgress from "./components/ScrollProgress";
 import BackToTopButton from "./components/BackToTopButton"; // New cool feature!
@@ -44,7 +47,7 @@ const App = () => {
       "our-vision",
       "testimonials",
       "faqs",
-      "contact-us",
+      "newsletter-sign-up",
     ];
     const handleScrollSpy = () => {
       const scrollPos = window.scrollY;
@@ -111,7 +114,9 @@ const App = () => {
                     <section id="faqs">
                       <FAQS />
                     </section>
-                    <section id="contact-us">
+                    <section id="ss">{/* <AccessibleContactForm /> */}</section>
+
+                    <section id="newsletter-sign-up">
                       <NewsletterSignup />
                     </section>
                     <section id="footer">
