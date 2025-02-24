@@ -1,405 +1,614 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
-import ReactDOM from "react-dom";
+// NewsletterSignup.jsx
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { CheckCircleIcon, XCircleIcon, LoaderIcon } from "lucide-react";
+import { FaGoogle, FaFacebook, FaInstagram } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { MobileMenuContext } from "../App";
-import logo from "../assets/logo2.svg";
 
-// Custom hook for media queries
-const useMediaQuery = (query) => {
-  const [matches, setMatches] = useState(false);
-  useEffect(() => {
-    const media = window.matchMedia(query);
-    if (media.matches !== matches) setMatches(media.matches);
-    const listener = () => setMatches(media.matches);
-    media.addEventListener("change", listener);
-    return () => media.removeEventListener("change", listener);
-  }, [matches, query]);
-  return matches;
-};
+/*
+  Global Color Variables (to be defined in your CSS):
+  
+  :root {
+    --color-primary: hsla(33, 50%, 90%);
+    --color-secondary: hsl(33, 50%, 10%);
+    --color-secondary-90: hsla(33, 50%, 10%, 0.9);
+    --color-secondary-80: hsla(33, 50%, 10%, 0.8);
+    --color-secondary-70: hsla(33, 50%, 10%, 0.7);
+    --color-secondary-60: hsla(33, 50%, 10%, 0.6);
+    --color-tertiary: hsl(333, 80%, 20%);
+    --color-accent: hsl(93, 80%, 20%);
+    --color-accent-90: hsla(93, 80%, 20%, 0.9);
+    --color-accent-80: hsla(93, 80%, 20%, 0.8);
+    --color-accent-70: hsla(93, 80%, 20%, 0.7);
+    --color-accent-60: hsla(93, 80%, 20%, 0.6);
+    --color-accent-50: hsla(93, 80%, 20%, 0.5);
+    --color-accent-40: hsla(93, 80%, 20%, 0.4);
+    --color-accent-30: hsla(93, 80%, 20%, 0.3);
+    --color-accent-20: hsla(93, 80%, 20%, 0.2);
+    --color-accent-10: hsla(93, 80%, 20%, 0.1);
+  }
+*/
 
-const menuItems = [
-  "Overview",
-  "Recipe",
-  "Our Vision",
-  "Testimonials",
-  "FAQs",
-  "Contact Us",
+// Define vouchers mapping.
+const vouchers = [
+  {
+    reward: "10% Off",
+    code: "NEWSLETTER10",
+    description: "10% Off Newsletter Signup",
+  },
+  {
+    reward: "Free Shipping",
+    code: "FREESHIP",
+    description: "Free Shipping Voucher",
+  },
+  {
+    reward: "20% Off",
+    code: "NEWSLETTER20",
+    description: "20% Off Special Offer",
+  },
+  {
+    reward: "No Prize",
+    code: "NONE",
+    description: "No Prize Voucher",
+  },
 ];
 
-// Utility: Throttle Function
-const throttle = (func, limit) => {
-  let inThrottle;
-  return function (...args) {
-    if (!inThrottle) {
-      func.apply(this, args);
-      inThrottle = true;
-      setTimeout(() => (inThrottle = false), limit);
-    }
-  };
-};
+// Hook to manage email state and validation.
+const useEmailValidation = () => {
+  const [email, setEmail] = useState(localStorage.getItem("email") || "");
+  const [isValid, setIsValid] = useState(true);
 
-// Custom Hook: Focus Trap
-const useFocusTrap = (ref, isActive) => {
   useEffect(() => {
-    if (!isActive || !ref.current) return;
-    const element = ref.current;
-    const focusableElementsSelector =
-      'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])';
-    const focusableElements = element.querySelectorAll(
-      focusableElementsSelector
-    );
-    if (!focusableElements.length) return;
-    const firstElement = focusableElements[0];
-    const lastElement = focusableElements[focusableElements.length - 1];
+    localStorage.setItem("email", email);
+  }, [email]);
 
-    const handleKeyDown = (e) => {
-      if (e.key === "Tab") {
-        if (e.shiftKey) {
-          if (document.activeElement === firstElement) {
-            e.preventDefault();
-            lastElement.focus();
-          }
-        } else {
-          if (document.activeElement === lastElement) {
-            e.preventDefault();
-            firstElement.focus();
-          }
-        }
-      }
-    };
+  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-    element.addEventListener("keydown", handleKeyDown);
-    firstElement.focus();
-
-    return () => {
-      if (element) {
-        element.removeEventListener("keydown", handleKeyDown);
-      }
-    };
-  }, [ref, isActive]);
-};
-
-// ScrollProgressIndicator Component
-const ScrollProgressIndicator = ({ progress }) => (
-  <motion.div
-    className="fixed top-0 left-0 h-1 z-50"
-    style={{
-      background:
-        "linear-gradient(to right, var(--color-secondary-70), var(--color-accent))",
-      width: `${progress}%`,
-    }}
-    initial={{ width: 0 }}
-    animate={{ width: `${progress}%` }}
-    transition={{ ease: "linear", duration: 0.1 }}
-  />
-);
-
-// DesktopNavigation Component
-const DesktopNavigation = ({
-  menuItems,
-  activeSection,
-  scrollToSection,
-  navigate,
-}) => (
-  <>
-    <ul
-      className="hidden lg:flex items-center space-x-6 text-base font-medium"
-      style={{ color: "var(--color-primary)" }}
-    >
-      {menuItems.map((item, index) => {
-        const id = item.toLowerCase().replace(/\s+/g, "-");
-        const activeClass =
-          activeSection === id
-            ? "text-[var(--color-accent)]"
-            : "hover:text-[var(--color-accent)] transition-colors";
-        return (
-          <li key={index} className="cursor-pointer">
-            <a
-              href={`#${id}`}
-              onClick={(e) => {
-                e.preventDefault();
-                scrollToSection(id);
-              }}
-              className={`px-3 py-2 rounded-md ${activeClass}`}
-            >
-              {item}
-            </a>
-          </li>
-        );
-      })}
-    </ul>
-    <div className="hidden lg:flex">
-      <button
-        className="ml-4 px-6 py-2 rounded-full font-semibold transition-colors text-[var(--color-primary)] hover:bg-[var(--color-accent)] hover:text-[var(--color-primary)]"
-        onClick={() => navigate("/order")}
-      >
-        ORDER NOW
-      </button>
-    </div>
-  </>
-);
-
-// MobileModal Component with Portal, Swipe Gesture, and Animated Overlay
-const MobileModal = ({
-  menuItems,
-  scrollToSection,
-  onClose,
-  navigate,
-  modalRef,
-}) => {
-  useFocusTrap(modalRef, true);
-
-  // Dismiss modal on vertical swipe gesture
-  const handleDragEnd = (event, info) => {
-    if (info.offset.y > 100) onClose();
+  const handleChange = (e) => {
+    setEmail(e.target.value);
+    setIsValid(validateEmail(e.target.value) || e.target.value === "");
   };
 
-  const modalContent = (
+  return { email, setEmail, isValid, handleChange };
+};
+
+// Confetti component for celebration.
+const Confetti = () => (
+  <AnimatePresence>
     <motion.div
-      className="fixed inset-0 z-40 flex items-center justify-center"
-      role="dialog"
-      aria-modal="true"
+      className="absolute inset-0 pointer-events-none"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.4 }}
     >
-      {/* Animated overlay */}
-      <motion.div
-        className="absolute inset-0"
-        onClick={onClose}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.4 }}
-        style={{
-          background: "rgba(0, 0, 0, 0.5)",
-          backdropFilter: "blur(4px)",
-        }}
-      />
-      {/* Modal container with swipe support */}
-      <motion.div
-        ref={modalRef}
-        className="relative rounded-xl shadow-xl p-8 w-11/12 max-w-sm z-50"
-        initial={{ y: -30, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: 30, opacity: 0 }}
-        transition={{ duration: 0.4 }}
-        drag="y"
-        dragConstraints={{ top: 0, bottom: 0 }}
-        dragElastic={0.5}
-        onDragEnd={handleDragEnd}
-        style={{ backgroundColor: "var(--color-primary)" }}
-      >
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-2xl focus:outline-none   hover:scale-90 transition-all duration-300 ease-in-out"
-          style={{ color: "var(--color-secondary)" }}
-          aria-label="Close menu"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-        <ul
-          className="mt-6 space-y-4 text-center text-lg"
-          style={{ color: "var(--color-secondary)" }}
-        >
-          {menuItems.map((item, index) => {
-            const id = item.toLowerCase().replace(/\s+/g, "-");
-            return (
-              <li key={index} className="cursor-pointer">
-                <a
-                  href={`#${id}`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    scrollToSection(id);
-                    onClose();
-                  }}
-                  className="block px-4 py-2 rounded-md transition-colors hover:bg-[var(--color-accent)]/10 hover:text-[var(--color-primary)]/90"
-                  style={{ color: "var(--color-secondary)" }}
-                >
-                  {item}
-                </a>
-              </li>
-            );
-          })}
-          <li className="mt-4">
-            <button
-              className="w-full px-4 py-2 rounded-full font-semibold transition-all bg-[var(--color-accent)]/90 text-[var(--color-primary)]/90 hover:bg-[var(--color-accent)]/80 hover:text-[var(--color-primary)]/80 hover:scale-95 duration-500 ease-in-out"
-              onClick={() => navigate("/order")}
-            >
-              ORDER NOW
-            </button>
-          </li>
-        </ul>
-      </motion.div>
+      {Array.from({ length: 15 }).map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full"
+          style={{
+            width: 8,
+            height: 8,
+            top: `${Math.random() * 100}%`,
+            left: `${Math.random() * 100}%`,
+            backgroundColor: "var(--color-accent-50)",
+          }}
+          animate={{ y: [0, 100], opacity: [1, 0] }}
+          transition={{ duration: 2, delay: i * 0.1, ease: "easeOut" }}
+        />
+      ))}
     </motion.div>
-  );
-  return ReactDOM.createPortal(modalContent, document.body);
+  </AnimatePresence>
+);
+
+// ProgressBar showing community growth.
+const ProgressBar = ({ progress }) => (
+  <div className="w-full max-w-md mx-auto mb-4 text-[var(--color-primary)]">
+    <div className="text-sm mb-1">
+      Join our community! {progress}% of our goal (100 subscribers) reached.
+    </div>
+    <div className="w-full bg-[var(--color-secondary-80)]/20 rounded-full h-2">
+      <motion.div
+        className="bg-[var(--color-accent)] h-2 rounded-full"
+        initial={{ width: 0 }}
+        animate={{ width: `${progress}%` }}
+        transition={{ duration: 1.5, ease: "easeOut" }}
+      />
+    </div>
+  </div>
+);
+
+// Animation variants.
+const pulseVariant = {
+  pulse: {
+    scale: [1, 1.05, 1],
+    transition: { duration: 1, repeat: Infinity, ease: "easeInOut" },
+  },
 };
 
-// Main StickyNav Component
-const StickyNav = ({ activeSection, visible }) => {
-  const { setShowMenu } = useContext(MobileMenuContext);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const [showBackToTop, setShowBackToTop] = useState(false);
-  const navigate = useNavigate();
+const flipVariant = {
+  initial: { rotateY: 90, opacity: 0 },
+  animate: {
+    rotateY: 0,
+    opacity: 1,
+    transition: { duration: 0.8, ease: "easeOut" },
+  },
+};
+
+// SpinWheelModal simulating a roulette wheel with interactive effects.
+const SpinWheelModal = ({ onClose }) => {
   const modalRef = useRef(null);
-  const hamburgerButtonRef = useRef(null);
+  const [spinning, setSpinning] = useState(false);
+  const [selectedReward, setSelectedReward] = useState("");
 
-  useMediaQuery("(min-width: 600px) and (max-width: 1023px)");
+  const rewards = [
+    "10% Off",
+    "Free Shipping",
+    "5% Off",
+    "No Prize",
+    "20% Off",
+    "Free Gift",
+  ];
 
-  const scrollToSection = (id) => {
-    const section = document.getElementById(id);
-    if (section) section.scrollIntoView({ behavior: "smooth" });
+  useEffect(() => {
+    modalRef.current.focus();
+    const liveRegion = document.getElementById("live-announcement");
+    if (liveRegion)
+      liveRegion.textContent =
+        "Reward Roulette modal opened. Use Escape key to close.";
+  }, []);
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Escape") {
+      handleClose();
+    }
   };
 
-  const toggleMenu = () => setIsMenuOpen((prev) => !prev);
+  const spinWheel = () => {
+    setSpinning(true);
+    const randomReward = rewards[Math.floor(Math.random() * rewards.length)];
+    setTimeout(() => {
+      setSelectedReward(randomReward);
+      setSpinning(false);
+    }, 2000);
+  };
 
-  // Close on Escape
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (event.key === "Escape") setIsMenuOpen(false);
-    };
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, []);
-
-  // Lock body scroll when modal open
-  useEffect(() => {
-    document.body.style.overflow = isMenuOpen ? "hidden" : "auto";
-  }, [isMenuOpen]);
-
-  // Throttled scroll handler
-  useEffect(() => {
-    const handleScroll = throttle(() => {
-      const scrollTop = window.scrollY;
-      const docHeight = document.body.scrollHeight - window.innerHeight;
-      setScrollProgress((scrollTop / docHeight) * 100);
-      setShowBackToTop(scrollTop > 300);
-    }, 100);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // Close modal if click outside
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (
-        isMenuOpen &&
-        modalRef.current &&
-        !modalRef.current.contains(e.target) &&
-        !hamburgerButtonRef.current.contains(e.target)
-      ) {
-        setIsMenuOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isMenuOpen]);
+  const handleClose = () => {
+    const liveRegion = document.getElementById("live-announcement");
+    if (liveRegion) liveRegion.textContent = "Reward Roulette modal closed.";
+    onClose(selectedReward);
+  };
 
   return (
-    <>
-      <ScrollProgressIndicator progress={scrollProgress} />
-      <nav
-        className={`fixed top-0 left-0 right-0 z-30 px-6 py-4 transition-transform duration-300 shadow-md`}
-        style={{
-          backgroundColor: "var(--color-primary)",
-          transform: visible ? "translateY(0)" : "translateY(-100%)",
-          opacity: visible ? 1 : 0,
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-[var(--color-secondary-80)] to-[var(--color-accent-80)] backdrop-blur-sm"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="spinWheelModalTitle"
+      aria-describedby="spinWheelModalDesc"
+      tabIndex={0}
+      ref={modalRef}
+      onKeyDown={handleKeyDown}
+    >
+      <h3 id="spinWheelModalTitle" className="sr-only">
+        Reward Roulette
+      </h3>
+      <p id="spinWheelModalDesc" className="sr-only">
+        Spin the roulette to win a reward. Press Escape to close the modal.
+      </p>
+      <motion.div
+        className="bg-[var(--color-primary)] p-8 rounded-lg shadow-lg text-center relative"
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{
+          scale: 1,
+          opacity: 1,
+          boxShadow: "0 0 5px var(--color-accent-90)",
         }}
-        role="navigation"
-        aria-label="Main Navigation"
+        exit={{ scale: 0, opacity: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
       >
-        <div className="flex items-center justify-between">
-          {/* Logo */}
-          <div className="flex items-center space-x-3">
-            <img src={logo} alt="Company Logo" className="w-12" />
-            <h2
-              className="text-xl font-bold"
-              style={{ color: "var(--color-secondary)" }}
-            >
-              NUTCHA BITES
-            </h2>
-          </div>
-          {/* Desktop Navigation */}
-          <DesktopNavigation
-            menuItems={menuItems}
-            activeSection={activeSection}
-            scrollToSection={scrollToSection}
-            navigate={navigate}
-          />
-          {/* Mobile Hamburger Button */}
-          <div className="lg:hidden">
-            <button
-              ref={hamburgerButtonRef}
-              onClick={toggleMenu}
-              className="p-2 focus:outline-none"
-              aria-label="Toggle menu"
-              aria-expanded={isMenuOpen}
-              style={{ color: "var(--color-secondary)" }}
-            >
-              {isMenuOpen ? (
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+        <div className="relative mx-auto mb-4 w-48 h-48 rounded-full border-4 border-[var(--color-accent)]/70 flex items-center justify-center overflow-hidden">
+          <motion.div
+            className="absolute inset-0 flex items-center justify-center text-[var(--color-secondary)] text-2xl font-bold"
+            animate={{ rotate: spinning ? 1080 : 0 }}
+            transition={{ duration: 2, ease: "easeOut" }}
+          >
+            {spinning ? (
+              "Spinning..."
+            ) : selectedReward ? (
+              <motion.span
+                variants={flipVariant}
+                initial="initial"
+                animate="animate"
+                className="inline-block"
+              >
+                <motion.span variants={pulseVariant} animate="pulse">
+                  {selectedReward}
+                </motion.span>
+              </motion.span>
+            ) : (
+              "?"
+            )}
+          </motion.div>
+          {!spinning && !selectedReward && (
+            <div className="absolute inset-0 grid grid-cols-3 grid-rows-3 text-xs text-[var(--color-secondary)]/50">
+              {[
+                "10% Off",
+                "Free Shipping",
+                "5% Off",
+                "No Prize",
+                "20% Off",
+                "Free Gift",
+                "Try Again",
+                "Bonus",
+                "Extra 5% Off",
+              ].map((text, i) => (
+                <div
+                  key={i}
+                  className="flex items-center justify-center border border-dashed border-[var(--color-secondary-60)]"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              ) : (
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                </svg>
-              )}
-            </button>
-          </div>
-        </div>
-        {/* Mobile Modal Menu */}
-        <AnimatePresence>
-          {isMenuOpen && (
-            <MobileModal
-              menuItems={menuItems}
-              scrollToSection={scrollToSection}
-              onClose={() => setIsMenuOpen(false)}
-              navigate={navigate}
-              modalRef={modalRef}
-            />
+                  {text}
+                </div>
+              ))}
+            </div>
           )}
-        </AnimatePresence>
-      </nav>
-    </>
+        </div>
+        {!spinning && !selectedReward && (
+          <motion.button
+            onClick={spinWheel}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="mb-4 px-4 py-2 bg-[var(--color-accent)] text-[var(--color-primary)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-70)]"
+            aria-label="Spin the roulette"
+          >
+            Spin Roulette
+          </motion.button>
+        )}
+        {selectedReward && (
+          <motion.button
+            onClick={handleClose}
+            whileHover={{
+              scale: 1.1,
+              transition: { ease: "easeOut", duration: 0.3 },
+            }}
+            whileTap={{ scale: 0.95 }}
+            className="mb-4 px-4 py-2 bg-[var(--color-accent)] text-[var(--color-primary)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-70)]"
+            aria-label="Claim your reward"
+          >
+            Claim Reward
+          </motion.button>
+        )}
+      </motion.div>
+    </div>
   );
 };
 
-export default StickyNav;
+const shakeVariant = {
+  shake: { x: [0, -5, 5, -5, 5, 0], transition: { duration: 0.4 } },
+  normal: { x: 0 },
+};
+
+const NewsletterSignup = () => {
+  const { email, setEmail, isValid, handleChange } = useEmailValidation();
+  const [message, setMessage] = useState("");
+  const [status, setStatus] = useState(""); // "success" or "error"
+  const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [recentSignups, setRecentSignups] = useState(50);
+  const [showSpinWheel, setShowSpinWheel] = useState(false);
+  const [reward, setReward] = useState("");
+  const [shakeInput, setShakeInput] = useState(false);
+  const [shareMessage, setShareMessage] = useState("");
+  const [progress, setProgress] = useState(0);
+  const subscriberGoal = 100;
+  const shareTimeoutRef = useRef(null);
+  const liveRegionRef = useRef(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (liveRegionRef.current && status) {
+      const announcement =
+        status === "success"
+          ? "Subscription successful. Reward roulette available."
+          : "Error: " + message;
+      liveRegionRef.current.textContent = announcement;
+    }
+  }, [status, message]);
+
+  useEffect(() => {
+    const fetchSubscriberCount = async () => {
+      try {
+        const response = await fetch("/api/subscriberCount");
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await response.json();
+        const count = data.subscriberCount;
+        setRecentSignups(count);
+        setProgress(Math.min(100, Math.floor((count / subscriberGoal) * 100)));
+      } catch (error) {
+        console.error("Failed to fetch subscriber count:", error);
+        setRecentSignups((prev) => {
+          const newCount = prev + Math.floor(Math.random() * 3);
+          setProgress(
+            Math.min(100, Math.floor((newCount / subscriberGoal) * 100))
+          );
+          return newCount;
+        });
+      }
+    };
+
+    fetchSubscriberCount();
+    const intervalId = setInterval(fetchSubscriberCount, 10000);
+    return () => clearInterval(intervalId);
+  }, [subscriberGoal]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setMessage("");
+    setStatus("");
+
+    if (!isValid || !email) {
+      setMessage("Please enter a valid email address.");
+      setStatus("error");
+      setShakeInput(true);
+      setTimeout(() => setShakeInput(false), 400);
+      return;
+    }
+
+    let storedEmails = [];
+    try {
+      const parsed = JSON.parse(localStorage.getItem("newsletterSubscribed"));
+      if (Array.isArray(parsed)) {
+        storedEmails = parsed;
+      }
+    } catch (err) {
+      storedEmails = [];
+    }
+
+    if (storedEmails.includes(email)) {
+      setMessage("You have already subscribed.");
+      setStatus("error");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      storedEmails.push(email);
+      localStorage.setItem(
+        "newsletterSubscribed",
+        JSON.stringify(storedEmails)
+      );
+      setEmail("");
+      setMessage("🎉 You're in! Get ready to spin the roulette for a reward.");
+      setStatus("success");
+      setSubmitted(true);
+      setShowSpinWheel(true);
+    } catch (error) {
+      setMessage("❌ Something went wrong. Please try again.");
+      setStatus("error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateShareMessage = (platform) => {
+    setShareMessage(`Subscribed on ${platform}!`);
+    if (shareTimeoutRef.current) clearTimeout(shareTimeoutRef.current);
+    shareTimeoutRef.current = setTimeout(() => {
+      setShareMessage("");
+      shareTimeoutRef.current = null;
+    }, 2000);
+  };
+
+  const handleGoogleSubscribe = () => updateShareMessage("Google");
+  const handleFacebookSubscribe = () => updateShareMessage("Facebook");
+  const handleInstagramShare = () => updateShareMessage("Instagram");
+
+  const handleModalClose = (selectedReward) => {
+    const voucher = vouchers.find(
+      (v) => v.reward.toLowerCase() === selectedReward.toLowerCase()
+    );
+    if (voucher) {
+      localStorage.setItem("newsletterVoucher", JSON.stringify(voucher));
+      setReward(voucher);
+    } else {
+      setReward({ reward: selectedReward, code: "N/A" });
+    }
+    setShowSpinWheel(false);
+    setTimeout(() => {
+      setSubmitted(false);
+      setEmail("");
+    }, 5000);
+  };
+
+  return (
+    <section
+      className="relative mt-32 bg-gradient-to-r from-[var(--color-secondary-80)] to-[var(--color-accent-80)] py-8 md:py-12 px-4 md:px-6 shadow-lg rounded-t-lg overflow-hidden"
+      aria-live="polite"
+    >
+      <div
+        id="live-announcement"
+        ref={liveRegionRef}
+        className="sr-only"
+        aria-live="assertive"
+      />
+      <div className="max-w-4xl mx-auto text-center relative">
+        <motion.h2
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-3xl md:text-4xl font-extrabold mb-4 text-[var(--color-primary)]"
+        >
+          🍵 Join Our Matcha Revolution
+        </motion.h2>
+        <p className="mb-8 text-base md:text-lg text-[var(--color-primary)]">
+          Subscribe to receive exclusive recipes, updates, and rewards directly
+          in your inbox.
+        </p>
+        <ProgressBar progress={progress} />
+        <motion.form
+          onSubmit={handleSubmit}
+          className="flex flex-col sm:flex-row justify-center items-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          aria-label="Newsletter Signup Form"
+        >
+          <div className="relative w-full sm:w-auto">
+            <label htmlFor="email" className="sr-only">
+              Email Address
+            </label>
+            <motion.input
+              id="email"
+              type="email"
+              value={email}
+              onChange={handleChange}
+              required
+              placeholder="Enter your email"
+              aria-invalid={!isValid}
+              aria-describedby={!isValid ? "email-error" : undefined}
+              aria-label="Email address input field"
+              className={`p-3 pr-10 rounded-md w-full sm:w-80 md:w-96 border ${
+                isValid
+                  ? "border-[var(--color-accent)]/40 focus:ring-2 focus:ring-[var(--color-accent-70)]"
+                  : "border-red-300 focus:ring-red-400"
+              } text-[var(--color-secondary)]`}
+              variants={shakeVariant}
+              animate={shakeInput ? "shake" : "normal"}
+            />
+          </div>
+          <motion.button
+            type="submit"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="bg-[var(--color-primary)] text-[var(--color-secondary)] font-semibold p-3 rounded-md ml-0 sm:ml-4 mt-4 sm:mt-0 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            disabled={loading}
+            aria-label="Submit your email to subscribe and spin the reward roulette"
+          >
+            {loading ? (
+              <motion.span
+                animate={{ rotate: 360 }}
+                transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+              >
+                <LoaderIcon size={18} />
+              </motion.span>
+            ) : (
+              "Subscribe & Spin!"
+            )}
+          </motion.button>
+        </motion.form>
+        <AnimatePresence>
+          {message && (
+            <motion.div
+              className={`mt-4 text-lg flex items-center justify-center ${
+                status === "success"
+                  ? "text-[var(--color-primary)]"
+                  : "text-red-300"
+              }`}
+              role="alert"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+            >
+              {status === "success" ? (
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                  className="mr-2"
+                >
+                  <CheckCircleIcon size={20} />
+                </motion.div>
+              ) : (
+                <XCircleIcon className="mr-2" size={20} />
+              )}
+              <span id={!isValid ? "email-error" : undefined}>{message}</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        {reward && (
+          <motion.div
+            className="mt-6 p-4 bg-[var(--color-secondary)]/20 text-[var(--color-accent)] rounded-md shadow-md flex flex-col items-center justify-center"
+            variants={flipVariant}
+            initial="initial"
+            animate="animate"
+            exit={{ opacity: 0, y: 10 }}
+          >
+            <motion.span
+              className="text-xl font-bold mb-2"
+              variants={pulseVariant}
+              animate="pulse"
+            >
+              🎁 {reward.reward} - use {reward.code} to redeem the reward
+            </motion.span>
+            <motion.button
+              onClick={() => navigate("/order")}
+              whileHover={{
+                scale: 1.15,
+                transition: { ease: "easeOut", duration: 0.3 },
+              }}
+              whileTap={{ scale: 0.95 }}
+              className="px-6 py-2 bg-[var(--color-accent)] text-[var(--color-primary)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-70)] mb-2"
+              aria-label="Proceed to shop using your reward"
+            >
+              Shop Now
+            </motion.button>
+            <motion.div
+              className="text-sm text-[var(--color-secondary)]/70"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
+              Congratulations! Enjoy your reward.
+            </motion.div>
+          </motion.div>
+        )}
+
+        <div className="mt-6 flex flex-col sm:flex-row justify-center gap-2 items-stretch">
+          <button
+            onClick={handleGoogleSubscribe}
+            className="flex items-center justify-center px-4 py-2 border border-[var(--color-secondary-60)] rounded-md dark:hover:bg-[var(--color-secondary-70)]/30 transition"
+            aria-label="Subscribe with Google"
+          >
+            <FaGoogle size={20} className="mr-2" />
+            Subscribe with Google
+          </button>
+          <button
+            onClick={handleFacebookSubscribe}
+            className="flex items-center flex-grow justify-center px-4 py-2 border border-[var(--color-secondary-60)] rounded-md dark:hover:bg-[var(--color-secondary-70)]/30 transition"
+            aria-label="Subscribe with Facebook"
+          >
+            <FaFacebook size={20} className="mr-2" />
+            Subscribe with Facebook
+          </button>
+          <button
+            onClick={handleInstagramShare}
+            className="flex items-center flex-grow justify-center px-4 py-2 border border-[var(--color-secondary-60)] rounded-md dark:hover:bg-[var(--color-secondary-70)]/30 transition"
+            aria-label="Subscribe with Instagram"
+          >
+            <FaInstagram size={20} className="mr-2" />
+            Subscribe with Instagram
+          </button>
+        </div>
+        {shareMessage && (
+          <div
+            className="mt-4 text-sm text-[var(--color-primary)]/70"
+            role="status"
+          >
+            {shareMessage}
+          </div>
+        )}
+        <p className="mt-6 text-sm text-[var(--color-primary)]/70">
+          🔥 {recentSignups}+ people joined recently! Don’t miss out.
+        </p>
+      </div>
+      <AnimatePresence>
+        {showSpinWheel && <SpinWheelModal onClose={handleModalClose} />}
+      </AnimatePresence>
+      {submitted && status === "success" && <Confetti />}
+    </section>
+  );
+};
+
+export default NewsletterSignup;
