@@ -77,13 +77,13 @@ const Confetti = () => (
 
 // ProgressBar showing community growth.
 const ProgressBar = ({ progress }) => (
-  <div className="w-full max-w-md mx-auto mb-4 text-[var(--color-primary)]/70">
-    <div className="text-sm mb-1">
+  <div className="w-full max-w-md mx-auto mb-4 text-xs text-[var(--color-secondary)]/70">
+    <div className=" mb-1">
       Join our community! {progress}% of our goal (100 subscribers) reached.
     </div>
     <div className="w-full bg-[var(--color-secondary)]/20 rounded-full h-2">
       <motion.div
-        className="bg-green-700 h-2 rounded-full"
+        className="bg-[var(--color-accent)] h-2 rounded-full"
         initial={{ width: 0 }}
         animate={{ width: `${progress}%` }}
         transition={{ duration: 1.5, ease: "easeOut" }}
@@ -157,7 +157,7 @@ const SpinWheelModal = ({ onClose }) => {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-[var(--color-secondary)]/30 to-transparent backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--color-secondary)]/30 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-labelledby="spinWheelModalTitle"
@@ -414,7 +414,7 @@ const NewsletterSignup = () => {
 
   return (
     <section
-      className="relative mt-32 bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-accent)] py-8 md:py-12 px-4 md:px-6 shadow-lg rounded-t-lg overflow-hidden"
+      className="relative mt-32 bg-[var(--color-primary)] border border[var(--color-secondary)]  py-8 md:py-12 px-4 md:px-6 shadow-lg rounded-t-lg overflow-hidden"
       aria-live="polite"
     >
       {/* Live region for accessibility announcements */}
@@ -429,11 +429,11 @@ const NewsletterSignup = () => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-3xl md:text-4xl font-extrabold mb-4 text-[var(--color-primary)]/90"
+          className="text-3xl md:text-4xl font-extrabold mb-4 text-[var(--color-secondary)]/90"
         >
           🍵 Join Our Matcha Revolution
         </motion.h2>
-        <p className="mb-8 text-base md:text-lg text-[var(--color-primary)]/90">
+        <p className="mb-8 text-base md:text-lg text-[var(--color-secondary)]/80">
           Subscribe to receive exclusive recipes, updates, and rewards directly
           in your inbox.
         </p>
@@ -460,7 +460,7 @@ const NewsletterSignup = () => {
               aria-invalid={!isValid}
               aria-describedby={!isValid ? "email-error" : undefined}
               aria-label="Email address input field"
-              className={`p-3 pr-10 rounded-md w-full sm:w-80 md:w-96 border border-[var(--color-primary)]/40 text-[var(--color-primary)]/90 focus:ring-2 outline-none transition ${
+              className={`p-3 pr-10 rounded-md w-full sm:w-80 md:w-96 border border-[var(--color-secondary)]/40 text-[var(--color-secondary)]/90 focus:ring-2 outline-none transition ${
                 isValid
                   ? "border-[var(--color-accent)]/30 focus:ring-[var(--color-accent)]/40"
                   : "border-red-300 focus:ring-red-400"
@@ -473,7 +473,7 @@ const NewsletterSignup = () => {
             type="submit"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="bg-[var(--color-primary)]/80 text-[var(--color-secondary)]/70 font-semibold p-3 rounded-md hover:bg-[var(--color-primary)]/60 transition flex items-center ml-0 sm:ml-4 mt-4 sm:mt-0 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-[var(--color-accent)]/90 text-[var(--color-primary)]/90 font-semibold p-3 rounded-md hover:bg-[var(--color-accent)]/80 transition flex items-center ml-0 sm:ml-4 mt-4 sm:mt-0 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={loading}
             aria-label="Submit your email to subscribe and spin the reward roulette"
           >
@@ -494,8 +494,8 @@ const NewsletterSignup = () => {
             <motion.div
               className={`mt-4 text-lg flex items-center justify-center ${
                 status === "success"
-                  ? "text-[var(--color-primary)]/60"
-                  : "text-red-300"
+                  ? "text-[var(--color-accent)]/70"
+                  : "text-[var(--color-tertiary)]/50"
               }`}
               role="alert"
               initial={{ opacity: 0, y: -10 }}
@@ -520,7 +520,7 @@ const NewsletterSignup = () => {
         </AnimatePresence>
         {reward && (
           <motion.div
-            className="mt-6 p-4 bg-[var(--color-secondary)]/20 text-green-300 rounded-md shadow-md flex flex-col items-center justify-center"
+            className="mt-6 p-4 bg-[var(--color-secondary)]/10 text-[var(--color-accent)] border border-[var(--color-tertiary)]/10 rounded-md shadow-md flex flex-col items-center justify-center"
             variants={flipVariant}
             initial="initial"
             animate="animate"
@@ -540,13 +540,13 @@ const NewsletterSignup = () => {
                 transition: { ease: "easeOut", duration: 0.3 },
               }}
               whileTap={{ scale: 0.95 }}
-              className="px-6 py-2 bg-[var(--color-accent)]/70 text-[var(--color-primary)]/90 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mb-2"
+              className="px-6 py-2 bg-[var(--color-accent)]/90 text-[var(--color-primary)]/90 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mb-2"
               aria-label="Proceed to shop using your reward"
             >
               Shop Now
             </motion.button>
             <motion.div
-              className="text-sm text-[var(--color-primary)]/50"
+              className="text-xs text-[var(--color-secondary)]/50"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
@@ -559,7 +559,7 @@ const NewsletterSignup = () => {
         <div className="mt-6 flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 gap-2 items-stretch">
           <button
             onClick={handleGoogleSubscribe}
-            className="flex items-center justify-center px-4 py-2 border border-[var(--color-secondary)]/10 rounded-md dark:hover:bg-[var(--color-secondary)]/30 transition"
+            className="flex items-center justify-center px-4 py-2 border border-[var(--color-tertiary)]/10 bg-[var(--color-secondary)]/10 rounded-md dark:hover:bg-[var(--color-accent)]/10 transition"
             aria-label="Subscribe with Google"
           >
             <FaGoogle size={20} className="mr-2" />
@@ -567,7 +567,7 @@ const NewsletterSignup = () => {
           </button>
           <button
             onClick={handleFacebookSubscribe}
-            className="flex items-center flex-grow justify-center px-4 py-2 border border-[var(--color-secondary)]/10 rounded-md dark:hover:bg-[var(--color-secondary)]/30 transition"
+            className="flex items-center justify-center px-4 py-2 border border-[var(--color-tertiary)]/10 bg-[var(--color-secondary)]/10 rounded-md dark:hover:bg-[var(--color-accent)]/10 transition"
             aria-label="Subscribe with Facebook"
           >
             <FaFacebook size={20} className="mr-2" />
@@ -575,7 +575,7 @@ const NewsletterSignup = () => {
           </button>
           <button
             onClick={handleInstagramShare}
-            className="flex items-center flex-grow justify-center px-4 py-2 border border-[var(--color-secondary)]/10 rounded-md dark:hover:bg-[var(--color-secondary)]/30 transition"
+            className="flex items-center justify-center px-4 py-2 border border-[var(--color-tertiary)]/10 bg-[var(--color-secondary)]/10 rounded-md dark:hover:bg-[var(--color-accent)]/10 transition"
             aria-label="Subscribe with Instagram"
           >
             <FaInstagram size={20} className="mr-2" />
@@ -584,13 +584,13 @@ const NewsletterSignup = () => {
         </div>
         {shareMessage && (
           <div
-            className="mt-4 text-sm text-[var(--color-primary)]/30"
+            className="mt-4 text-xs text-[var(--color-secondary)]/30"
             role="status"
           >
             {shareMessage}
           </div>
         )}
-        <p className="mt-6 text-sm text-[var(--color-primary)]/50">
+        <p className="mt-6 text-sm text-[var(--color-secondary)]/70">
           🔥 {recentSignups}+ people joined recently! Don’t miss out.
         </p>
       </div>
