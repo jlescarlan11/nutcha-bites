@@ -6,25 +6,25 @@ const Modal = ({ onClose }) => {
   const modalRef = useRef(null);
   const previouslyFocusedElement = useRef(null);
 
-  // Reimagined interactive chapters with evocative narrative content
+  // Revised interactive chapters with a detailed and professional narrative
   const chapters = [
     {
       id: 1,
-      title: "Chapter 1: The Dawn of a Dream",
+      title: "Chapter 1: A Legacy Begins",
       content:
-        "In the quiet hours before the sun, when hope stirred in every heartbeat, our journey was born. We dared to blend the timeless traditions of Filipino cuisine with the artistry of Japanese matcha, crafting a dream where every ingredient whispered secrets of the past and promise for the future.",
+        "Our journey began in the heart of the Philippines, where a family legacy in culinary arts sparked a passion for preserving time-honored recipes. Founded with humble beginnings, every dish was crafted with care and an unwavering commitment to quality.",
     },
     {
       id: 2,
-      title: "Chapter 2: The Fusion of Legacies",
+      title: "Chapter 2: Bridging Cultures",
       content:
-        "As ancient recipes met modern innovations, flavors danced in harmony. The rich heritage of our forefathers mingled with bold, contemporary visions, creating a symphony of taste that transcended generations. Each bite became a tribute to the past and a celebration of the present.",
+        "As we evolved, we embraced the distinctive flavors of Japanese matcha, merging them with cherished Filipino traditions. This cultural fusion was not without its challenges, yet it paved the way for innovative culinary techniques that set us apart.",
     },
     {
       id: 3,
-      title: "Chapter 3: The Legacy of Taste",
+      title: "Chapter 3: A Commitment to Excellence",
       content:
-        "Now, with decades of wisdom and an unyielding passion for culinary storytelling, our saga continues. Every morsel is a testament to the art of transformation—melding heritage with innovation. Our journey is not just about food; it is about forging memories, kindling hope, and inspiring a future steeped in tradition and creativity.",
+        "Today, our brand stands as a testament to relentless dedication and excellence. We honor our rich heritage while pioneering new culinary frontiers, ensuring every product reflects our legacy, integrity, and passion for the art of flavor.",
     },
   ];
   const [currentChapter, setCurrentChapter] = useState(0);

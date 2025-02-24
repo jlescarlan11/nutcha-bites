@@ -92,7 +92,8 @@ const Story = () => {
           Nutcha Bites is a fusion of Filipino tradition and Japanese
           innovation. Born from a passion for culinary artistry, we blend the
           rich heritage of Filipino bandi with the vibrant, earthy notes of
-          matcha to create a snack that tells a story in every bite.
+          matcha to create a snack that tells our story with authenticity and
+          excellence.
         </p>
         <figure className="max-w-xl mx-auto mb-8">
           <blockquote className="text-[var(--color-primary)]/70 italic border-l-4 pl-4 border-green-500">
