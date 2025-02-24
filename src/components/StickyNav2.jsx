@@ -173,7 +173,7 @@ const StickyNav2 = ({ activeSection, visible, darkMode, setDarkMode }) => {
               )}
             </button>
             <button
-              className="px-6 py-3 rounded-full font-semibold bg-[var(--color-secondary)]/80 hover:bg-[var(--color-secondary)] transition-colors duration-300"
+              className="px-6 py-3 rounded-full text-[var(--color-primary)]/90 font-semibold bg-[var(--color-secondary)]/80 hover:bg-[var(--color-secondary)] transition-colors duration-300"
               onClick={() => navigate("/order")}
             >
               ORDER NOW

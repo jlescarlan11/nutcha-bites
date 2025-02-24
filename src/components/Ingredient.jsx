@@ -1,9 +1,91 @@
-// Ingredient.jsx
-import React, { useState } from "react";
+// Ingredients.jsx
+import React, { useReducer } from "react";
 import PropTypes from "prop-types";
-import { FaHeart, FaRegHeart } from "react-icons/fa";
+import styled, { keyframes } from "styled-components";
+import AccessibleModal from "./AccessibleModal";
 
-const ingredients = [
+// ----------------------------------------------------------------------
+// Design System Tokens (these can be centralized in a separate theme file)
+const theme = {
+  primary: "hsl(33, 50%, 90%)", // Background
+  secondary: "hsl(33, 50%, 10%)", // Text
+  tertiary: "hsl(333, 80%, 20%)", // Interactive elements (buttons, small accents)
+  accent: "hsl(93, 80%, 20%)", // Hover accents and highlights
+};
+
+// ----------------------------------------------------------------------
+// Scalable SVG Icon Components using a centralized IconWrapper
+const IconWrapper = styled.svg`
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+`;
+
+// Filled Heart Icon (for favorites)
+const FavoritesIcon = (props) => (
+  <IconWrapper viewBox="0 0 24 24" {...props}>
+    <path
+      d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+      2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 
+      16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+    />
+  </IconWrapper>
+);
+
+// Outline Heart Icon (for non-favorites)
+const UnfavoriteIcon = (props) => (
+  <IconWrapper viewBox="0 0 24 24" {...props}>
+    <path
+      d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 
+         2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 
+         14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 
+         11.54L12 21.35z"
+      stroke="currentColor"
+      strokeWidth="2"
+      fill="none"
+    />
+  </IconWrapper>
+);
+
+// Other SVG icons for controls
+const ClearIcon = (props) => (
+  <IconWrapper viewBox="0 0 24 24" {...props}>
+    <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" strokeWidth="2" />
+    <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" strokeWidth="2" />
+  </IconWrapper>
+);
+
+const SortAscIcon = (props) => (
+  <IconWrapper viewBox="0 0 24 24" {...props}>
+    <polyline
+      points="18 15 12 9 6 15"
+      stroke="currentColor"
+      strokeWidth="2"
+      fill="none"
+    />
+  </IconWrapper>
+);
+
+const SortDescIcon = (props) => (
+  <IconWrapper viewBox="0 0 24 24" {...props}>
+    <polyline
+      points="6 9 12 15 18 9"
+      stroke="currentColor"
+      strokeWidth="2"
+      fill="none"
+    />
+  </IconWrapper>
+);
+
+const ListIcon = (props) => (
+  <IconWrapper viewBox="0 0 24 24" {...props}>
+    <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zm0-8h14V7H7v2z" />
+  </IconWrapper>
+);
+
+// ----------------------------------------------------------------------
+// Sample ingredient data
+const ingredientsData = [
   {
     id: 1,
     name: "Raw Peanuts",
@@ -44,84 +126,245 @@ const ingredients = [
   },
 ];
 
-const IngredientRow = ({ ingredient, onSelect, isFavorite }) => {
-  const { name, description, optional } = ingredient;
-  return (
-    <tr
-      onClick={() => onSelect(ingredient)}
-      className="hover:bg-[var(--color-secondary)]/10 transition-colors duration-200 cursor-pointer"
-    >
-      <td className="px-4 py-2 border-b border-[var(--color-secondary)]/20 text-[var(--color-secondary)]/70">
-        {name}{" "}
-        {isFavorite && (
-          <FaHeart className="inline text-[var(--color-accent)] ml-1" />
-        )}
-        {optional && (
-          <span className="text-sm text-[var(--color-secondary)]/50">
-            {" "}
-            (Optional)
-          </span>
-        )}
-      </td>
-      <td className="px-4 py-2 border-b border-[var(--color-secondary)]/20 text-[var(--color-secondary)]/70">
-        {description}
-      </td>
-    </tr>
-  );
+// ----------------------------------------------------------------------
+// Animations
+const fadeIn = keyframes`
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+`;
+
+// ----------------------------------------------------------------------
+// Styled Components (externalizing all styling)
+const Container = styled.section`
+  background-color: var(--color-primary, ${theme.primary});
+  color: var(--color-secondary, ${theme.secondary});
+  padding: 3rem 1rem;
+  min-height: 100vh;
+  transition: background-color 0.3s ease;
+`;
+
+const Header = styled.div`
+  text-align: center;
+  margin-bottom: 2rem;
+`;
+
+const Title = styled.h2`
+  font-size: clamp(1.5rem, 5vw, 3rem);
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+`;
+
+const Subtitle = styled.p`
+  font-size: 1rem;
+  opacity: 0.7;
+  margin-bottom: 1.5rem;
+`;
+
+const Controls = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+`;
+
+const SearchInputWrapper = styled.div`
+  position: relative;
+  flex: 1;
+  max-width: 300px;
+`;
+
+const SearchInput = styled.input`
+  width: 100%;
+  padding: 0.75rem 2.5rem 0.75rem 1rem;
+  border: 1px solid var(--color-secondary, ${theme.secondary});
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  color: var(--color-secondary, ${theme.secondary});
+  background-color: var(--color-primary, ${theme.primary});
+  transition: box-shadow 0.2s ease;
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--color-accent, ${theme.accent});
+  }
+`;
+
+const ClearButton = styled.button`
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-secondary, ${theme.secondary});
+  &:hover {
+    color: var(--color-accent, ${theme.accent});
+  }
+`;
+
+const Button = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background-color: var(--color-accent, ${theme.accent});
+  color: var(--color-primary, ${theme.primary});
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  &:hover {
+    background-color: var(--color-accent, ${theme.accent});
+    transform: translateY(-2px);
+  }
+  &:active {
+    transform: scale(0.97);
+  }
+`;
+
+const Grid = styled.div`
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  transition: all 0.3s ease-in-out;
+`;
+
+const Card = styled.div`
+  background-color: var(--color-primary, ${theme.primary});
+  border: 1px solid var(--color-secondary, ${theme.secondary});
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  animation: ${fadeIn} 0.5s ease forwards;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+`;
+
+const CardTitle = styled.h3`
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  font-weight: semibold;
+  align-items: center;
+  gap: 0.5rem;
+`;
+
+const CardDescription = styled.p`
+  font-size: 0.95rem;
+  opacity: 0.8;
+  margin-bottom: 1rem;
+`;
+
+const OptionalLabel = styled.span`
+  font-size: 0.8rem;
+  opacity: 0.7;
+`;
+
+// ----------------------------------------------------------------------
+// State Management using useReducer
+const initialState = {
+  searchTerm: "",
+  selectedIngredient: null,
+  favoriteIds: [],
+  sortAscending: true,
+  showFavoritesOnly: false,
 };
 
-IngredientRow.propTypes = {
-  ingredient: PropTypes.shape({
-    name: PropTypes.string.isRequired,
-    description: PropTypes.string.isRequired,
-    optional: PropTypes.bool,
-  }).isRequired,
-  onSelect: PropTypes.func.isRequired,
-  isFavorite: PropTypes.bool,
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "SET_SEARCH_TERM":
+      return { ...state, searchTerm: action.payload };
+    case "SET_SELECTED_INGREDIENT":
+      return { ...state, selectedIngredient: action.payload };
+    case "TOGGLE_FAVORITE":
+      const { id } = action.payload;
+      return {
+        ...state,
+        favoriteIds: state.favoriteIds.includes(id)
+          ? state.favoriteIds.filter((favId) => favId !== id)
+          : [...state.favoriteIds, id],
+      };
+    case "TOGGLE_SORT_ORDER":
+      return { ...state, sortAscending: !state.sortAscending };
+    case "TOGGLE_FAVORITES_ONLY":
+      return { ...state, showFavoritesOnly: !state.showFavoritesOnly };
+    default:
+      return state;
+  }
 };
 
-const IngredientCard = ({ ingredient, onSelect, isFavorite }) => {
-  const { name, description, optional } = ingredient;
+// ----------------------------------------------------------------------
+// IngredientCard Component using standardized SVG icons
+const IngredientCard = ({
+  ingredient,
+  onSelect,
+  isFavorite,
+  onFavoriteToggle,
+}) => {
+  const { id, name, description, optional } = ingredient;
   return (
-    <div
-      onClick={() => onSelect(ingredient)}
-      className="bg-[var(--color-secondary)]/5  rounded-lg shadow-sm p-4 transition-transform duration-200 transform hover:scale-105 cursor-pointer animate-fadeIn"
-    >
-      <h3 className="text-lg font-semibold text-[var(--color-secondary)]">
-        {name}{" "}
-        {isFavorite && (
-          <FaHeart className="inline text-[var(--color-accent)] ml-1" />
+    <Card onClick={() => onSelect(ingredient)}>
+      <CardTitle>
+        {name}
+        {isFavorite && <FavoritesIcon />}
+        {optional && <OptionalLabel>(Optional)</OptionalLabel>}
+      </CardTitle>
+      <CardDescription>{description}</CardDescription>
+      {/* This button will push to the bottom */}
+      <Button
+        onClick={(e) => {
+          e.stopPropagation();
+          onFavoriteToggle(id);
+        }}
+        style={{ marginTop: "auto" }}
+      >
+        {isFavorite ? (
+          <>
+            <FavoritesIcon /> Favorited
+          </>
+        ) : (
+          <>
+            <UnfavoriteIcon /> Add to Favorites
+          </>
         )}
-        {optional && (
-          <span className="text-sm text-[var(--color-secondary)]/50">
-            {" "}
-            (Optional)
-          </span>
-        )}
-      </h3>
-      <p className="text-[var(--color-secondary)]/70 mt-2">{description}</p>
-    </div>
+      </Button>
+    </Card>
   );
 };
 
 IngredientCard.propTypes = {
   ingredient: PropTypes.shape({
+    id: PropTypes.number,
     name: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
     optional: PropTypes.bool,
   }).isRequired,
   onSelect: PropTypes.func.isRequired,
   isFavorite: PropTypes.bool,
+  onFavoriteToggle: PropTypes.func.isRequired,
 };
 
+// ----------------------------------------------------------------------
+// Main Ingredients Component
 const Ingredients = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedIngredient, setSelectedIngredient] = useState(null);
-  const [favoriteIds, setFavoriteIds] = useState([]);
-  const [sortAscending, setSortAscending] = useState(true);
-  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const {
+    searchTerm,
+    selectedIngredient,
+    favoriteIds,
+    sortAscending,
+    showFavoritesOnly,
+  } = state;
 
-  const filteredIngredients = ingredients
+  const filteredIngredients = ingredientsData
     .filter((item) => {
       const matchesSearch = item.name
         .toLowerCase()
@@ -137,202 +380,108 @@ const Ingredients = () => {
         : b.name.localeCompare(a.name)
     );
 
-  const handleFavoriteToggle = (id) => {
-    setFavoriteIds((prev) =>
-      prev.includes(id) ? prev.filter((favId) => favId !== id) : [...prev, id]
-    );
-  };
-
   return (
-    <section
-      id="ingredients"
-      className="mt-20 py-12 px-4 sm:px-6 lg:px-8 transition-all duration-300"
-    >
-      <div className="max-w-4xl mx-auto">
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center text-[var(--color-secondary)]/80 mb-6">
-          Ingredients
-        </h2>
-        <p className="text-center text-[var(--color-secondary)]/60 mb-8">
+    <Container id="ingredients">
+      <Header>
+        <Title>Ingredients</Title>
+        <Subtitle>
           We believe in authenticity and transparency. Here’s exactly what goes
           into every bite of Nutcha Bites:
-        </p>
-        <div className="mb-6 flex flex-wrap items-center justify-center gap-2 sm:flex-nowrap">
-          {/* Search Input with Autofocus & Improved Clear Button */}
-          <div className="relative flex-grow max-w-md">
-            <input
-              type="text"
-              placeholder="Search ingredients..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full p-2 pr-10 border border-[var(--color-secondary)]/40 text-[var(--color-secondary)]/90 rounded focus:outline-none  focus:ring focus:border-[var(--color-secondary)] transition"
-              onFocus={() => setSearchActive(true)}
-            />
-            {searchTerm && (
-              <button
-                onClick={() => setSearchTerm("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent active:scale-90 transition-all"
-                aria-label="Clear search"
-              >
-                ❌
-              </button>
-            )}
-          </div>
-
-          {/* Sort Button with Tooltip */}
-          <button
-            onClick={() => setSortAscending(!sortAscending)}
-            className="relative flex items-center justify-center gap-1 px-3 py-2 border   rounded text-[var(--color-primary)]/80 bg-[var(--color-accent)]/80 hover:bg-[var(--color-accent)]/70 active:scale-95 transition-all"
-          >
-            {sortAscending ? "⬆️" : "⬇️"}
-            <span className="inline">Sort</span>
-          </button>
-
-          {/* Favorites Toggle with Ripple Effect */}
-          <button
-            onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
-            className="relative flex  items-center justify-center gap-1 px-3 py-2 border rounded text-[var(--color-primary)]/80 bg-[var(--color-accent)]/80 hover:bg-[var(--color-accent)]/70 active:scale-95 transition-all"
-          >
-            {showFavoritesOnly ? "⭐" : "📃"}
-            <span className="inline">{showFavoritesOnly ? "Fav" : "All"}</span>
-          </button>
-        </div>
-
-        {filteredIngredients.length === 0 ? (
-          <p className="text-center text-[var(--color-secondary)]/70">
-            No ingredients found.
-          </p>
-        ) : (
-          <>
-            {/* Mobile Card View */}
-            <div className="flex flex-col gap-1 sm:hidden">
-              {filteredIngredients.map((item) => (
-                <IngredientCard
-                  key={item.id}
-                  ingredient={item}
-                  onSelect={setSelectedIngredient}
-                  isFavorite={favoriteIds.includes(item.id)}
-                />
-              ))}
-            </div>
-            {/* Tablet Grid View */}
-            <div className="hidden sm:grid lg:hidden gap-4 grid-cols-1 sm:grid-cols-2">
-              {filteredIngredients.map((item) => (
-                <IngredientCard
-                  key={item.id}
-                  ingredient={item}
-                  onSelect={setSelectedIngredient}
-                  isFavorite={favoriteIds.includes(item.id)}
-                />
-              ))}
-            </div>
-            {/* Desktop/Table View */}
-            <div className="hidden lg:block overflow-x-auto">
-              <table className="min-w-full w-full border-collapse">
-                <caption className="sr-only">
-                  List of ingredients for Nutcha Bites
-                </caption>
-                <thead>
-                  <tr>
-                    <th className="px-4 py-2 border-b-2 border-[var(--color-secondary)]/30 text-left text-[var(--color-secondary)]/80 text-lg sm:text-xl">
-                      Ingredient
-                    </th>
-                    <th className="px-4 py-2 border-b-2 border-[var(--color-secondary)]/30 text-left text-[var(--color-secondary)]/80 text-lg sm:text-xl">
-                      Description
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredIngredients.map((item) => (
-                    <IngredientRow
-                      key={item.id}
-                      ingredient={item}
-                      onSelect={setSelectedIngredient}
-                      isFavorite={favoriteIds.includes(item.id)}
-                    />
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </>
-        )}
-        <div className="mt-8 text-center">
-          <p className="text-[var(--color-secondary)]/70 italic">
-            Our expert process transforms these high-quality ingredients into
-            the perfect, crunchy, and innovative Nutcha Bites.
-          </p>
-        </div>
-      </div>
-
-      {/* Ingredient Details Modal */}
-      {selectedIngredient && (
-        <div
-          className="fixed inset-0 flex items-center justify-center z-50"
-          aria-labelledby="ingredient-modal-title"
-          role="dialog"
-          aria-modal="true"
+        </Subtitle>
+      </Header>
+      <Controls>
+        <SearchInputWrapper>
+          <SearchInput
+            type="text"
+            placeholder="Search ingredients..."
+            value={searchTerm}
+            onChange={(e) =>
+              dispatch({ type: "SET_SEARCH_TERM", payload: e.target.value })
+            }
+            aria-label="Search ingredients"
+          />
+          {searchTerm && (
+            <ClearButton
+              onClick={() => dispatch({ type: "SET_SEARCH_TERM", payload: "" })}
+              aria-label="Clear search"
+            >
+              <ClearIcon />
+            </ClearButton>
+          )}
+        </SearchInputWrapper>
+        <Button
+          onClick={() => dispatch({ type: "TOGGLE_SORT_ORDER" })}
+          aria-label="Toggle sort order"
         >
-          <div
-            className="absolute inset-0 bg-gradient-to-br from-[var(--color-secondary)]/30 backdrop-blur-sm transition-opacity duration-300"
-            onClick={() => setSelectedIngredient(null)}
-          ></div>
-          <div className="relative bg-[var(--color-primary)] rounded-2xl shadow-2xl max-w-md w-full p-6 mx-4 z-50 transition-transform duration-300 transform animate-modalIn">
-            <button
-              onClick={() => setSelectedIngredient(null)}
-              className="absolute top-3 right-3 text-2xl  bg-transparent text-[var(--color-secondary)] hover:text-[var(--color-accent)] focus:outline-none"
-              aria-label="Close modal"
-            >
-              &times;
-            </button>
-            <h3
-              id="ingredient-modal-title"
-              className="text-2xl font-bold text-[var(--color-secondary)]/80 mb-4"
-            >
-              {selectedIngredient.name}
-            </h3>
-            <p className="text-[var(--color-secondary)]/70 mb-4">
-              {selectedIngredient.description}
-            </p>
-            {selectedIngredient.optional && (
-              <p className="text-sm text-[var(--color-secondary)]/50 italic mb-4">
-                This ingredient is optional.
-              </p>
-            )}
-            <button
-              onClick={() => handleFavoriteToggle(selectedIngredient.id)}
-              className="flex items-center justify-center w-full px-4 py-2 border rounded-full text-sm font-medium transition-colors duration-300  text-[var(--color-primary)]/90 hover:bg-[var(--color-accent)]/80"
-            >
-              {favoriteIds.includes(selectedIngredient.id) ? (
-                <>
-                  <FaHeart className="mr-2 text-[var(--color-primary)]/90" />{" "}
-                  Favorited
-                </>
-              ) : (
-                <>
-                  <FaRegHeart className="mr-2" /> Add to Favorites
-                </>
-              )}
-            </button>
-          </div>
-        </div>
+          {sortAscending ? <SortAscIcon /> : <SortDescIcon />} Sort
+        </Button>
+        <Button
+          onClick={() => dispatch({ type: "TOGGLE_FAVORITES_ONLY" })}
+          aria-label="Toggle favorites filter"
+        >
+          {showFavoritesOnly ? <FavoritesIcon /> : <ListIcon />}{" "}
+          {showFavoritesOnly ? "Favorites" : "All"}
+        </Button>
+      </Controls>
+      {filteredIngredients.length === 0 ? (
+        <p style={{ textAlign: "center", opacity: 0.7 }}>
+          No ingredients found.
+        </p>
+      ) : (
+        <Grid>
+          {filteredIngredients.map((item) => (
+            <IngredientCard
+              key={item.id}
+              ingredient={item}
+              onSelect={(ingredient) =>
+                dispatch({
+                  type: "SET_SELECTED_INGREDIENT",
+                  payload: ingredient,
+                })
+              }
+              isFavorite={favoriteIds.includes(item.id)}
+              onFavoriteToggle={(id) =>
+                dispatch({ type: "TOGGLE_FAVORITE", payload: { id } })
+              }
+            />
+          ))}
+        </Grid>
       )}
-
-      <style>{`
-        @keyframes modalIn {
-          from { opacity: 0; transform: scale(0.95); }
-          to { opacity: 1; transform: scale(1); }
-        }
-        .animate-modalIn {
-          animation: modalIn 0.3s ease-out;
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.5s ease-out;
-        }
-      `}</style>
-    </section>
+      {selectedIngredient && (
+        <AccessibleModal
+          isOpen={Boolean(selectedIngredient)}
+          onClose={() =>
+            dispatch({ type: "SET_SELECTED_INGREDIENT", payload: null })
+          }
+          title={selectedIngredient.name}
+          description={selectedIngredient.description}
+        >
+          {selectedIngredient.optional && (
+            <p style={{ fontStyle: "italic", opacity: 0.7 }}>
+              This ingredient is optional.
+            </p>
+          )}
+          <Button
+            onClick={() =>
+              dispatch({
+                type: "TOGGLE_FAVORITE",
+                payload: { id: selectedIngredient.id },
+              })
+            }
+          >
+            {favoriteIds.includes(selectedIngredient.id) ? (
+              <>
+                <FavoritesIcon /> Favorited
+              </>
+            ) : (
+              <>
+                <UnfavoriteIcon /> Add to Favorites
+              </>
+            )}
+          </Button>
+        </AccessibleModal>
+      )}
+    </Container>
   );
 };
 
