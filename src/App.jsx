@@ -68,7 +68,7 @@ const App = () => {
   return (
     <Router>
       <MobileMenuContext.Provider value={{ showMenu, setShowMenu }}>
-        <div className="min-h-screen flex flex-col relative">
+        <div className="min-h-screen flex flex-col justify-center relative">
           <ScrollProgress />
           <Routes>
             <Route
