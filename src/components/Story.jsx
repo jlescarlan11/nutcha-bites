@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { CSSTransition } from "react-transition-group";
-import backgroundImage from "../assets/nutchaOverview.webp";
+import backgroundImage from "../assets/nutchaStory.webp";
 
 // ParallaxLayer component for the background
 const ParallaxLayer = ({ offset, speed, image, children, className = "" }) => {
