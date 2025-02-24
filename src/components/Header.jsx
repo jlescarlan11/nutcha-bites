@@ -1,10 +1,9 @@
 // Header.jsx
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo2.svg";
 import { MobileMenuContext } from "../App";
-import { FaMoon, FaSun } from "react-icons/fa";
-import { span } from "framer-motion/client";
 
 const menuItems = [
   "Overview",
@@ -15,26 +14,21 @@ const menuItems = [
   "Contact Us",
 ];
 
-const Header = ({ darkMode, setDarkMode }) => {
+const Header = () => {
   const navigate = useNavigate();
   const { showMenu, setShowMenu } = useContext(MobileMenuContext);
 
-  // Toggle dark mode by adding/removing a "dark" class on the documentElement.
-
-  // Disable background scroll when mobile menu is open
+  // Prevent background scroll when modal is open
   useEffect(() => {
-    if (showMenu) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
+    document.body.style.overflow = showMenu ? "hidden" : "";
+    return () => (document.body.style.overflow = "");
   }, [showMenu]);
 
-  const toggleDarkMode = () => {
-    setDarkMode((prev) => !prev);
+  // Drag handler: if dragged far enough, close the modal
+  const handleDragEnd = (event, info) => {
+    if (info.point.y > 100) {
+      setShowMenu(false);
+    }
   };
 
   return (
@@ -55,17 +49,6 @@ const Header = ({ darkMode, setDarkMode }) => {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex gap-4 items-center space-x-6">
           <button
-            onClick={toggleDarkMode}
-            className="flex items-center p-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
-            aria-label="Toggle dark mode"
-          >
-            {darkMode ? (
-              <FaSun className="text-yellow-500 size-5" />
-            ) : (
-              <FaMoon className="text-[var(--color-primary)]/60 size-5" />
-            )}
-          </button>
-          <button
             onClick={() => navigate("/order")}
             className="px-4 py-2 font-semibold bg-[var(--color-accent)]/80 text-[var(--color-primary)]/90 transition-transform duration-300 hover:scale-105 hover:bg-[var(--color-accent)]/90 focus:outline-none"
           >
@@ -73,7 +56,7 @@ const Header = ({ darkMode, setDarkMode }) => {
           </button>
         </nav>
 
-        {/* Mobile Navigation Button */}
+        {/* Mobile Menu Toggle */}
         <button
           onClick={() => setShowMenu(true)}
           className="md:hidden focus:outline-none bg-transparent"
@@ -96,87 +79,105 @@ const Header = ({ darkMode, setDarkMode }) => {
         </button>
       </div>
 
-      {/* Mobile Menu Overlay with Enhanced Effects */}
-      {showMenu && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-[var(--color-secondary)]/30 to-transparent backdrop-blur-sm"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              setShowMenu(false);
-            }
-          }}
-        >
-          <div className="relative bg-[var(--color-primary)] rounded-2xl shadow-2xl p-8 w-11/12 max-w-md animate-slideDown transform transition-all duration-300 hover:scale-105">
-            <button
+      {/* Mobile Menu Modal with Enhanced Effects */}
+      <AnimatePresence>
+        {showMenu && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center"
+            role="dialog"
+            aria-modal="true"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            {/* Animated Overlay */}
+            <motion.div
+              className="absolute inset-0"
               onClick={() => setShowMenu(false)}
-              className="absolute top-4 right-4 text-3xl focus:outline-none bg-transparent text-[var(--color-secondary)] transform transition-transform duration-300 hover:scale-110"
-              aria-label="Close menu"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+              style={{
+                background: "rgba(0, 0, 0, 0.5)",
+                backdropFilter: "blur(4px)",
+              }}
+            />
+
+            {/* Modal Container with Swipe Support */}
+            <motion.div
+              className="relative rounded-xl shadow-xl p-8 w-11/12 max-w-md z-50"
+              initial={{ y: -30, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 30, opacity: 0 }}
+              transition={{ duration: 0.4 }}
+              drag="y"
+              dragConstraints={{ top: 0, bottom: 0 }}
+              dragElastic={0.5}
+              onDragEnd={handleDragEnd}
+              style={{ backgroundColor: "var(--color-primary)" }}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-8 w-8"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+              <button
+                onClick={() => setShowMenu(false)}
+                className="absolute top-4 right-4 text-3xl focus:outline-none hover:scale-90 transition-all duration-300 ease-in-out"
+                style={{ color: "var(--color-secondary)" }}
+                aria-label="Close menu"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-            <ul className="mt-8 space-y-6 text-center text-lg sm:text-xl text-[var(--color-secondary)]">
-              {menuItems.map((item, index) => {
-                const id = item.toLowerCase().replace(/\s+/g, "-");
-                return (
-                  <li
-                    key={index}
-                    className="cursor-pointer transform transition-transform duration-300 hover:scale-105"
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-8 w-8"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+              <ul
+                className="mt-6 space-y-4 text-center text-lg"
+                style={{ color: "var(--color-secondary)" }}
+              >
+                {menuItems.map((item, index) => {
+                  const id = item.toLowerCase().replace(/\s+/g, "-");
+                  return (
+                    <li key={index} className="cursor-pointer">
+                      <a
+                        href={`#${id}`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          // If you have a scrollToSection function, call it here.
+                          setShowMenu(false);
+                        }}
+                        className="block px-4 py-2 rounded-md transition-colors hover:bg-[var(--color-accent)]/10 hover:text-[var(--color-primary)]/90"
+                        style={{ color: "var(--color-secondary)" }}
+                      >
+                        {item}
+                      </a>
+                    </li>
+                  );
+                })}
+                <li className="mt-4">
+                  <button
+                    className="w-full px-4 py-2 rounded-full font-semibold transition-all bg-[var(--color-accent)]/90 text-[var(--color-primary)]/90 hover:bg-[var(--color-accent)]/80 hover:text-[var(--color-primary)]/80 hover:scale-95 duration-500 ease-in-out"
+                    onClick={() => {
+                      setShowMenu(false);
+                      navigate("/order");
+                    }}
                   >
-                    <a
-                      href={`#${id}`}
-                      className="block px-4 py-2 rounded transition-colors duration-300 ease-in-out hover:bg-[var(--color-secondary)] hover:text-[var(--color-primary)]"
-                      onClick={() => setShowMenu(false)}
-                    >
-                      {item}
-                    </a>
-                  </li>
-                );
-              })}
-            </ul>
-            <div className="mt-6 flex flex-col gap-2">
-              <button
-                onClick={toggleDarkMode}
-                className="w-full px-4 py-3 rounded-full flex justify-center items-center font-semibold bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-secondary-light)] hover:from-[var(--color-secondary-light)] hover:to-[var(--color-secondary)] transform transition-all duration-300 hover:scale-105"
-                aria-label="Toggle dark mode"
-              >
-                {darkMode ? (
-                  <span className="flex gap-2 items-center">
-                    <FaSun className="text-yellow-500" />
-                    <p> Dark Mode</p>
-                  </span>
-                ) : (
-                  <span className="flex gap-2 items-center">
-                    <FaMoon className="text-gray-600" />
-                    <p>Light Mode</p>
-                  </span>
-                )}
-              </button>
-              <button
-                className="w-full px-4 py-3 rounded-full font-semibold bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-secondary-light)] hover:from-[var(--color-secondary-light)] hover:to-[var(--color-secondary)] transform transition-all duration-300 hover:scale-105"
-                onClick={() => {
-                  setShowMenu(false);
-                  navigate("/order");
-                }}
-              >
-                ORDER NOW
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+                    ORDER NOW
+                  </button>
+                </li>
+              </ul>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 };
