@@ -160,7 +160,7 @@ const MobileModal = ({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.4 }}
+      transition={{ duration: 0.1 }}
     >
       {/* Animated overlay */}
       <motion.div
@@ -266,11 +266,14 @@ const StickyNav = ({ activeSection, visible }) => {
   };
 
   const toggleMenu = () => {
-    // Force blur on mousedown so the button doesn’t keep focus during animation
-    if (hamburgerButtonRef.current) {
-      hamburgerButtonRef.current.blur();
-    }
+    // Open the menu
     setIsMenuOpen((prev) => !prev);
+    // Immediately force blur in the next tick
+    setTimeout(() => {
+      if (hamburgerButtonRef.current) {
+        hamburgerButtonRef.current.blur();
+      }
+    }, 0);
   };
 
   // Close on Escape
@@ -319,7 +322,7 @@ const StickyNav = ({ activeSection, visible }) => {
     <>
       <ScrollProgressIndicator progress={scrollProgress} />
       <nav
-        className={`fixed top-0 left-0 right-0 z-30 px-6 py-4 transition-transform duration-300 shadow-md`}
+        className={`fixed top-0 left-0 right-0 z-30 px-6 py-4 transition-transform duration-100 shadow-md`}
         style={{
           backgroundColor: "var(--color-primary)",
           transform: visible ? "translateY(0)" : "translateY(-100%)",
@@ -350,12 +353,21 @@ const StickyNav = ({ activeSection, visible }) => {
           <div className="lg:hidden">
             <button
               ref={hamburgerButtonRef}
-              onMouseDown={(e) => e.preventDefault()} // Prevents delay on blur
+              // onMouseDown can help too—blur before click if needed
+              onMouseDown={() => {
+                if (hamburgerButtonRef.current) {
+                  hamburgerButtonRef.current.blur();
+                }
+              }}
               onClick={toggleMenu}
               className="p-2 focus:outline-none"
               aria-label="Toggle menu"
               aria-expanded={isMenuOpen}
-              style={{ color: "var(--color-secondary)" }}
+              // Disable pointer events once the menu is open so the button no longer receives focus
+              style={{
+                color: "var(--color-secondary)",
+                pointerEvents: isMenuOpen ? "none" : "auto",
+              }}
             >
               {isMenuOpen ? (
                 <svg
