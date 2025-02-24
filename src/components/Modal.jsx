@@ -151,7 +151,7 @@ const Modal = ({ onClose }) => {
           <h4 className="text-xl font-semibold text-[var(--color-accent)] mb-2">
             {chapters[currentChapter].title}
           </h4>
-          <p className="text-[var(--color-secondary)]/80">
+          <p className="text-[var(--color-secondary)]/80 text-justify">
             {chapters[currentChapter].content}
           </p>
           <div className="flex justify-between mt-4">
