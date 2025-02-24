@@ -6,7 +6,7 @@ import Home from "./components/Home";
 import Overview from "./components/Overview";
 import OrderForm from "./components/OrderForm";
 import background from "./assets/nutchaBackground.webp";
-import StickyNav2 from "./components/StickyNav2";
+import StickyNav from "./components/StickyNav";
 import Ingredients from "./components/Ingredient";
 import Story from "./components/Story";
 import Testimonials from "./components/Testimonials";
@@ -97,7 +97,7 @@ const App = () => {
                       </div>
                     </div>
                   </header>
-                  <StickyNav2
+                  <StickyNav
                     activeSection={activeSection}
                     visible={navVisible}
                     darkMode={darkMode}

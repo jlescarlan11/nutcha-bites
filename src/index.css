@@ -49,23 +49,3 @@
   box-sizing: border-box;
   font-family: "Poppins", sans-serif;
 }
-
-button {
-  background-color: var(--color-accent);
-  color: var(--color-primary);
-}
-
-/* styles.css */
-.back-button {
-  margin-top: 20px;
-  padding: 10px 20px;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.back-button:hover {
-  background-color: #45a049;
-}
