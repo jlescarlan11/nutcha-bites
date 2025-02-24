@@ -22,6 +22,11 @@ const vouchers = [
     code: "NEWSLETTER20",
     description: "20% Off Special Offer",
   },
+  {
+    reward: "No Prize",
+    code: "NONE",
+    description: "No Prize Voucher",
+  },
 ];
 
 // Hook to manage email state and validation.
@@ -331,10 +336,39 @@ const NewsletterSignup = () => {
       return;
     }
 
+    // Safely parse stored emails from localStorage.
+    let storedEmails = [];
+    try {
+      const parsed = JSON.parse(localStorage.getItem("newsletterSubscribed"));
+      if (Array.isArray(parsed)) {
+        storedEmails = parsed;
+      }
+    } catch (err) {
+      storedEmails = [];
+    }
+
+    // Check if the email is already subscribed.
+    if (storedEmails.includes(email)) {
+      setMessage("You have already subscribed.");
+      setStatus("error");
+      return;
+    }
+
     setLoading(true);
     try {
       // Simulated API call.
       await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      // Add the new email to the array and update localStorage.
+      storedEmails.push(email);
+      localStorage.setItem(
+        "newsletterSubscribed",
+        JSON.stringify(storedEmails)
+      );
+
+      // Clear the input immediately.
+      setEmail("");
+
       setMessage("🎉 You're in! Get ready to spin the roulette for a reward.");
       setStatus("success");
       setSubmitted(true);
@@ -506,13 +540,13 @@ const NewsletterSignup = () => {
                 transition: { ease: "easeOut", duration: 0.3 },
               }}
               whileTap={{ scale: 0.95 }}
-              className="px-6 py-2 bg-green-600 text-[var(--color-primary)]/90 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mb-2"
+              className="px-6 py-2 bg-[var(--color-accent)]/70 text-[var(--color-primary)]/90 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 mb-2"
               aria-label="Proceed to shop using your reward"
             >
               Shop Now
             </motion.button>
             <motion.div
-              className="text-sm text-blue-500"
+              className="text-sm text-[var(--color-primary)]/50"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}

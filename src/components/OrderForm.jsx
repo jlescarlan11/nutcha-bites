@@ -99,8 +99,7 @@ const InputField = ({
     <div className="min-h-12 sm:min-h-7 flex items-center">
       <label
         htmlFor={id}
-        className="block font-medium mb-1"
-        style={{ color: "var(--color-secondary)" }}
+        className="block font-medium mb-1 text-[var(--color-secondary)]/70"
       >
         {label}
       </label>
@@ -112,8 +111,8 @@ const InputField = ({
       onChange={onChange}
       onBlur={onBlur}
       placeholder={placeholder}
-      className={`w-full p-4 rounded-md border focus:outline-none focus:ring-4 transition-shadow shadow-sm ${
-        error ? "border-red-500" : "border-gray-300"
+      className={`w-full p-4 rounded-md border  text-[var(--color-secondary)]/90 focus:outline-none focus:ring-4 transition-shadow shadow-sm ${
+        error ? "border-red-500" : "border-[var(--color-secondary)]/80"
       }`}
       {...rest}
     />
@@ -197,19 +196,13 @@ const CustomerOrderForm = ({
 
   return (
     <div className="px-4 py-6">
-      <h2
-        className="text-2xl font-semibold mb-6"
-        style={{ color: "var(--color-secondary)" }}
-      >
+      <h2 className="text-2xl font-semibold mb-6 text-[var(--color-secondary)]/90">
         Customer & Order Details
       </h2>
-      <div className="flex flex-col md:flex-row md:space-x-8 space-y-8 md:space-y-0">
+      <div className="flex flex-col gap-2 md:flex-row md:space-x-8 space-y-8 md:space-y-0">
         {/* Customer Information */}
         <div className="w-full md:w-1/2">
-          <h3
-            className="text-xl font-bold mb-4"
-            style={{ color: "var(--color-secondary)" }}
-          >
+          <h3 className="text-xl font-bold mb-4 text-[var(--color-secondary)]/80">
             Customer Information
           </h3>
           {["name", "email", "phone", "address"].map((field) => (
@@ -230,17 +223,13 @@ const CustomerOrderForm = ({
         </div>
         {/* Order Details */}
         <div className="w-full md:w-1/2">
-          <h3
-            className="text-xl font-bold mb-4"
-            style={{ color: "var(--color-secondary)" }}
-          >
+          <h3 className="text-xl font-bold mb-4 text-[var(--color-secondary)]/90">
             Order Details
           </h3>
           <div className="mb-4">
             <label
               htmlFor="product"
-              className="block font-medium mb-1"
-              style={{ color: "var(--color-secondary)" }}
+              className="block font-medium mb-1 text-[var(--color-secondary)]/70"
             >
               Select Product
             </label>
@@ -248,7 +237,7 @@ const CustomerOrderForm = ({
               id="product"
               value={selectedProduct.id}
               onChange={handleProductChange}
-              className="w-full p-4 border rounded-md focus:outline-none focus:ring-4 focus:ring-blue-300 shadow-sm transition-shadow"
+              className="w-full p-4 border border-[var(--color-secondary)]/80 text-[var(--color-secondary)]/90 rounded-md focus:outline-none focus:ring-4 focus:ring-blue-300 shadow-sm transition-shadow"
             >
               {products.map((product) => (
                 <option key={product.id} value={product.id}>
@@ -268,32 +257,26 @@ const CustomerOrderForm = ({
             placeholder="Enter quantity"
           />
           <div
-            className="mt-6 p-6 rounded-lg shadow-lg border"
+            className="mt-12 p-6 rounded-lg shadow-lg border"
             style={{
               backgroundColor: "var(--color-primary)",
               borderColor: "var(--color-secondary)",
             }}
           >
-            <h3
-              className="font-bold text-xl mb-3"
-              style={{ color: "var(--color-secondary)" }}
-            >
+            <h3 className="font-bold text-xl mb-3 text-[var(--color-secondary)]/90">
               Order Summary
             </h3>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-start gap-4 space-x-4">
               <img
                 src={selectedProduct.image}
                 alt={selectedProduct.name}
                 className="w-16 h-16 object-cover rounded-md"
               />
               <div>
-                <p style={{ color: "var(--color-secondary)" }}>
+                <p className="text-[var(--color-secondary)]/80  font-semibold">
                   {selectedProduct.name}
                 </p>
-                <p
-                  className="text-sm"
-                  style={{ color: "var(--color-secondary)" }}
-                >
+                <p className="text-xs text-[var(--color-secondary)]/70">
                   x {quantity} = ₱{totalPrice}
                 </p>
               </div>
@@ -306,11 +289,10 @@ const CustomerOrderForm = ({
         <motion.button
           onClick={onNext}
           whileHover={{ scale: 1.05 }}
-          className="px-8 py-3 rounded-full transition-transform shadow-md"
+          className="px-8 py-3 rounded-full transition-transform shadow-md text-[var(--color-primary)]/80"
           style={{
             background:
               "linear-gradient(to right, var(--color-secondary), var(--color-accent))",
-            color: "#fff",
           }}
         >
           Next: Payment Details
@@ -455,10 +437,7 @@ const PaymentForm = ({
         borderColor: "var(--color-secondary)",
       }}
     >
-      <h2
-        className="text-2xl font-semibold mb-6"
-        style={{ color: "var(--color-secondary)" }}
-      >
+      <h2 className="text-2xl font-semibold mb-6 text-[var(--color-secondary)]/90">
         Payment Details
       </h2>
       <div className="flex flex-col md:flex-row gap-8">
@@ -530,8 +509,7 @@ const PaymentForm = ({
           <div className="mt-6">
             <label
               htmlFor="voucherCode"
-              className="block font-medium mb-1"
-              style={{ color: "var(--color-secondary)" }}
+              className="block font-medium mb-1 text-[var(--color-secondary)]/70"
             >
               Voucher Code
             </label>
@@ -542,17 +520,12 @@ const PaymentForm = ({
               value={buyerInfo.voucherCode}
               onChange={handleVoucherChange}
               placeholder="Enter voucher code"
-              className={`w-full p-4 rounded-md border focus:outline-none transition-shadow shadow-sm ${
+              className={`w-full p-4 rounded-md border text-[var(--color-secondary)]  focus:outline-none transition-shadow shadow-sm ${
                 voucherFeedback && voucherFeedback.status === "error"
                   ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-300 focus:ring-blue-300"
+                  : "border-[var(--color-secondary)]/70 focus:ring-blue-300"
               }`}
             />
-            <datalist id="voucherOptions">
-              {vouchers.map((voucher) => (
-                <option key={voucher.code} value={voucher.code} />
-              ))}
-            </datalist>
             <AnimatePresence>
               {voucherFeedback && voucherFeedback.message && (
                 <motion.div
@@ -571,26 +544,17 @@ const PaymentForm = ({
             </AnimatePresence>
           </div>
           {/* Purchase Summary */}
-          <div
-            className="mt-8 p-6 rounded-lg shadow-md border"
-            style={{
-              backgroundColor: "var(--color-primary)",
-              borderColor: "var(--color-secondary)",
-            }}
-          >
-            <h3
-              className="font-bold text-xl mb-3"
-              style={{ color: "var(--color-secondary)" }}
-            >
+          <div className="mt-8 p-6 rounded-lg shadow-md  border border-[var(--color-secondary)]/80">
+            <h3 className="font-bold text-xl mb-3 text-[var(--color-secondary)]/90">
               Purchase Summary
             </h3>
-            <p style={{ color: "var(--color-secondary)" }}>
+            <p className="text-[var(--color-secondary)]/80">
               <strong>Product:</strong> {selectedProduct.name}
             </p>
-            <p style={{ color: "var(--color-secondary)" }}>
+            <p className="text-[var(--color-secondary)]/80">
               <strong>Quantity:</strong> {quantity}
             </p>
-            <p style={{ color: "var(--color-secondary)" }}>
+            <p className="text-[var(--color-secondary)]/80">
               <strong>Base Price:</strong> ₱{basePrice.toFixed(2)}
             </p>
             {reward ? (
@@ -625,23 +589,20 @@ const PaymentForm = ({
                 )}
               </>
             ) : (
-              <p style={{ color: "var(--color-secondary)" }}>
+              <p className="text-[var(--color-secondary)]/80">
                 No voucher applied
               </p>
             )}
-            <p style={{ color: "var(--color-secondary)" }}>
+            <p className="text-[var(--color-secondary)]/80">
               <strong>Shipping Fee:</strong> ₱{shippingFee.toFixed(2)}
             </p>
-            <p
-              className="mt-3 font-bold"
-              style={{ color: "var(--color-secondary)" }}
-            >
+            <p className="mt-3 font-bold text-[var(--color-secondary)]/80">
               <strong>Total Price:</strong> ₱{finalPrice.toFixed(2)}
             </p>
           </div>
         </div>
         {/* Desktop Credit Card Preview */}
-        <div className="w-full md:w-1/3 hidden md:flex justify-center items-start mb-6 md:mb-0 transform scale-90">
+        <div className="w-full md:w-1/3 hidden md:flex justify-center -mt-3 items-start mb-6 md:mb-0 transform scale-90">
           <CreditCard
             number={buyerInfo.cardNumber}
             name={buyerInfo.name}
@@ -657,8 +618,8 @@ const PaymentForm = ({
           onClick={onBack}
           whileHover={{ scale: 1.05 }}
           type="button"
-          className="mb-4 sm:mb-0 px-8 hidden sm:block py-3 rounded-full transition-shadow shadow-md"
-          style={{ backgroundColor: "var(--color-secondary)", color: "#fff" }}
+          className="px-8 py-3 sm:block hidden rounded-full transition-transform shadow-md text-[var(--color-primary)]/80"
+          style={{ backgroundColor: "var(--color-secondary)" }}
         >
           Back
         </motion.button>
@@ -667,13 +628,12 @@ const PaymentForm = ({
           whileHover={{ scale: 1.05 }}
           type="button"
           disabled={isSubmitting}
-          className={`w-full sm:w-auto px-8 py-3 rounded-full transition-shadow shadow-md ${
+          className={`px-8 py-3 rounded-full transition-transform shadow-md text-[var(--color-primary)]/80 ${
             isSubmitting ? "opacity-50 cursor-not-allowed" : ""
           }`}
           style={{
             background:
               "linear-gradient(to right, var(--color-secondary), var(--color-accent))",
-            color: "#fff",
           }}
         >
           {isSubmitting ? "Processing..." : "Confirm Order"}
@@ -682,8 +642,8 @@ const PaymentForm = ({
           onClick={onBack}
           whileHover={{ scale: 1.05 }}
           type="button"
-          className="block sm:hidden sm:mb-0 px-8 py-3 rounded-full transition-shadow shadow-md"
-          style={{ backgroundColor: "var(--color-secondary)", color: "#fff" }}
+          className="px-8 py-3 block sm:hidden rounded-full transition-transform shadow-md text-[var(--color-primary)]/80"
+          style={{ backgroundColor: "var(--color-secondary)" }}
         >
           Back
         </motion.button>
@@ -724,32 +684,23 @@ const Confirmation = ({
         borderColor: "var(--color-secondary)",
       }}
     >
-      <h1 className="text-3xl font-extrabold text-[var(--color-secondary)]/80 text-center mb-4">
+      <h1 className="text-3xl font-extrabold text-[var(--color-primary)]/80 text-center mb-4">
         Nutcha Bites
       </h1>
-      <h2
-        className="text-2xl font-semibold mb-6 text-center"
-        style={{ color: "var(--color-secondary)" }}
-      >
+      <h2 className="text-2xl font-semibold mb-6 text-center text-[var(--color-secondary)]/90">
         Order Confirmation
       </h2>
-      <p className="mb-4" style={{ color: "var(--color-secondary)" }}>
+      <p className="mb-4 text-[var(--color-secondary)]/80">
         Thank you, {buyerInfo.name}! Your order has been confirmed.
       </p>
-      <div
-        className="p-4 rounded-lg shadow-md mb-6 border"
-        style={{
-          backgroundColor: "var(--color-primary)",
-          borderColor: "var(--color-secondary)",
-        }}
-      >
-        <p style={{ color: "var(--color-secondary)" }}>
+      <div className="p-4 rounded-lg shadow-md mb-6 border bg-[var(--color-primary)]/80 border-[var(--color-secondary)]/80">
+        <p className="text-[var(--color-secondary)]/70">
           <strong>Product:</strong> {selectedProduct.name}
         </p>
-        <p style={{ color: "var(--color-secondary)" }}>
+        <p className="text-[var(--color-secondary)]/70">
           <strong>Quantity:</strong> {quantity}
-        </p>
-        <p style={{ color: "var(--color-secondary)" }}>
+        </p>{" "}
+        <p className="text-[var(--color-secondary)]/70">
           <strong>Base Price:</strong> ₱{baseProductPrice.toFixed(2)}
         </p>
         {reward ? (
@@ -781,15 +732,12 @@ const Confirmation = ({
             </>
           )
         ) : (
-          <p style={{ color: "var(--color-secondary)" }}>No voucher applied</p>
+          <p className="text-[var(--color-secondary)]/60">No voucher applied</p>
         )}
-        <p style={{ color: "var(--color-secondary)" }}>
+        <p className="text-[var(--color-secondary)]/70">
           <strong>Shipping Fee:</strong> ₱{shippingFee.toFixed(2)}
         </p>
-        <p
-          className="mt-3 font-bold"
-          style={{ color: "var(--color-secondary)" }}
-        >
+        <p className="mt-3 font-bold text-[var(--color-secondary)]/80">
           <strong>Total Price:</strong> ₱{finalPrice.toFixed(2)}
         </p>
       </div>
@@ -801,8 +749,7 @@ const Confirmation = ({
       <motion.button
         onClick={() => navigate("/")}
         whileHover={{ scale: 1.05 }}
-        className="w-full p-3 rounded-full mt-4 shadow-md"
-        style={{ backgroundColor: "var(--color-secondary)", color: "#fff" }}
+        className="w-full p-3 rounded-full mt-4 shadow-md bg-[var(--color-secondary)]/80 text-[var(--color-primary)]/80"
       >
         Back to Home
       </motion.button>
@@ -899,6 +846,11 @@ const OrderForm = () => {
         setReward(selectedVoucher.description);
       }
     }
+
+    // Remove the saved newsletter voucher so it can't be reused
+    localStorage.removeItem("newsletterVoucher");
+    setBuyerInfo((prev) => ({ ...prev, voucherCode: "" }));
+
     setOrderSubmitted(true);
   }, [buyerInfo, reward]);
 
@@ -942,12 +894,12 @@ const OrderForm = () => {
             borderColor: "var(--color-secondary)",
           }}
         >
-          <h1 className="text-3xl font-extrabold" style={{ color: "#fff" }}>
+          <h1 className="text-3xl font-extrabold text-[var(--color-primary)]/80">
             Nutcha Bites
           </h1>
           <motion.button
             whileHover={{ scale: 1.2, rotate: 90 }}
-            className="cursor-pointer text-white focus:outline-none"
+            className="cursor-pointer text-[var(--color-primary)]/80 focus:outline-none"
             onClick={() => navigate("/")}
             aria-label="Close Order Form"
           >
