@@ -20,7 +20,7 @@ const SuggestionForm = () => {
 
   return (
     <div
-      className="mt-10 p-4 border border-[var(--color-tertiary)]/20 rounded-lg bg-[var(--color-accent)]/10"
+      className="mt-10 p-4 border border-[var(--color-tertiary)]/20 rounded-lg bg-[var(--color-secondary)]/10"
       aria-live="polite"
     >
       <h3 className="text-xl font-semibold mb-2 text-[var(--color-secondary)]/90">
