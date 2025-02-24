@@ -5,7 +5,6 @@ import FAQItem from "./FAQItem";
 import SuggestionForm from "./SuggestionForm";
 import usePrefersReducedMotion from "../hooks/usePrefersReducedMotion";
 
-// Sample FAQ data
 const faqData = [
   {
     question: "How long is the shelf life of Nutcha Bites?",
@@ -41,6 +40,39 @@ const faqData = [
     question: "How do Nutcha Bites compare to other snacks?",
     answer:
       "Nutcha Bites stand out with their premium ingredients, meticulous preparation, and dedication to quality. Experience a snack that is both delicious and thoughtfully crafted.",
+  },
+  {
+    question: "What allergens are present in Nutcha Bites?",
+    answer:
+      "Nutcha Bites contain peanuts and dairy (butter). They are produced in a facility that also processes tree nuts and soy. If you have specific allergies, please review the ingredient list carefully or consult with your healthcare provider before consuming.",
+  },
+  {
+    question:
+      "Do Nutcha Bites contain any preservatives or artificial additives?",
+    answer:
+      "No, Nutcha Bites are made with natural ingredients and do not contain preservatives or artificial additives.",
+  },
+  {
+    question: "Are there any plans to introduce new flavors or variations?",
+    answer:
+      "We are continually exploring new flavors and variations to delight our customers. Stay tuned to our website and social media channels for updates on upcoming products.",
+  },
+  {
+    question:
+      "Can I customize my Nutcha Bites order (e.g., bulk orders, special packaging)?",
+    answer:
+      "Yes, we offer customization options for bulk orders and special occasions. Please contact our customer service team for more details and to discuss your specific requirements.",
+  },
+  {
+    question:
+      "What is the nutritional information for a serving of Nutcha Bites?",
+    answer:
+      "Each serving of Nutcha Bites (approximately 30g) contains:\n\nCalories: 150\nProtein: 4g\nCarbohydrates: 12g\nSugars: 8g\nFat: 10g\nSaturated Fat: 2g\nSodium: 80mg\n\nPlease note that these values are approximate and may vary slightly between batches.",
+  },
+  {
+    question: "How can I provide feedback or suggestions about Nutcha Bites?",
+    answer:
+      "We value your feedback and suggestions. You can reach out to us through our website's contact form or email us directly at feedback@nutchabites.com.",
   },
 ];
 
