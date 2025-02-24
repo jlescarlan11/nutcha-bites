@@ -58,21 +58,21 @@ const AtomicTypewriter = ({ strings, loop = true }) => {
       <div className="mt-2 mb-6 flex gap-2 text-sm space-x-2">
         <button
           onClick={slowDown}
-          className="bg-[var(--color-accent)]/20 text-[var(--color-secondary)]/70 border-[var(--color-secondary)]/10 py-1 px-2 rounded-md border cursor-pointer"
+          className="bg-[var(--color-accent)]/20 text-[var(--color-secondary)]/70 border-[var(--color-secondary)]/10 py-1 px-2 rounded-md border cursor-pointer hover:scale-105 transition-all duration-300"
           aria-label="Slow down typewriter"
         >
           ⏪
         </button>
         <button
           onClick={togglePause}
-          className="bg-[var(--color-accent)]/20 text-[var(--color-secondary)]/70 border-[var(--color-secondary)]/10 py-1 px-2 rounded-md border cursor-pointer"
+          className="bg-[var(--color-accent)]/20 text-[var(--color-secondary)]/70 border-[var(--color-secondary)]/10 py-1 px-2 rounded-md border cursor-pointer hover:scale-105 transition-all duration-300"
           aria-label={isPaused ? "Resume typewriter" : "Pause typewriter"}
         >
           {isPaused ? "▶" : "⏸"}
         </button>
         <button
           onClick={speedUp}
-          className="bg-[var(--color-accent)]/20 text-[var(--color-secondary)]/70 border-[var(--color-secondary)]/10 py-1 px-2 rounded-md border cursor-pointer"
+          className="bg-[var(--color-accent)]/20 text-[var(--color-secondary)]/70 border-[var(--color-secondary)]/10 py-1 px-2 rounded-md border cursor-pointer hover:scale-105 transition-all duration-300"
           aria-label="Speed up typewriter"
         >
           ⏩

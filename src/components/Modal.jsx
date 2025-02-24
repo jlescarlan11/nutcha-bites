@@ -1,86 +1,179 @@
-import React, { useEffect, useRef } from "react";
-import ReactDOM from "react-dom";
+import React, { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 
-const Modal = ({ isOpen, onClose, title, description, children }) => {
+const Modal = ({ onClose }) => {
+  const [modalContainer, setModalContainer] = useState(null);
   const modalRef = useRef(null);
+  const previouslyFocusedElement = useRef(null);
+
+  // Reimagined interactive chapters with evocative narrative content
+  const chapters = [
+    {
+      id: 1,
+      title: "Chapter 1: The Dawn of a Dream",
+      content:
+        "In the quiet hours before the sun, when hope stirred in every heartbeat, our journey was born. We dared to blend the timeless traditions of Filipino cuisine with the artistry of Japanese matcha, crafting a dream where every ingredient whispered secrets of the past and promise for the future.",
+    },
+    {
+      id: 2,
+      title: "Chapter 2: The Fusion of Legacies",
+      content:
+        "As ancient recipes met modern innovations, flavors danced in harmony. The rich heritage of our forefathers mingled with bold, contemporary visions, creating a symphony of taste that transcended generations. Each bite became a tribute to the past and a celebration of the present.",
+    },
+    {
+      id: 3,
+      title: "Chapter 3: The Legacy of Taste",
+      content:
+        "Now, with decades of wisdom and an unyielding passion for culinary storytelling, our saga continues. Every morsel is a testament to the art of transformation—melding heritage with innovation. Our journey is not just about food; it is about forging memories, kindling hope, and inspiring a future steeped in tradition and creativity.",
+    },
+  ];
+  const [currentChapter, setCurrentChapter] = useState(0);
+
+  // Touch event state for swipe detection
+  const [touchStartX, setTouchStartX] = useState(null);
+  const [touchEndX, setTouchEndX] = useState(null);
+
+  const handleTouchStart = (e) => {
+    setTouchStartX(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e) => {
+    setTouchEndX(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStartX === null || touchEndX === null) return;
+    const diff = touchStartX - touchEndX;
+    if (diff > 50 && currentChapter < chapters.length - 1) {
+      // Swipe left: next chapter
+      setCurrentChapter(currentChapter + 1);
+    } else if (diff < -50 && currentChapter > 0) {
+      // Swipe right: previous chapter
+      setCurrentChapter(currentChapter - 1);
+    }
+    setTouchStartX(null);
+    setTouchEndX(null);
+  };
+
+  const handleNextChapter = () => {
+    if (currentChapter < chapters.length - 1) {
+      setCurrentChapter(currentChapter + 1);
+    }
+  };
+
+  const handlePrevChapter = () => {
+    if (currentChapter > 0) {
+      setCurrentChapter(currentChapter - 1);
+    }
+  };
 
   useEffect(() => {
-    if (isOpen) {
-      const previouslyFocusedElement = document.activeElement;
-      modalRef.current.focus();
+    // Set the container to document.body so that the modal is appended there
+    setModalContainer(document.body);
+  }, []);
 
-      const focusableSelectors =
-        'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, [tabindex]:not([tabindex="-1"])';
-      const focusableElements =
-        modalRef.current.querySelectorAll(focusableSelectors);
-      const firstFocusable = focusableElements[0];
-      const lastFocusable = focusableElements[focusableElements.length - 1];
+  useEffect(() => {
+    previouslyFocusedElement.current = document.activeElement;
+    if (modalRef.current) modalRef.current.focus();
 
-      const handleKeyDown = (e) => {
-        if (e.key === "Escape") {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") onClose();
+      if (e.key === "Tab") {
+        const focusableElements = modalRef.current.querySelectorAll(
+          'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusableElements.length === 0) {
           e.preventDefault();
-          onClose();
-        } else if (e.key === "Tab") {
-          if (e.shiftKey) {
-            if (document.activeElement === firstFocusable) {
-              e.preventDefault();
-              lastFocusable.focus();
-            }
-          } else {
-            if (document.activeElement === lastFocusable) {
-              e.preventDefault();
-              firstFocusable.focus();
-            }
+          return;
+        }
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+        if (e.shiftKey) {
+          if (document.activeElement === firstElement) {
+            lastElement.focus();
+            e.preventDefault();
+          }
+        } else {
+          if (document.activeElement === lastElement) {
+            firstElement.focus();
+            e.preventDefault();
           }
         }
-      };
+      }
+    };
 
-      modalRef.current.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      if (previouslyFocusedElement.current) {
+        previouslyFocusedElement.current.focus();
+      }
+    };
+  }, [onClose]);
 
-      return () => {
-        // Check if modalRef.current exists before removing the event listener.
-        if (modalRef.current) {
-          modalRef.current.removeEventListener("keydown", handleKeyDown);
-        }
-        previouslyFocusedElement && previouslyFocusedElement.focus();
-      };
-    }
-  }, [isOpen, onClose]);
+  if (!modalContainer) return null;
 
-  if (!isOpen) return null;
-
-  return ReactDOM.createPortal(
+  return createPortal(
     <div
+      className="fixed inset-0 flex items-center justify-center z-50"
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title"
-      aria-describedby="modal-description"
-      // Here we set an extremely high z-index to ensure the modal is on top.
-      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-75"
-      onClick={onClose}
     >
       <div
+        className="fixed inset-0 bg-gradient-to-br from-[var(--color-secondary)]/30 to-transparent backdrop-blur-sm"
+        onClick={onClose}
+      ></div>
+      <div
         ref={modalRef}
-        tabIndex={-1}
-        className="bg-white p-6 rounded shadow-xl max-w-md mx-auto"
-        onClick={(e) => e.stopPropagation()}
+        tabIndex="-1"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        className="relative bg-[var(--color-primary)] rounded-2xl shadow-2xl max-w-lg w-full p-6 mx-4 z-50 border border-[var(--color-tertiary)]/30 animate-modalIn"
       >
-        <h2 id="modal-title" className="text-2xl font-bold">
-          {title}
-        </h2>
-        <p id="modal-description" className="mt-2">
-          {description}
-        </p>
-        <div className="mt-4">{children}</div>
-        <button
-          onClick={onClose}
-          className="mt-4 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded"
-        >
-          Close
-        </button>
+        <div className="flex justify-between items-center mb-4">
+          <h3
+            id="modal-title"
+            className="text-2xl font-bold text-[var(--color-secondary)]/80"
+          >
+            Our Journey
+          </h3>
+          <button
+            onClick={onClose}
+            className="text-4xl text-[var(--color-secondary)] bg-transparent hover:text-[var(--color-accent)] focus:outline-none"
+            aria-label="Close modal"
+          >
+            &times;
+          </button>
+        </div>
+        <div className="p-4">
+          <h4 className="text-xl font-semibold text-[var(--color-accent)] mb-2">
+            {chapters[currentChapter].title}
+          </h4>
+          <p className="text-[var(--color-secondary)]/80">
+            {chapters[currentChapter].content}
+          </p>
+          <div className="flex justify-between mt-4">
+            <button
+              onClick={handlePrevChapter}
+              disabled={currentChapter === 0}
+              className="px-4 py-2 bg-[var(--color-secondary)]/20 text-[var(--color-secondary)] rounded disabled:opacity-50"
+            >
+              Prev
+            </button>
+            <button
+              onClick={handleNextChapter}
+              disabled={currentChapter === chapters.length - 1}
+              className="px-4 py-2 bg-[var(--color-secondary)]/20 text-[var(--color-secondary)] rounded disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        </div>
       </div>
     </div>,
-    document.body
+    modalContainer
   );
 };
 
