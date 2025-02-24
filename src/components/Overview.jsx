@@ -44,7 +44,7 @@ const Overview = () => {
   return (
     <motion.section
       aria-label="Overview Section"
-      className="mx-auto px-4 py-6 sm:py-8 md:py-12 lg:py-16 max-w-6xl bg-[var(--color-primary)] text-[var(--color-secondary)]/80"
+      className="mx-auto px-4 py-6 min-h-dvh flex items-center md:py-12 lg:py-16 max-w-6xl bg-[var(--color-primary)] text-[var(--color-secondary)]/80"
       initial="hidden"
       animate="visible"
       transition={{ duration: shouldReduceMotion ? 0 : 0.5 }}

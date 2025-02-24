@@ -281,7 +281,7 @@ const Testimonials = () => {
 
   return (
     <section
-      className="relative mt-24 mx-4 sm:mx-8 overflow-hidden md:mx-16 lg:mx-32 py-8 md:py-12 px-4 bg-[var(--color-primary)]"
+      className="relative flex min-h-dvh items-center mx-4 sm:mx-8 overflow-hidden md:mx-16 lg:mx-32 py-8 md:py-12 px-4 bg-[var(--color-primary)]"
       aria-label="Testimonials Slider"
       onKeyDown={handleKeyDown}
       tabIndex="0"
@@ -409,14 +409,14 @@ const Testimonials = () => {
           ))}
           <button
             onClick={handlePrev}
-            className="absolute left-1 sm:left-3 top-11/12 transform -translate-y-1/2 bg-[var(--color-accent)]/50 text-[var(--color-primary)] p-2 sm:p-3 rounded-full focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]/30"
+            className="absolute left-1 sm:left-3 top-11/12 sm:top-12/12 transform -translate-y-1/2 bg-[var(--color-accent)]/50 text-[var(--color-primary)] p-2 sm:p-3 rounded-full focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]/30"
             aria-label="Previous testimonial"
           >
             ◀
           </button>
           <button
             onClick={handleNext}
-            className="absolute right-1 sm:right-3 top-11/12 transform -translate-y-1/2 bg-[var(--color-accent)]/50 text-[var(--color-primary)] p-2 sm:p-3 rounded-full focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]/30"
+            className="absolute right-1 sm:right-3 top-11/12 sm:top-12/12 transform -translate-y-1/2 bg-[var(--color-accent)]/50 text-[var(--color-primary)] p-2 sm:p-3 rounded-full focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]/30"
             aria-label="Next testimonial"
           >
             ▶

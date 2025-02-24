@@ -103,16 +103,13 @@ const DesktopNavigation = ({
   navigate,
 }) => (
   <>
-    <ul
-      className="hidden lg:flex items-center space-x-6 text-base font-medium"
-      style={{ color: "var(--color-primary)" }}
-    >
+    <ul className="hidden lg:flex items-center space-x-6 text-base font-medium text-[var(--color-secondary)]/30">
       {menuItems.map((item, index) => {
         const id = item.toLowerCase().replace(/\s+/g, "-");
         const activeClass =
           activeSection === id
-            ? "text-[var(--color-accent)]"
-            : "hover:text-[var(--color-accent)] transition-colors";
+            ? "font-bold text-[var(--color-accent)]"
+            : "hover:text-[var(--color-accent)] transition-colors duration-300";
         return (
           <li key={index} className="cursor-pointer">
             <a
@@ -131,7 +128,7 @@ const DesktopNavigation = ({
     </ul>
     <div className="hidden lg:flex">
       <button
-        className="ml-4 px-6 py-2 rounded-full font-semibold transition-colors text-[var(--color-primary)] hover:bg-[var(--color-accent)] hover:text-[var(--color-primary)]"
+        className="ml-4 px-6 py-2 rounded-full font-semibold transition-all bg-[var(--color-accent)] text-[var(--color-primary)] hover:bg-[var(--color-accent)]/90 hover:text-[var(--color-primary)] hover:-translate-y-0.5 duration-300 "
         onClick={() => navigate("/order")}
       >
         ORDER NOW
@@ -268,7 +265,13 @@ const StickyNav = ({ activeSection, visible }) => {
     if (section) section.scrollIntoView({ behavior: "smooth" });
   };
 
-  const toggleMenu = () => setIsMenuOpen((prev) => !prev);
+  const toggleMenu = () => {
+    // Force blur on mousedown so the button doesn’t keep focus during animation
+    if (hamburgerButtonRef.current) {
+      hamburgerButtonRef.current.blur();
+    }
+    setIsMenuOpen((prev) => !prev);
+  };
 
   // Close on Escape
   useEffect(() => {
@@ -347,6 +350,7 @@ const StickyNav = ({ activeSection, visible }) => {
           <div className="lg:hidden">
             <button
               ref={hamburgerButtonRef}
+              onMouseDown={(e) => e.preventDefault()} // Prevents delay on blur
               onClick={toggleMenu}
               className="p-2 focus:outline-none"
               aria-label="Toggle menu"

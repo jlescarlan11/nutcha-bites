@@ -107,7 +107,7 @@ const FAQS = () => {
       id="faq"
       role="region"
       aria-labelledby="faq-heading"
-      className="mt-32 px-4 sm:px-6 md:px-8 transition-colors"
+      className="mt-28 px-4 sm:px-6 md:px-8 transition-colors"
     >
       <noscript>
         <p className="text-center text-[var(--color-secondary)]">
