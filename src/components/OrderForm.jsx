@@ -413,16 +413,12 @@ const PaymentForm = ({
   let discountAmount = 0;
 
   if (reward) {
-    // "Free One Product Voucher" takes precedence
-    if (/free\s+product/i.test(reward)) {
+    // Explicit check for FREEGIFT voucher description
+    if (/free\s+(one|product)+\s*product/i.test(reward)) {
       discountAmount = quantity >= 1 ? selectedProduct.price : 0;
-    }
-    // "Free Shipping Voucher" applies free shipping
-    else if (/free\s+(delivery|shipping)/i.test(reward)) {
+    } else if (/free\s+(delivery|shipping)/i.test(reward)) {
       shippingFee = 0;
-    }
-    // Handle discount percentages (e.g., "10% Off Newsletter Signup")
-    else {
+    } else {
       const discountMatch = reward.match(/(\d+)%\s*Off/i);
       if (discountMatch) {
         const discountPercentage = parseFloat(discountMatch[1]);
@@ -430,6 +426,7 @@ const PaymentForm = ({
       }
     }
   }
+
   const finalPrice = basePrice - discountAmount + shippingFee;
 
   return (
@@ -562,11 +559,15 @@ const PaymentForm = ({
             </p>
             {reward ? (
               <>
-                {/free\s+product/i.test(reward) ? (
+                {/free\s+(one|product)+\s*product/i.test(reward) ? (
                   <p style={{ color: "green" }}>
                     <strong>Discount:</strong> -₱
                     {selectedProduct.price.toFixed(2)} (Free One Product
                     Voucher)
+                  </p>
+                ) : /free\s+(one|gift)+\s*gift/i.test(reward) ? ( // Free Gift Validation
+                  <p style={{ color: "green" }}>
+                    <strong>Free Gift Voucher Applied</strong>
                   </p>
                 ) : (
                   <>
