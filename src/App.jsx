@@ -12,6 +12,7 @@ import Story from "./components/Story";
 import Testimonials from "./components/Testimonials";
 import FAQS from "./components/FAQS";
 import NewsletterSignup from "./components/NewsletterSignup";
+import AdVideo from "./components/AdVideo";
 import Footer from "./components/Footer";
 import ScrollProgress from "./components/ScrollProgress";
 import BackToTopButton from "./components/BackToTopButton"; // New cool feature!
@@ -100,6 +101,9 @@ const App = () => {
                     </section>
                     <section id="our-vision">
                       <Story />
+                    </section>
+                    <section id="ad-video">
+                      <AdVideo />
                     </section>
                     <section id="testimonials">
                       <Testimonials />
