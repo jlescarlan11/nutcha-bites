@@ -31,6 +31,11 @@ const Header = () => {
     }
   };
 
+  const scrollToSection = (id) => {
+    const section = document.getElementById(id);
+    if (section) section.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
     <header className="relative z-20 shadow-md">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
@@ -151,7 +156,9 @@ const Header = () => {
                         href={`#${id}`}
                         onClick={(e) => {
                           e.preventDefault();
+                          scrollToSection(id);
                           // If you have a scrollToSection function, call it here.
+
                           setShowMenu(false);
                         }}
                         className="block px-4 py-2 rounded-md transition-colors hover:bg-[var(--color-accent)]/10 hover:text-[var(--color-primary)]/90"
