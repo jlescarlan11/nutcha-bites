@@ -677,7 +677,7 @@ const Confirmation = ({
         borderColor: "var(--color-secondary)",
       }}
     >
-      <h1 className="text-3xl font-bold text-[var(--color-primary)]/80 text-center mb-4">
+      <h1 className="text-3xl font-bold text-[var(--color-secondary)]/80 text-center mb-4">
         Nutcha Bites
       </h1>
       <h2 className="text-2xl font-semibold mb-6 text-center text-[var(--color-secondary)]/90">
@@ -785,7 +785,7 @@ const OrderForm = () => {
 
   useEffect(() => {
     const originalStyle = window.getComputedStyle(document.body).overflow;
-    document.body.style.overflow = "auto";
+    document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = originalStyle;
     };
@@ -861,7 +861,7 @@ const OrderForm = () => {
 
   return (
     <motion.div
-      className="fixed top-8 bottom-8 left-0 right-0 flex justify-center items-center p-4 z-50"
+      className="fixed inset-0 flex justify-center items-center p-4 z-50"
       style={{ backgroundColor: "var(--color-primary)" }}
       variants={containerVariants}
       initial="hidden"
@@ -909,7 +909,7 @@ const OrderForm = () => {
         <div
           className="overflow-y-auto p-6 relative sm:p-8"
           style={{
-            maxHeight: "calc(100vh - 100px)",
+            maxHeight: "calc(100vh - 200px)",
             WebkitOverflowScrolling: "touch",
           }}
         >
