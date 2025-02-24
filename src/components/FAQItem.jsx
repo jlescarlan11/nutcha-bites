@@ -117,58 +117,57 @@ const FAQItem = ({ faq, isOpen, toggle, index }) => {
       <animated.div
         id={`faq-answer-${index}`}
         style={{ ...animationProps, overflow: "hidden" }}
+        aria-hidden={!isOpen}
       >
         <div
           ref={measureRef}
-          className="py-2 sm:py-3 px-4 sm:px-6 text-[var(--color-secondary)]/70 mr-12"
+          className={`py-2 sm:py-3 px-4 sm:px-6 text-[var(--color-secondary)]/70 mr-12 transition-opacity duration-300 ${
+            isOpen ? "opacity-100" : "opacity-0"
+          }`}
         >
           <p>{faq.answer}</p>
-          {isOpen && (
-            <div className="mt-4 flex flex-col sm:flex-row items-center justify-between">
-              <div
-                className="flex gap-2 items-center space-x-6"
-                aria-live="polite"
+
+          {/* Always Rendered Interactive Elements */}
+          <div className="mt-4 flex flex-col sm:flex-row items-center justify-between">
+            <div
+              className="flex gap-2 items-center space-x-6"
+              aria-live="polite"
+            >
+              <button
+                onClick={handleUpVote}
+                className={`flex items-center space-x-1 bg-transparent text-[var(--color-secondary)]/70 focus:outline-none ${
+                  userVote === "up" ? "font-bold" : ""
+                }`}
+                aria-label="Upvote this FAQ"
               >
-                <button
-                  onClick={handleUpVote}
-                  className={`flex items-center space-x-1 bg-transparent text-[var(--color-secondary)]/70 focus:outline-none ${
-                    userVote === "up" ? "font-bold" : ""
-                  }`}
-                  aria-label="Upvote this FAQ"
-                >
-                  <span role="img" aria-label="thumbs up">
-                    👍
-                  </span>
-                  <span>{upCount}</span>
-                </button>
-                <button
-                  onClick={handleDownVote}
-                  className={`flex items-center space-x-1 bg-transparent text-[var(--color-secondary)]/70 focus:outline-none ${
-                    userVote === "down" ? "font-bold" : ""
-                  }`}
-                  aria-label="Downvote this FAQ"
-                >
-                  <span role="img" aria-label="thumbs down">
-                    👎
-                  </span>
-                  <span>{downCount}</span>
-                </button>
-              </div>
-              <div className="mt-2 sm:mt-0">
-                <button
-                  onClick={handleShare}
-                  className="px-3 py-1 bg-[var(--color-accent)]/80 text-[var(--color-primary)]/90 rounded hover:bg-[var(--color-accent)]/90 transition focus:outline-none"
-                  aria-label="Share this FAQ"
-                >
-                  {copied ? (
-                    <span role="alert">Copied!</span>
-                  ) : (
-                    "Share this FAQ"
-                  )}
-                </button>
-              </div>
+                <span role="img" aria-label="thumbs up">
+                  👍
+                </span>
+                <span>{upCount}</span>
+              </button>
+              <button
+                onClick={handleDownVote}
+                className={`flex items-center space-x-1 bg-transparent text-[var(--color-secondary)]/70 focus:outline-none ${
+                  userVote === "down" ? "font-bold" : ""
+                }`}
+                aria-label="Downvote this FAQ"
+              >
+                <span role="img" aria-label="thumbs down">
+                  👎
+                </span>
+                <span>{downCount}</span>
+              </button>
             </div>
-          )}
+            <div className="mt-2 sm:mt-0">
+              <button
+                onClick={handleShare}
+                className="px-3 py-1 bg-[var(--color-accent)]/80 text-[var(--color-primary)]/90 rounded hover:bg-[var(--color-accent)]/90 transition focus:outline-none"
+                aria-label="Share this FAQ"
+              >
+                {copied ? <span role="alert">Copied!</span> : "Share this FAQ"}
+              </button>
+            </div>
+          </div>
         </div>
       </animated.div>
     </article>
