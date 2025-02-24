@@ -80,7 +80,7 @@ const App = () => {
                       style={{ backgroundImage: `url(${background})` }}
                     >
                       {/* Enhanced overlay with gradient, blur, and parallax effect */}
-                      <div className="absolute inset-0 bg-gradient-to-b from-[var(--color-secondary)]/40 to-[var(--color-secondary)]/80 backdrop-blur-md" />
+                      <div className="absolute inset-0 bg-gradient-to-b from-[var(--color-secondary)]/10 to-[var(--color-secondary)]/40 backdrop-blur-sm" />
                       <div className="relative z-10 text-[var(--color-primary)]">
                         <Header />
                         <Home />
